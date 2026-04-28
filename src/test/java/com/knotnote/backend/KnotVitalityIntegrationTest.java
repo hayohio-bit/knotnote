@@ -367,10 +367,13 @@ class KnotVitalityIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {"targetNoteId":%d}
-                        """.formatted(noteB)));
+                        """.formatted(noteB)))
+                .andExpect(status().isCreated());  // 생성 확인
 
         var pendingResult1 = mockMvc.perform(get("/api/notes/" + noteA + "/links/pending")
                 .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()").value(1))
                 .andReturn();
         long linkId = objectMapper.readTree(pendingResult1.getResponse().getContentAsString())
                 .path("data").get(0).path("linkId").asLong();
@@ -380,7 +383,8 @@ class KnotVitalityIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {"summary":"확정"}
-                        """));
+                        """))
+                .andExpect(status().isOk());  // crystallize 확인
 
         // A-C 링크는 미확정 상태로 유지
         mockMvc.perform(post("/api/notes/" + noteA + "/links")
@@ -388,14 +392,15 @@ class KnotVitalityIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {"targetNoteId":%d}
-                        """.formatted(noteC)));
+                        """.formatted(noteC)))
+                .andExpect(status().isCreated());  // 생성 확인
 
         // pending links는 A-C 링크 1개만 반환해야 함
         mockMvc.perform(get("/api/notes/" + noteA + "/links/pending")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.length()").value(1))
-                .andExpect(jsonPath("$.data[0].toNoteId").value(noteC));
+                .andExpect(jsonPath("$.data[0].toNoteId").value((int) noteC));
     }
 
     @Test

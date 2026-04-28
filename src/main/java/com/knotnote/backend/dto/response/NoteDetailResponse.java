@@ -1,5 +1,6 @@
 package com.knotnote.backend.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,6 +17,8 @@ public class NoteDetailResponse {
     private List<NoteSummaryResponse> linkedNotes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @JsonProperty("isPinned")
     private boolean isPinned;
 
     @Getter
