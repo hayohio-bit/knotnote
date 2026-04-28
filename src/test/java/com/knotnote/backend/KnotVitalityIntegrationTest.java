@@ -382,7 +382,7 @@ class KnotVitalityIntegrationTest {
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                        {"summary":"확정"}
+                        {"summary":"연결 확정 완료"}
                         """))
                 .andExpect(status().isOk());  // crystallize 확인
 
