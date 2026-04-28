@@ -1,5 +1,5 @@
 # ── Stage 1: 빌드 ────────────────────────────────────────────
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /workspace
 
 COPY gradlew .
@@ -10,7 +10,7 @@ COPY src src
 RUN chmod +x gradlew && ./gradlew bootJar -x test --no-daemon
 
 # ── Stage 2: 런타임 ──────────────────────────────────────────
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 COPY --from=build /workspace/build/libs/*.jar app.jar
