@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: knotnote-backend
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/knotnote?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: 8080
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: 3600000       # 1 hour (ms)
+  refresh-expiration: 1209600000   # 14 days (ms)
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  api-docs:
+    path: /v3/api-docs
+
+# ── Phase 3: 임베딩 서버 설정 ─────────────────────────────────────────────
+embed:
+  server:
+    url: http://localhost:8000   # Python FastAPI 임베딩 서버 주소
+    enabled: true                 # false 로 설정하면 임베딩 기능 전체 비활성화
+
+logging:
+  level:
+    org.springframework.security: INFO
+    com.knotnote: DEBUG

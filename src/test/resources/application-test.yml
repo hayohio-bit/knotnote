@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;NON_KEYWORDS=VALUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        # H2 in-memory: dialect 자동 감지
+
+jwt:
+  secret: test-secret-key-must-be-at-least-32-bytes-long!!
+  access-expiration: 3600000
+  refresh-expiration: 1209600000
+
+embed:
+  server:
+    enabled: false   # 테스트 환경에서는 임베딩 서버 호출 비활성화
+
+logging:
+  level:
+    org.springframework.security: WARN
+    com.knotnote: INFO
