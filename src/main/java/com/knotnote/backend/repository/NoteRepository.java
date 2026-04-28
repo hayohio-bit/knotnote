@@ -25,16 +25,10 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
                                @Param("keyword") String keyword,
                                Pageable pageable);
 
-    /** low-vitality 전용: DB에서 threshold 미만만 가져와 메모리 절약 */
-    @Query("SELECT n FROM Note n JOIN n.noteEmbedding ne "
-            + "WHERE n.user.id = :userId AND n.isDeleted = false "
-            + "AND ne.vitalityScore < :threshold "
-            + "ORDER BY ne.vitalityScore ASC")
+    /** low-vitality 전용: vitalityScore threshold 미만만 조회 */
+    @Query("SELECT n FROM Note n WHERE n.user.id = :userId AND n.isDeleted = false "
+            + "AND n.vitalityScore < :threshold "
+            + "ORDER BY n.vitalityScore ASC")
     List<Note> findLowVitality(@Param("userId") Long userId,
                                @Param("threshold") double threshold);
-
-    /** 핀된 노트를 먼저, 그 다음 최신순 정렬 */
-    @Query("SELECT n FROM Note n WHERE n.user.id = :userId AND n.isDeleted = false "
-            + "ORDER BY n.isPinned DESC, n.updatedAt DESC")
-    List<Note> findByUserIdOrderByPinnedAndUpdated(@Param("userId") Long userId);
 }
