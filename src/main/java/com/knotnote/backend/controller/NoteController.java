@@ -3,6 +3,7 @@ package com.knotnote.backend.controller;
 import com.knotnote.backend.common.ApiResponse;
 import com.knotnote.backend.dto.request.BulkDeleteRequest;
 import com.knotnote.backend.dto.request.BulkTagRequest;
+import com.knotnote.backend.dto.request.ClipRequest;
 import com.knotnote.backend.dto.request.CrystallizeRequest;
 import com.knotnote.backend.dto.request.NoteCreateRequest;
 import com.knotnote.backend.dto.request.NoteLinkRequest;
@@ -229,5 +230,43 @@ public class NoteController {
     public ApiResponse<Void> bulkAddTag(@Valid @RequestBody BulkTagRequest request) {
         noteService.bulkAddTag(request.getNoteIds(), request.getTagId(), SecurityUtil.currentUserId());
         return ApiResponse.ok(null);
+    }
+
+    // ── Phase 9: AI 요약 ─────────────────────────────────────────────
+
+    @PostMapping("/{noteId}/summarize")
+    @Operation(summary = "AI 요약 생성",
+            description = "GPT-4o-mini로 노트 내용을 3문장 이내로 요약합니다. 결과는 노트에 저장됩니다.")
+    public ApiResponse<SummarizeResponse> summarizeNote(@PathVariable Long noteId) {
+        return ApiResponse.ok(noteService.summarizeNote(noteId, SecurityUtil.currentUserId()));
+    }
+
+    // ── Phase 9: 노트 공유 ────────────────────────────────────────────
+
+    @PostMapping("/{noteId}/share")
+    @Operation(summary = "공유 링크 생성",
+            description = "읽기 전용 공개 링크를 생성합니다. expiresInDays 미입력 시 만료 없음.")
+    public ApiResponse<NoteDetailResponse> shareNote(
+            @PathVariable Long noteId,
+            @RequestParam(required = false) Integer expiresInDays) {
+        return ApiResponse.ok(noteService.shareNote(noteId, SecurityUtil.currentUserId(), expiresInDays));
+    }
+
+    @DeleteMapping("/{noteId}/share")
+    @Operation(summary = "공유 링크 해제")
+    public ApiResponse<NoteDetailResponse> unshareNote(@PathVariable Long noteId) {
+        return ApiResponse.ok(noteService.unshareNote(noteId, SecurityUtil.currentUserId()));
+    }
+
+    // ── Phase 9: 웹 클리핑 ───────────────────────────────────────────
+
+    @PostMapping("/clip")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "웹 클리핑",
+            description = "URL에서 제목·본문을 추출해 새 노트로 저장합니다.")
+    public ApiResponse<NoteDetailResponse> clipUrl(
+            @Valid @RequestBody ClipRequest request) {
+        return ApiResponse.ok(
+                noteService.clipUrl(request.getUrl(), SecurityUtil.currentUserId()));
     }
 }

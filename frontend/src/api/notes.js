@@ -72,6 +72,25 @@ export const notesApi = {
 
   bulkAddTag: (noteIds, tagId) =>
     api.post('/notes/bulk/tag', { noteIds, tagId }),
+
+  // ── 웹 클리핑 (Phase 9) ───────────────────────────────────
+  clip: (url) => api.post('/notes/clip', { url }),
+
+  // ── AI 요약 (Phase 9) ──────────────────────────────────────
+  summarize: (noteId) => api.post(`/notes/${noteId}/summarize`),
+
+  // ── 노트 공유 (Phase 9) ────────────────────────────────────
+  share: (noteId, expiresInDays = null) =>
+    api.post(`/notes/${noteId}/share`, null, {
+      params: expiresInDays ? { expiresInDays } : {},
+    }),
+
+  unshare: (noteId) => api.delete(`/notes/${noteId}/share`),
+}
+
+// ── 공개 공유 노트 조회 (인증 불필요) ─────────────────────────
+export const shareApi = {
+  get: (shareToken) => api.get(`/share/${shareToken}`),
 }
 
 // ── 통계 / Graph Insights (Phase 3~4) ─────────────────────────

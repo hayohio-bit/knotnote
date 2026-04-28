@@ -76,6 +76,19 @@ export default function EditorPage() {
     localStorage.setItem(MODE_KEY, next)
   }
 
+  // ── Phase 9: AI 요약 ───────────────────────────────────────────
+  const [aiSummary, setAiSummary]         = useState(null)
+  const [summarizing, setSummarizing]     = useState(false)
+  const [showSummary, setShowSummary]     = useState(false)
+
+  // ── Phase 9: 노트 공유 ─────────────────────────────────────────
+  const [shareToken, setShareToken]           = useState(null)
+  const [shareExpiresAt, setShareExpiresAt]   = useState(null)
+  const [showShareModal, setShowShareModal]   = useState(false)
+  const [sharingLoading, setSharingLoading]   = useState(false)
+  const [shareCopied, setShareCopied]         = useState(false)
+  const [shareExpireDays, setShareExpireDays] = useState('')
+
   const safeNavigate = useCallback((to, options) => {
     if (!isDirty) { _navigate(to, options); return }
     pendingNav.current = { to, options }
@@ -94,6 +107,9 @@ export default function EditorPage() {
         setNoteTags(note.tags ?? [])
         setLinkedNotes(note.linkedNotes ?? [])
         setIsPinned(note.isPinned ?? false)
+        setAiSummary(note.aiSummary ?? null)
+        setShareToken(note.shareToken ?? null)
+        setShareExpiresAt(note.shareExpiresAt ?? null)
         savedTitle.current   = note.title
         savedContent.current = note.content ?? ''
       } catch { setError('메모를 불러오지 못했습니다.') }
@@ -325,6 +341,61 @@ export default function EditorPage() {
     catch { alert('삭제 실패') }
   }
 
+  // ── AI 요약 ──────────────────────────────────────────────────────
+  const handleSummarize = async () => {
+    if (summarizing) return
+    setSummarizing(true)
+    try {
+      const { data } = await notesApi.summarize(id)
+      setAiSummary(data.data.summary)
+      setShowSummary(true)
+    } catch (err) {
+      const msg = err.response?.data?.message || 'AI 요약에 실패했습니다.'
+      alert(msg)
+    } finally { setSummarizing(false) }
+  }
+
+  const handleInsertSummary = () => {
+    if (!aiSummary) return
+    const insert = `\n\n> **AI 요약**\n> ${aiSummary.replace(/\n/g, '\n> ')}\n`
+    setContent(prev => prev + insert)
+    setShowSummary(false)
+  }
+
+  // ── 노트 공유 ─────────────────────────────────────────────────────
+  const shareUrl = shareToken
+    ? `${window.location.origin}/shared/${shareToken}`
+    : null
+
+  const handleShare = async () => {
+    setSharingLoading(true)
+    try {
+      const days = shareExpireDays ? parseInt(shareExpireDays) : null
+      const { data } = await notesApi.share(id, days)
+      const note = data.data
+      setShareToken(note.shareToken)
+      setShareExpiresAt(note.shareExpiresAt)
+    } catch { alert('공유 링크 생성 실패') }
+    finally { setSharingLoading(false) }
+  }
+
+  const handleUnshare = async () => {
+    if (!window.confirm('공유를 해제할까요? 링크가 더 이상 유효하지 않게 됩니다.')) return
+    setSharingLoading(true)
+    try {
+      await notesApi.unshare(id)
+      setShareToken(null); setShareExpiresAt(null)
+    } catch { alert('공유 해제 실패') }
+    finally { setSharingLoading(false) }
+  }
+
+  const handleCopyLink = () => {
+    if (!shareUrl) return
+    navigator.clipboard.writeText(shareUrl)
+    setShareCopied(true)
+    setTimeout(() => setShareCopied(false), 2000)
+  }
+
   if (loading) return <><Navbar /><Spinner /></>
 
   return (
@@ -343,6 +414,29 @@ export default function EditorPage() {
             {isEdit && pendingLinks.length > 0 && (
               <button className="btn btn-crystallize" onClick={() => setShowCrystallize(true)} title="미확정 연결 확정">
                 🔮 매듭 확정 <span className="crystallize-badge">{pendingLinks.length}</span>
+              </button>
+            )}
+
+            {/* AI 요약 버튼 */}
+            {isEdit && (
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={handleSummarize}
+                disabled={summarizing}
+                title="AI로 이 노트를 3문장으로 요약"
+              >
+                {summarizing ? '⟳ 요약 중...' : '✨ AI 요약'}
+              </button>
+            )}
+
+            {/* 공유 버튼 */}
+            {isEdit && (
+              <button
+                className={`btn btn-ghost btn-sm ${shareToken ? 'share-active' : ''}`}
+                onClick={() => setShowShareModal(true)}
+                title="노트 공유 링크"
+              >
+                {shareToken ? '🔗 공유 중' : '🔗 공유'}
               </button>
             )}
 
@@ -374,6 +468,28 @@ export default function EditorPage() {
         </div>
 
         {error && <div className="editor-error">{error}</div>}
+
+        {/* AI 요약 결과 배너 */}
+        {showSummary && aiSummary && (
+          <div className="ai-summary-banner">
+            <div className="ai-summary-header">
+              <span>✨ AI 요약</span>
+              <div className="ai-summary-actions">
+                <button className="btn btn-ghost btn-xs" onClick={handleInsertSummary}>본문에 삽입</button>
+                <button className="btn btn-ghost btn-xs" onClick={() => setShowSummary(false)}>✕</button>
+              </div>
+            </div>
+            <p className="ai-summary-text">{aiSummary}</p>
+          </div>
+        )}
+
+        {/* 기존 AI 요약이 있고 배너가 닫힌 경우 작은 표시 */}
+        {!showSummary && aiSummary && (
+          <div className="ai-summary-hint">
+            <span>✨ AI 요약 있음</span>
+            <button className="btn btn-ghost btn-xs" onClick={() => setShowSummary(true)}>보기</button>
+          </div>
+        )}
 
         <div className="editor-layout">
           {/* 편집 영역 */}
@@ -545,6 +661,7 @@ export default function EditorPage() {
         </div>
       </main>
 
+      {/* Crystallize 모달 */}
       {showCrystallize && pendingLinks.length > 0 && (
         <CrystallizeModal
           noteId={Number(id)}
@@ -554,6 +671,61 @@ export default function EditorPage() {
         />
       )}
 
+      {/* 공유 모달 */}
+      {showShareModal && (
+        <div className="modal-backdrop" onClick={() => setShowShareModal(false)}>
+          <div className="share-modal" onClick={e => e.stopPropagation()}>
+            <h2 className="share-modal-title">🔗 노트 공유</h2>
+
+            {shareToken ? (
+              <>
+                <p className="share-modal-desc">
+                  아래 링크로 누구나 이 노트를 읽을 수 있습니다.
+                  {shareExpiresAt && (
+                    <span className="share-expires"> (만료: {fmtDate(shareExpiresAt)})</span>
+                  )}
+                </p>
+                <div className="share-link-row">
+                  <input className="input share-link-input" readOnly value={shareUrl} />
+                  <button className="btn btn-primary btn-sm" onClick={handleCopyLink}>
+                    {shareCopied ? '✓ 복사됨' : '복사'}
+                  </button>
+                </div>
+                <button className="btn btn-danger btn-sm share-revoke-btn"
+                  onClick={handleUnshare} disabled={sharingLoading}>
+                  {sharingLoading ? '...' : '공유 해제'}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="share-modal-desc">
+                  읽기 전용 공개 링크를 생성합니다.
+                </p>
+                <div className="share-expire-row">
+                  <label className="share-expire-label">만료 기간</label>
+                  <select className="input input-sm share-expire-select"
+                    value={shareExpireDays}
+                    onChange={e => setShareExpireDays(e.target.value)}>
+                    <option value="">만료 없음</option>
+                    <option value="1">1일</option>
+                    <option value="7">7일</option>
+                    <option value="30">30일</option>
+                  </select>
+                </div>
+                <button className="btn btn-primary share-create-btn"
+                  onClick={handleShare} disabled={sharingLoading}>
+                  {sharingLoading ? '생성 중...' : '링크 생성'}
+                </button>
+              </>
+            )}
+
+            <button className="btn btn-ghost share-close-btn"
+              onClick={() => setShowShareModal(false)}>닫기</button>
+          </div>
+        </div>
+      )}
+
+      {/* 미저장 경고 모달 */}
       {showUnsaved && (
         <div className="unsaved-backdrop" onClick={() => setShowUnsaved(false)}>
           <div className="unsaved-modal" onClick={e => e.stopPropagation()}>

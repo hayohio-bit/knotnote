@@ -31,4 +31,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             + "ORDER BY n.vitalityScore ASC")
     List<Note> findLowVitality(@Param("userId") Long userId,
                                @Param("threshold") double threshold);
+
+    /** 공유 토큰으로 노트 조회 (공개 접근용) */
+    Optional<Note> findByShareToken(String shareToken);
 }

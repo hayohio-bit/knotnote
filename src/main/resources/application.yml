@@ -38,6 +38,11 @@ embed:
     url: http://localhost:8000   # Python FastAPI 임베딩 서버 주소
     enabled: true                 # false 로 설정하면 임베딩 기능 전체 비활성화
 
+# ── Phase 9: OpenAI 설정 (AI 요약) ───────────────────────────────────────────
+openai:
+  api-key: ${OPENAI_API_KEY:}   # 환경변수로 주입. 없으면 AI 요약 비활성화
+  enabled: true                  # false 로 설정하면 AI 요약 전체 비활성화
+
 logging:
   level:
     org.springframework.security: INFO

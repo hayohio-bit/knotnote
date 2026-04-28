@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
 import NoteCard from '../components/NoteCard.jsx'
 import Spinner from '../components/Spinner.jsx'
@@ -38,6 +38,8 @@ function sortNotes(notes, sort) {
 }
 
 export default function DashboardPage() {
+  const navigate = useNavigate()
+
   // 기본 상태
   const [notes, setNotes]           = useState([])
   const [tags, setTags]             = useState([])
@@ -75,6 +77,12 @@ export default function DashboardPage() {
 
   // ── 템플릿 모달 (Phase 7-C) ──
   const [showTemplateModal, setShowTemplateModal] = useState(false)
+
+  // ── 웹 클리핑 모달 (Phase 9-F) ──
+  const [showClipModal, setShowClipModal]   = useState(false)
+  const [clipUrl, setClipUrl]               = useState('')
+  const [clipLoading, setClipLoading]       = useState(false)
+  const [clipError, setClipError]           = useState('')
 
   const isSearchMode = debouncedQ.trim().length > 0
   const isSFMode     = Boolean(activeSF)
@@ -214,6 +222,29 @@ export default function DashboardPage() {
     finally { setBulkLoading(false) }
   }
 
+  // 웹 클리핑
+  const handleClip = async () => {
+    const trimmed = clipUrl.trim()
+    if (!trimmed) return
+    if (!/^https?:\/\//i.test(trimmed)) {
+      setClipError('http:// 또는 https://로 시작하는 URL을 입력하세요.')
+      return
+    }
+    setClipLoading(true)
+    setClipError('')
+    try {
+      const { data } = await notesApi.clip(trimmed)
+      setShowClipModal(false)
+      setClipUrl('')
+      navigate(`/notes/${data.data.id}`)
+    } catch (e) {
+      const msg = e?.response?.data?.message
+      setClipError(msg || '클리핑에 실패했습니다. URL을 확인하거나 잠시 후 다시 시도하세요.')
+    } finally {
+      setClipLoading(false)
+    }
+  }
+
   // 내보내기
   const handleExport = async (format) => {
     setExporting(true)
@@ -343,6 +374,14 @@ export default function DashboardPage() {
 
               <button
                 className="btn btn-secondary btn-sm"
+                onClick={() => { setShowClipModal(true); setClipUrl(''); setClipError('') }}
+                title="URL에서 노트 생성"
+              >
+                🌐 웹 클리핑
+              </button>
+
+              <button
+                className="btn btn-secondary btn-sm"
                 onClick={() => setShowTemplateModal(true)}
                 title="템플릿으로 새 메모"
               >
@@ -464,6 +503,42 @@ export default function DashboardPage() {
 
       {showTemplateModal && (
         <TemplateModal onClose={() => setShowTemplateModal(false)} />
+      )}
+
+      {/* 웹 클리핑 모달 */}
+      {showClipModal && (
+        <div className="modal-backdrop" onClick={() => !clipLoading && setShowClipModal(false)}>
+          <div className="clip-modal" onClick={e => e.stopPropagation()}>
+            <div className="clip-modal-header">
+              <h3>🌐 웹 클리핑</h3>
+              <button className="modal-close-btn" onClick={() => setShowClipModal(false)} disabled={clipLoading}>×</button>
+            </div>
+            <p className="clip-modal-desc">URL을 입력하면 제목과 본문을 자동으로 추출해 새 노트로 저장합니다.</p>
+            <div className="clip-url-row">
+              <input
+                className="clip-url-input"
+                type="url"
+                placeholder="https://example.com/article"
+                value={clipUrl}
+                onChange={e => { setClipUrl(e.target.value); setClipError('') }}
+                onKeyDown={e => e.key === 'Enter' && !clipLoading && handleClip()}
+                autoFocus
+                disabled={clipLoading}
+              />
+            </div>
+            {clipError && <p className="clip-error">{clipError}</p>}
+            <div className="clip-modal-actions">
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowClipModal(false)} disabled={clipLoading}>취소</button>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={handleClip}
+                disabled={clipLoading || !clipUrl.trim()}
+              >
+                {clipLoading ? '클리핑 중...' : '노트로 저장'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

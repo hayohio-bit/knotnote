@@ -41,6 +41,17 @@ public class Note extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isPinned = false;
 
+    /** Phase 9: AI 요약 결과 (Claude Haiku) */
+    @Column(columnDefinition = "TEXT")
+    private String aiSummary;
+
+    /** Phase 9: 노트 공유 토큰 (UUID) */
+    @Column(unique = true)
+    private String shareToken;
+
+    /** Phase 9: 공유 링크 만료 시각 (null = 만료 없음) */
+    private java.time.LocalDateTime shareExpiresAt;
+
     @Builder
     public Note(User user, String title, String content) {
         this.user = user;
@@ -66,4 +77,28 @@ public class Note extends BaseTimeEntity {
 
     public void pin()   { this.isPinned = true; }
     public void unpin() { this.isPinned = false; }
+
+    /** AI 요약 저장 */
+    public void updateAiSummary(String summary) {
+        this.aiSummary = summary;
+    }
+
+    /** 공유 토큰 설정 (공유 활성화) */
+    public void share(String token, java.time.LocalDateTime expiresAt) {
+        this.shareToken = token;
+        this.shareExpiresAt = expiresAt;
+    }
+
+    /** 공유 해제 */
+    public void unshare() {
+        this.shareToken = null;
+        this.shareExpiresAt = null;
+    }
+
+    /** 공유 링크가 유효한지 확인 */
+    public boolean isShareActive() {
+        if (shareToken == null) return false;
+        if (shareExpiresAt == null) return true;
+        return shareExpiresAt.isAfter(java.time.LocalDateTime.now());
+    }
 }

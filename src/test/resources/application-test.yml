@@ -23,6 +23,10 @@ embed:
   server:
     enabled: false   # 테스트 환경에서는 임베딩 서버 호출 비활성화
 
+openai:
+  api-key: ""        # 테스트 환경에서는 OpenAI API 호출 비활성화
+  enabled: false
+
 logging:
   level:
     org.springframework.security: WARN

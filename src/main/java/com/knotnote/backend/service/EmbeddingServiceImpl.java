@@ -63,6 +63,13 @@ public class EmbeddingServiceImpl implements EmbeddingService {
                 .map(vec -> vec.stream().mapToDouble(Double::doubleValue).toArray());
     }
 
+    // ── 웹 클리핑 ─────────────────────────────────────────────────────────
+
+    @Override
+    public Optional<EmbeddingClient.ClipResult> clip(String url) {
+        return embeddingClient.clip(url);
+    }
+
     // ── 헬퍼 ───────────────────────────────────────────────────────────────
 
     /**

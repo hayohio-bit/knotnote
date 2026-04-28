@@ -654,3 +654,148 @@
   border-radius: 4px !important;
   line-height: 1.6 !important;
 }
+
+/* ── AI 요약 배너 ─────────────────────────────────────────────── */
+.ai-summary-banner {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1.5px solid #86efac;
+  border-radius: 10px;
+  padding: 14px 16px;
+  animation: slide-down 0.2s ease;
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ai-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.ai-summary-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ai-summary-text {
+  font-size: 14px;
+  color: #166534;
+  line-height: 1.65;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.ai-summary-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #15803d;
+  padding: 4px 0;
+}
+
+/* 공유 중인 버튼 강조 */
+.share-active {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  background: color-mix(in srgb, var(--accent) 8%, transparent) !important;
+}
+
+/* ── 공유 모달 ─────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: ub-fade-in 0.15s ease;
+}
+
+.share-modal {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  padding: 32px;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: ub-slide-up 0.18s ease;
+}
+
+.share-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.share-modal-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.share-expires {
+  color: #d97706;
+  font-size: 12px;
+  display: block;
+  margin-top: 4px;
+}
+
+.share-link-row {
+  display: flex;
+  gap: 8px;
+}
+
+.share-link-input {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.share-revoke-btn {
+  align-self: flex-start;
+}
+
+.share-expire-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.share-expire-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.share-expire-select {
+  flex: 1;
+}
+
+.share-create-btn {
+  width: 100%;
+  padding: 11px;
+  font-weight: 600;
+}
+
+.share-close-btn {
+  color: var(--text-secondary);
+  align-self: center;
+}

@@ -3,14 +3,15 @@ import { AuthProvider, useAuth } from './store/AuthContext.jsx'
 import PrivateRoute from './components/PrivateRoute.jsx'
 import QuickCapture from './components/QuickCapture.jsx'
 
-import LandingPage   from './pages/LandingPage.jsx'
-import LoginPage     from './pages/LoginPage.jsx'
-import SignupPage    from './pages/SignupPage.jsx'
-import DashboardPage from './pages/DashboardPage.jsx'
-import EditorPage    from './pages/EditorPage.jsx'
-import GraphPage     from './pages/GraphPage.jsx'
-import ActivityPage  from './pages/ActivityPage.jsx'
-import StatsPage     from './pages/StatsPage.jsx'
+import LandingPage    from './pages/LandingPage.jsx'
+import LoginPage      from './pages/LoginPage.jsx'
+import SignupPage     from './pages/SignupPage.jsx'
+import DashboardPage  from './pages/DashboardPage.jsx'
+import EditorPage     from './pages/EditorPage.jsx'
+import GraphPage      from './pages/GraphPage.jsx'
+import ActivityPage   from './pages/ActivityPage.jsx'
+import StatsPage      from './pages/StatsPage.jsx'
+import SharedNotePage from './pages/SharedNotePage.jsx'
 
 // QuickCapture는 로그인된 사용자에게만 전역 활성화
 function AppRoutes() {
@@ -20,9 +21,10 @@ function AppRoutes() {
       {user && <QuickCapture />}
       <Routes>
         {/* 공개 */}
-        <Route path="/"        element={<LandingPage />} />
-        <Route path="/login"   element={<LoginPage />} />
-        <Route path="/signup"  element={<SignupPage />} />
+        <Route path="/"                    element={<LandingPage />} />
+        <Route path="/login"               element={<LoginPage />} />
+        <Route path="/signup"              element={<SignupPage />} />
+        <Route path="/shared/:shareToken"  element={<SharedNotePage />} />
 
         {/* 인증 필요 */}
         <Route element={<PrivateRoute />}>

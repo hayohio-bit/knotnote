@@ -60,4 +60,25 @@ public interface NoteService {
 
     /** 여러 노트에 태그 일괄 부착 */
     void bulkAddTag(List<Long> noteIds, Long tagId, Long userId);
+
+    // ── Phase 9: AI 요약 ──────────────────────────────────────────────
+
+    /** AI 요약 생성 후 노트에 저장하고 반환 */
+    SummarizeResponse summarizeNote(Long noteId, Long userId);
+
+    // ── Phase 9: 웹 클리핑 ───────────────────────────────────────────
+
+    /** URL에서 제목·본문을 추출해 새 노트로 저장 */
+    NoteDetailResponse clipUrl(String url, Long userId);
+
+    // ── Phase 9: 노트 공유 ────────────────────────────────────────────
+
+    /** 공유 링크 생성 (expiresInDays = null 이면 만료 없음) */
+    NoteDetailResponse shareNote(Long noteId, Long userId, Integer expiresInDays);
+
+    /** 공유 링크 해제 */
+    NoteDetailResponse unshareNote(Long noteId, Long userId);
+
+    /** 공유 토큰으로 노트 공개 조회 (인증 불필요) */
+    NoteDetailResponse getSharedNote(String shareToken);
 }

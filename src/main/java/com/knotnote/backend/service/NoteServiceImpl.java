@@ -11,6 +11,7 @@ import com.knotnote.backend.entity.NoteTag;
 import com.knotnote.backend.entity.NoteVersion;
 import com.knotnote.backend.entity.Tag;
 import com.knotnote.backend.entity.User;
+import com.knotnote.backend.embedding.EmbeddingClient;
 import com.knotnote.backend.exception.CustomException;
 import com.knotnote.backend.exception.ErrorCode;
 import com.knotnote.backend.repository.NoteLinkRepository;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,7 @@ public class NoteServiceImpl implements NoteService {
     private final KnotVitalityService   knotVitalityService;
     private final EmbeddingService      embeddingService;
     private final ActivityService       activityService;
+    private final AiService             aiService;
 
     // ── 기본 CRUD ──────────────────────────────────────────────────
 
@@ -531,6 +534,81 @@ public class NoteServiceImpl implements NoteService {
         return dot / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 
+    // ── Phase 9: 웹 클리핑 ────────────────────────────────────────────
+
+    @Override
+    public NoteDetailResponse clipUrl(String url, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        EmbeddingClient.ClipResult clipped = embeddingService.clip(url)
+                .orElseThrow(() -> new CustomException(ErrorCode.AI_UNAVAILABLE));
+
+        Note note = noteRepository.save(
+                Note.builder()
+                        .user(user)
+                        .title(clipped.title())
+                        .content(clipped.content())
+                        .build());
+
+        embeddingService.indexNoteAsync(note);
+        activityService.record(user, ActivityType.NOTE_CREATED, note, "웹 클리핑: " + url);
+
+        return toDetail(note);
+    }
+
+    // ── Phase 9: AI 요약 ──────────────────────────────────────────────
+
+    @Override
+    public SummarizeResponse summarizeNote(Long noteId, Long userId) {
+        Note note = findNoteOrThrow(noteId, userId);
+
+        String summary = aiService.summarize(note.getTitle(), note.getContent())
+                .orElseThrow(() -> new CustomException(ErrorCode.AI_UNAVAILABLE));
+
+        note.updateAiSummary(summary);
+        noteRepository.save(note);
+        activityService.record(note.getUser(), ActivityType.NOTE_UPDATED, note, "AI 요약 생성");
+
+        return SummarizeResponse.builder()
+                .noteId(noteId)
+                .summary(summary)
+                .generatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    // ── Phase 9: 노트 공유 ────────────────────────────────────────────
+
+    @Override
+    public NoteDetailResponse shareNote(Long noteId, Long userId, Integer expiresInDays) {
+        Note note = findNoteOrThrow(noteId, userId);
+        String token = UUID.randomUUID().toString().replace("-", "");
+        LocalDateTime expiresAt = expiresInDays != null
+                ? LocalDateTime.now().plusDays(expiresInDays) : null;
+        note.share(token, expiresAt);
+        noteRepository.save(note);
+        return toDetail(note);
+    }
+
+    @Override
+    public NoteDetailResponse unshareNote(Long noteId, Long userId) {
+        Note note = findNoteOrThrow(noteId, userId);
+        note.unshare();
+        noteRepository.save(note);
+        return toDetail(note);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public NoteDetailResponse getSharedNote(String shareToken) {
+        Note note = noteRepository.findByShareToken(shareToken)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        if (!note.isShareActive()) {
+            throw new CustomException(ErrorCode.SHARE_EXPIRED);
+        }
+        return toDetail(note);
+    }
+
     // ── 헬퍼 ───────────────────────────────────────────────────────
 
     private Note findNoteOrThrow(Long noteId, Long userId) {
@@ -587,6 +665,9 @@ public class NoteServiceImpl implements NoteService {
                 .tags(tags).linkedNotes(linkedNotes)
                 .createdAt(note.getCreatedAt()).updatedAt(note.getUpdatedAt())
                 .isPinned(note.isPinned())
+                .aiSummary(note.getAiSummary())
+                .shareToken(note.isShareActive() ? note.getShareToken() : null)
+                .shareExpiresAt(note.getShareExpiresAt())
                 .build();
     }
 

@@ -60,6 +60,33 @@ public class EmbeddingClient {
     }
 
     /**
+     * URL에서 제목과 본문 추출 (웹 클리핑)
+     *
+     * @return ClipResult (서버 비활성화 또는 오류 시 Optional.empty())
+     */
+    public Optional<ClipResult> clip(String url) {
+        if (!enabled) {
+            log.debug("Embedding server disabled — skipping clip call");
+            return Optional.empty();
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            java.util.Map<String, Object> response = restTemplate.postForObject(
+                    serverUrl + "/clip",
+                    java.util.Map.of("url", url),
+                    java.util.Map.class
+            );
+            if (response == null) return Optional.empty();
+            String title   = (String) response.get("title");
+            String content = (String) response.get("content");
+            return Optional.of(new ClipResult(title, content));
+        } catch (Exception e) {
+            log.warn("Embedding server call failed (clip): {}", e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    /**
      * 서버 헬스 체크
      */
     public boolean isHealthy() {
@@ -71,4 +98,7 @@ public class EmbeddingClient {
             return false;
         }
     }
+
+    /** 웹 클리핑 결과 DTO */
+    public record ClipResult(String title, String content) {}
 }
