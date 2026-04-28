@@ -1,0 +1,212 @@
+/* ══════════════════════════════════════════
+   카드 모드 (기본)
+══════════════════════════════════════════ */
+.note-card {
+  display: block;
+  background: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-out);
+  padding: 20px 24px;
+  transition: transform var(--transition), box-shadow var(--transition);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.note-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 8px 8px 18px #c0ccc8, -8px -8px 18px #ffffff;
+}
+
+.note-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.note-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.note-card-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.note-card-preview {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.note-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ══════════════════════════════════════════
+   리스트 모드
+══════════════════════════════════════════ */
+.note-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 18px;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+}
+
+.note-list-item:hover {
+  background: var(--bg);
+  box-shadow: var(--shadow-out);
+}
+
+.note-list-title {
+  font-size: 15px;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-list-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.note-list-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════
+   피드 모드
+══════════════════════════════════════════ */
+.note-feed-item {
+  display: block;
+  width: 100%;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+
+.note-feed-item:first-child {
+  padding-top: 8px;
+}
+
+.note-feed-item:last-child {
+  border-bottom: none;
+}
+
+.note-feed-item:hover .note-feed-title {
+  color: var(--accent);
+}
+
+.note-feed-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.note-feed-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.note-feed-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 12px;
+  letter-spacing: -0.3px;
+  transition: color var(--transition);
+}
+
+.note-feed-preview {
+  width: 100%;
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.85;
+}
+
+.note-feed-preview p {
+  margin: 0 0 12px;
+}
+
+.note-feed-preview p:last-of-type {
+  margin-bottom: 0;
+}
+
+.note-feed-more {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+/* ── Bulk Selection ─────────────────────────────────────────── */
+.bulk-selectable {
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.bulk-selected.note-card,
+.bulk-selected.note-list-item,
+.bulk-selected.note-feed-item {
+  outline: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.bulk-checkbox {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-right: 8px;
+  color: var(--accent);
+}
+
+.card-checkbox {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  z-index: 2;
+}
+
+.feed-checkbox {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 20px;
+  z-index: 2;
+}
+
+/* ── Pin Badge ──────────────────────────────────────────────── */
+.note-pin-badge {
+  font-size: 12px;
+  opacity: 0.8;
+}

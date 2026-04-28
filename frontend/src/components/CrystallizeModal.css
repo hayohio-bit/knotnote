@@ -1,0 +1,245 @@
+/* ── Crystallize Modal ───────────────────────────────────────── */
+
+.crystallize-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.crystallize-modal {
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+  padding: 28px;
+  width: 100%;
+  max-width: 460px;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* 헤더 */
+.crystallize-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.crystallize-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crystallize-icon {
+  font-size: 20px;
+}
+
+.crystallize-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.crystallize-progress-badge {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  background: #e6f4ef;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* 설명 */
+.crystallize-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.crystallize-notice {
+  color: #b45309;
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* 진행 바 */
+.crystallize-progress-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.crystallize-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* 링크 목록 */
+.crystallize-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.crystallize-item {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid;
+  transition: border-color 0.2s;
+}
+
+.crystallize-item.pending {
+  border-color: #fcd34d;
+  background: #fffbeb;
+}
+
+.crystallize-item.done {
+  border-color: #6ee7b7;
+  background: #f0fdf4;
+}
+
+/* 연결 쌍 */
+.link-pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.link-note-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
+}
+
+.link-arrow {
+  font-size: 14px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+/* 입력 영역 */
+.crystallize-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.crystallize-input {
+  flex: 1;
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  background: transparent;
+  font-size: 13px;
+  color: var(--text);
+  padding: 6px 0;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.crystallize-input:focus {
+  border-bottom-color: var(--accent);
+}
+
+.crystallize-input:disabled {
+  opacity: 0.6;
+}
+
+.crystallize-confirm-btn {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: var(--font);
+}
+
+.crystallize-confirm-btn:hover:not(:disabled) {
+  background: #1a7a5e;
+}
+
+.crystallize-confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 완료 표시 */
+.crystallize-done-text {
+  font-size: 13px;
+  color: #059669;
+  font-weight: 500;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 에러 */
+.crystallize-error {
+  font-size: 12px;
+  color: #dc2626;
+  margin: 6px 0 0;
+}
+
+/* 닫기 버튼 */
+.crystallize-close-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.crystallize-close-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (max-width: 520px) {
+  .crystallize-modal {
+    padding: 20px;
+    margin: 16px;
+    max-width: 100%;
+  }
+}

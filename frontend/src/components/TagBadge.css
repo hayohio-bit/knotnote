@@ -1,0 +1,27 @@
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent-pale);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.tag-badge-remove {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 15px;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+
+.tag-badge-remove:hover {
+  opacity: 1;
+}

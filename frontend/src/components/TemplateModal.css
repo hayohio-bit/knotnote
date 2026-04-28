@@ -1,0 +1,107 @@
+/* ── Template Modal ─────────────────────────────────────────── */
+.tpl-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: qc-fade-in 0.12s ease;
+}
+
+.tpl-modal {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.tpl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tpl-heading {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.tpl-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: all var(--transition);
+}
+
+.tpl-close:hover {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.tpl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 18px;
+}
+
+.tpl-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.tpl-item:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  transform: translateY(-1px);
+}
+
+.tpl-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tpl-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.tpl-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.tpl-spinner {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 12px;
+  color: var(--accent);
+}

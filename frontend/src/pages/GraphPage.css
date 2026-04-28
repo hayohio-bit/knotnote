@@ -1,0 +1,210 @@
+.graph-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f0f4f2;
+}
+
+.graph-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: #fff;
+  border-bottom: 1px solid #d1e0d8;
+  flex-shrink: 0;
+}
+
+.graph-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a7a5e;
+}
+
+.graph-meta {
+  font-size: 0.82rem;
+  color: #6b7280;
+  background: #f0f4f2;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.graph-hint {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  margin-left: auto;
+}
+
+.graph-canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.graph-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.graph-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+.graph-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e11d48;
+  font-size: 0.95rem;
+}
+
+/* 툴팁 */
+.graph-tooltip {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #d1e0d8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 4px 4px 12px rgba(0,0,0,0.10);
+  pointer-events: none;
+  max-width: 200px;
+  z-index: 10;
+}
+
+.graph-tooltip strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #1a2e26;
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+
+.graph-tooltip-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.graph-tooltip-tag {
+  background: #e6f4ef;
+  color: #1a7a5e;
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+.graph-tooltip-degree {
+  font-size: 0.76rem;
+  color: #9ca3af;
+}
+
+/* ── 범례 ──────────────────────────────────────────────── */
+.graph-legend {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-out);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+  min-width: 160px;
+}
+
+.graph-legend-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.graph-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.graph-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.graph-legend-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.graph-legend-divider {
+  border-top: 1px solid var(--border);
+  margin: 4px 0;
+}
+
+.graph-legend-line {
+  width: 22px;
+  height: 2px;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+.graph-legend-line.solid {
+  background: rgba(99,102,241,0.8);
+}
+
+.graph-legend-line.dashed {
+  border-top: 2px dashed rgba(99,102,241,0.5);
+  background: transparent;
+}
+
+/* ── tooltip vitality ─────────────────────────────────── */
+.graph-tooltip-vitality {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+.vitality-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── header layout ────────────────────────────────────── */
+.graph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.graph-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}

@@ -1,0 +1,250 @@
+.landing {
+  min-height: 100vh;
+}
+
+/* ── 네비 ─────────────────────────────────────────────────── */
+.landing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(240, 244, 242, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.landing-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.landing-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.landing-nav-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+.hero {
+  padding: 80px 0 60px;
+}
+
+.hero-container {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: var(--accent-pale);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.hero-title {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+
+.hero-desc {
+  font-size: 17px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 16px;
+}
+
+/* Hero 카드 (시각적 장식) */
+.hero-visual {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hero-card {
+  width: 280px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.hero-card-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.hero-card-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.hero-card-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hero-link-badge {
+  font-size: 13px;
+  background: var(--accent-pale);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* ── Stats ────────────────────────────────────────────────── */
+.stats {
+  padding: 40px 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ── Features ─────────────────────────────────────────────── */
+.features {
+  padding: 60px 0;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.section-desc {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin-bottom: 48px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  transition: transform var(--transition);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+}
+
+.feature-icon {
+  font-size: 32px;
+  margin-bottom: 14px;
+}
+
+.feature-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ── CTA ──────────────────────────────────────────────────── */
+.cta-section {
+  padding: 60px 0;
+}
+
+.cta-inner {
+  background: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-out);
+  text-align: center;
+  padding: 64px 48px;
+}
+
+.cta-inner h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.cta-inner p {
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.landing-footer {
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ── 반응형 ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  .hero-visual { display: none; }
+  .hero-cta { justify-content: center; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: 1fr; }
+}

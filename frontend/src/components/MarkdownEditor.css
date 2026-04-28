@@ -1,0 +1,212 @@
+/* ── MarkdownEditor ── */
+
+.md-editor {
+  display: flex;
+  flex-direction: column;
+  min-height: 60vh;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-in);
+  overflow: hidden;
+}
+
+/* ── 툴바 ── */
+.md-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.md-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+/* ── 실행취소 / 다시실행 버튼 ── */
+.md-undo-btn {
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: 6px;
+  font-size: 15px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  padding: 0;
+}
+
+.md-undo-btn:hover:not(:disabled) {
+  background: #f0f9f5;
+  border-color: var(--border);
+  color: var(--accent);
+}
+
+.md-undo-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.md-btn {
+  background: none;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.md-btn:hover {
+  border-color: var(--border);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.md-sep {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+  vertical-align: middle;
+}
+
+.md-preview-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.md-preview-toggle:hover,
+.md-preview-toggle.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ── 편집 textarea ── */
+.md-textarea {
+  flex: 1;
+  min-height: 60vh;
+  padding: 24px 28px;
+  font-size: 15px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  line-height: 1.8;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  caret-color: var(--accent);
+}
+
+/* ── 미리보기 ── */
+.md-preview {
+  flex: 1;
+  padding: 24px 28px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text);
+  overflow-y: auto;
+}
+
+.md-preview h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 16px 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.md-preview h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+
+.md-preview h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 12px 0 4px;
+}
+
+.md-preview p {
+  margin: 6px 0;
+}
+
+.md-preview ul,
+.md-preview ol {
+  padding-left: 20px;
+  margin: 6px 0;
+}
+
+.md-preview li {
+  margin: 3px 0;
+}
+
+.md-preview code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--border);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.md-preview pre {
+  background: var(--border);
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  margin: 10px 0;
+}
+
+.md-preview pre code {
+  background: none;
+  padding: 0;
+}
+
+.md-preview blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 10px 0;
+  padding: 4px 16px;
+  color: var(--text-secondary);
+}
+
+.md-preview hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+.md-preview-empty {
+  color: var(--text-secondary);
+  opacity: 0.4;
+  font-style: italic;
+}
+
+/* 체크박스 리스트 */
+.md-preview input[type='checkbox'] {
+  margin-right: 6px;
+}
