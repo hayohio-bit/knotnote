@@ -12,9 +12,6 @@ jobs:
     name: Backend (Java 17)
     runs-on: ubuntu-latest
 
-    services:
-      # H2 in-memory DB를 사용하므로 별도 DB 서비스 불필요
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
