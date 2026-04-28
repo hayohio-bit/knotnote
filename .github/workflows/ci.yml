@@ -9,8 +9,11 @@ on:
 jobs:
   # ── Backend: Spring Boot 빌드 + 테스트 ─────────────────────────
   backend:
-    name: Backend (Java 17)
+    name: Backend (Java 21)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write      # dorny/test-reporter 가 check run을 생성하려면 필요
 
     steps:
       - name: Checkout
