@@ -28,6 +28,24 @@ jobs:
           sed -i 's/\r$//' gradlew
           chmod +x gradlew
 
+      - name: Restore gradle-wrapper.jar if missing
+        run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "gradle-wrapper.jar not found — downloading..."
+            GRADLE_VER=$(grep distributionUrl gradle/wrapper/gradle-wrapper.properties \
+              | grep -oP 'gradle-\K[0-9]+\.[0-9]+(\.[0-9]+)?')
+            curl -sL "https://services.gradle.org/distributions/gradle-${GRADLE_VER}-bin.zip" \
+              -o /tmp/gradle.zip
+            unzip -jo /tmp/gradle.zip \
+              "gradle-${GRADLE_VER}/lib/plugins/gradle-wrapper-*.jar" \
+              -d /tmp/gwjar/
+            mkdir -p gradle/wrapper
+            cp /tmp/gwjar/gradle-wrapper-*.jar gradle/wrapper/gradle-wrapper.jar
+            echo "gradle-wrapper.jar restored (${GRADLE_VER})"
+          else
+            echo "gradle-wrapper.jar already present ✅"
+          fi
+
       - name: Build & Test
         run: ./gradlew test --no-daemon
         env:

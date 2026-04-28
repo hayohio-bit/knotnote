@@ -1,7 +1,6 @@
 # Gradle
 .gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
@@ -18,11 +17,14 @@ build/
 .DS_Store
 Thumbs.db
 
-# Spring Boot
+# Spring Boot (빌드 산출물만 제외 — wrapper jar는 아래에서 예외 처리)
 *.jar
 *.war
 *.ear
 target/
+
+# gradle wrapper jar는 반드시 커밋 (*.jar 규칙 이후에 선언해야 우선 적용)
+!gradle/wrapper/gradle-wrapper.jar
 
 # 환경변수 / 시크릿
 .env
