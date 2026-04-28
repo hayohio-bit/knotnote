@@ -1,0 +1,17 @@
+# 기본: CRLF → LF 자동 변환
+* text=auto
+
+# gradlew는 항상 LF (Linux 실행 파일)
+gradlew text eol=lf
+gradlew.bat text eol=crlf
+
+# 쉘 스크립트
+*.sh text eol=lf
+
+# 바이너리
+*.jar binary
+*.class binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
