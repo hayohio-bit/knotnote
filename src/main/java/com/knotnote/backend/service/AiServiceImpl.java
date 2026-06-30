@@ -11,21 +11,21 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * OpenAI GPT-4o-mini 기반 AI 서비스
+ * Google Gemini 1.5 Flash 기반 AI 서비스 (OpenAI 호환 API 사용)
  *
- * 비용: 입력 $0.15 / 1M 토큰, 출력 $0.60 / 1M 토큰
- * 노트 요약 1회 ≈ $0.0002 (Claude Haiku 대비 3~5배 저렴)
+ * 비용: 무료 티어 (15 RPM, 1M TPM, 일 1,500회 제한)
  *
- * application.yml:
- *   openai.api-key: ${OPENAI_API_KEY:}
+ * application.yml (호환성을 위해 기존 openai 프로퍼티를 그대로 사용):
+ *   openai.api-key: ${OPENAI_API_KEY:}  # 여기에 Gemini API Key를 넣으세요!
  *   openai.enabled: true
  */
 @Slf4j
 @Service
 public class AiServiceImpl implements AiService {
 
-    private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String MODEL       = "gpt-4o-mini";
+    // Google Gemini API (OpenAI 호환 엔드포인트)
+    private static final String OPENAI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+    private static final String MODEL       = "gemini-1.5-flash";
     private static final int    MAX_TOKENS  = 256;
 
     private final RestTemplate restTemplate;

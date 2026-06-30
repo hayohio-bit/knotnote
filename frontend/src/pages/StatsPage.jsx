@@ -113,10 +113,10 @@ export default function StatsPage() {
         {/* 허브 노트 */}
         {stats?.mostConnectedNote && (
           <section className="stats-section">
-            <h2 className="stats-section-title">가장 연결된 노트</h2>
+            <h2 className="stats-section-title">최다 연결 노트</h2>
             <button
               className="hub-note-card"
-              onClick={() => navigate(`/notes/${stats.mostConnectedNote.id}`)}
+              onClick={() => navigate(`/notes/${stats.mostConnectedNote.noteId}`)}
             >
               <span className="hub-note-title">{stats.mostConnectedNote.title}</span>
               <span className="hub-note-meta">링크 {stats.mostConnectedNote.linkCount ?? 0}개</span>
@@ -130,7 +130,12 @@ export default function StatsPage() {
             <h2 className="stats-section-title">인기 태그 Top 5</h2>
             <div className="top-tags-list">
               {stats.topTags.map((t, i) => (
-                <div key={t.tagName} className="top-tag-item">
+                <div
+                  key={t.tagName}
+                  className="top-tag-item"
+                  onClick={() => navigate(`/dashboard?tagId=${t.tagId}`)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <span className="top-tag-rank">#{i + 1}</span>
                   <span className="top-tag-name">{t.tagName}</span>
                   <span className="top-tag-count">{t.noteCount}개</span>
@@ -173,9 +178,9 @@ export default function StatsPage() {
                   {insights.hubNotes.map(n => (
                     <li key={n.noteId} className="hub-item">
                       <button className="hub-item-title" onClick={() => navigate(`/notes/${n.noteId}`)}>
-                        {n.noteTitle}
+                        {n.title}
                       </button>
-                      <span className="hub-item-meta">링크 {n.degree}개 · 확정 {n.crystallizedCount}개</span>
+                      <span className="hub-item-meta">링크 {n.degree}개 · 확정 {n.crystallized ?? 0}개</span>
                     </li>
                   ))}
                 </ul>
@@ -190,7 +195,7 @@ export default function StatsPage() {
                   {insights.orphanNotes.slice(0, 5).map(n => (
                     <li key={n.noteId}>
                       <button className="orphan-title" onClick={() => navigate(`/notes/${n.noteId}`)}>
-                        {n.noteTitle}
+                        {n.title}
                       </button>
                     </li>
                   ))}

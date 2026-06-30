@@ -3,7 +3,7 @@ spring:
     name: knotnote-backend
 
   datasource:
-    url: jdbc:mysql://localhost:3306/knotnote?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/knotnote?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -35,7 +35,7 @@ springdoc:
 # ── Phase 3: 임베딩 서버 설정 ─────────────────────────────────────────────
 embed:
   server:
-    url: http://localhost:8000   # Python FastAPI 임베딩 서버 주소
+    url: http://${EMBED_HOST:localhost}:8000   # Python FastAPI 임베딩 서버 주소
     enabled: true                 # false 로 설정하면 임베딩 기능 전체 비활성화
 
 # ── Phase 9: OpenAI 설정 (AI 요약) ───────────────────────────────────────────

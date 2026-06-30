@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { shareApi } from '../api/notes.js'
 import Spinner from '../components/Spinner.jsx'
+import MarkdownPreview from '../components/MarkdownPreview.jsx'
 import './SharedNotePage.css'
 
 function fmtDate(iso) {
@@ -76,12 +77,7 @@ export default function SharedNotePage() {
           )}
 
           <div className="shared-content">
-            {note.content
-              ? note.content.split('\n').map((line, i) => (
-                  <p key={i}>{line || <br />}</p>
-                ))
-              : <p className="shared-empty">내용 없음</p>
-            }
+            <MarkdownPreview source={note.content} />
           </div>
         </article>
       </main>

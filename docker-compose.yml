@@ -10,11 +10,66 @@ services:
       MYSQL_DATABASE: knotnote
       MYSQL_USER: knotnote
       MYSQL_PASSWORD: knotnote1234!
-    ports:
-      - "3306:3306"
     volumes:
       - knotnote-mysql-data:/var/lib/mysql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - knotnote-net
+
+  embed_server:
+    build:
+      context: ./embed_server
+    container_name: knotnote-embed
+    restart: unless-stopped
+    networks:
+      - knotnote-net
+
+  backend:
+    build:
+      context: .
+    container_name: knotnote-backend
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - embed_server
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: knotnote
+      DB_PASSWORD: knotnote1234!
+      JWT_SECRET: knotnote-super-secret-jwt-key-2026-production-secure
+      EMBED_HOST: embed_server
+    networks:
+      - knotnote-net
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: knotnote-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - knotnote-net
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: knotnote-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - knotnote-net
+
+networks:
+  knotnote-net:
 
 volumes:
   knotnote-mysql-data:
+  caddy_data:
+  caddy_config:

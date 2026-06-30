@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Navbar from '../components/Navbar.jsx'
 import NoteCard from '../components/NoteCard.jsx'
 import Spinner from '../components/Spinner.jsx'
@@ -39,6 +39,7 @@ function sortNotes(notes, sort) {
 
 export default function DashboardPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   // 기본 상태
   const [notes, setNotes]           = useState([])
@@ -58,7 +59,10 @@ export default function DashboardPage() {
   const [viewMode, setViewMode] = useState(() => localStorage.getItem(VIEW_KEY) || 'card')
 
   // 다중 태그 필터
-  const [selectedTagIds, setSelectedTagIds] = useState([])
+  const [selectedTagIds, setSelectedTagIds] = useState(() => {
+    const t = searchParams.get('tagId')
+    return t ? [Number(t)] : []
+  })
   const [tagMatchMode, setTagMatchMode]     = useState('ANY')
 
   // 스마트 폴더
@@ -141,6 +145,14 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchNotes() }, [fetchNotes])
   useEffect(() => { tagsApi.list().then(({ data }) => setTags(data.data)).catch(() => {}) }, [])
+
+  useEffect(() => {
+    const t = searchParams.get('tagId')
+    if (t) {
+      setSelectedTagIds([Number(t)])
+      setActiveSF(null)
+    }
+  }, [searchParams])
 
   // 현재 표시 노트
   const sourceNotes = isSFMode ? sfNotes : notes

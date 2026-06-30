@@ -1,57 +1,7 @@
 import { useRef, useState, useCallback } from 'react'
 import './MarkdownEditor.css'
 
-// ── 간단한 마크다운 → HTML 변환기 ────────────────────────────
-function escapeHtml(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-}
-
-function inlineMd(s) {
-  const parts = []
-  let last = 0
-  const codeRe = /`([^`]+)`/g
-  let m
-  while ((m = codeRe.exec(s)) !== null) {
-    parts.push(escapeHtml(s.slice(last, m.index)))
-    parts.push(`<code>${escapeHtml(m[1])}</code>`)
-    last = m.index + m[0].length
-  }
-  parts.push(escapeHtml(s.slice(last)))
-  let r = parts.join('')
-  r = r.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-  r = r.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-  r = r.replace(/\*(.+?)\*/g, '<em>$1</em>')
-  r = r.replace(/_(.+?)_/g, '<em>$1</em>')
-  return r
-}
-
-function mdToHtml(md) {
-  const lines = md.split('\n')
-  const out = []
-  let i = 0
-  while (i < lines.length) {
-    const line = lines[i]
-    if (/^---+$/.test(line.trim())) { out.push('<hr />'); i++; continue }
-    const hm = line.match(/^(#{1,3})\s+(.*)/)
-    if (hm) { out.push(`<h${hm[1].length}>${inlineMd(hm[2])}</h${hm[1].length}>`); i++; continue }
-    if (line.startsWith('> ')) { out.push(`<blockquote>${inlineMd(line.slice(2))}</blockquote>`); i++; continue }
-    const cbm = line.match(/^- \[([ x])\] (.*)/)
-    if (cbm) { out.push(`<p class="md-check"><input type="checkbox"${cbm[1]==='x'?' checked':''} disabled /> ${inlineMd(cbm[2])}</p>`); i++; continue }
-    if (/^[-*] /.test(line)) {
-      const items = []
-      while (i < lines.length && /^[-*] /.test(lines[i])) { items.push(`<li>${inlineMd(lines[i].replace(/^[-*] /,''))}</li>`); i++ }
-      out.push(`<ul>${items.join('')}</ul>`); continue
-    }
-    if (/^\d+\. /.test(line)) {
-      const items = []
-      while (i < lines.length && /^\d+\. /.test(lines[i])) { items.push(`<li>${inlineMd(lines[i].replace(/^\d+\. /,''))}</li>`); i++ }
-      out.push(`<ol>${items.join('')}</ol>`); continue
-    }
-    if (line.trim() === '') { out.push('<br />'); i++; continue }
-    out.push(`<p>${inlineMd(line)}</p>`); i++
-  }
-  return out.join('\n')
-}
+import MarkdownPreview from './MarkdownPreview.jsx'
 
 // ── 툴바 버튼 정의 ────────────────────────────────────────────
 const TOOLBAR = [
@@ -270,11 +220,7 @@ export default function MarkdownEditor({ value, onChange }) {
 
       {preview ? (
         <div className="md-preview">
-          {value.trim() ? (
-            <div dangerouslySetInnerHTML={{ __html: mdToHtml(value) }} />
-          ) : (
-            <p className="md-preview-empty">내용이 없습니다.</p>
-          )}
+          <MarkdownPreview source={value} />
         </div>
       ) : (
         <textarea

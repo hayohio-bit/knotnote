@@ -138,7 +138,7 @@ public class ExportServiceImpl implements ExportService {
         try (ZipOutputStream zip = new ZipOutputStream(baos)) {
             // 노트별 개별 파일
             for (Note note : notes) {
-                String filename = sanitizeFilename(note.getTitle()) + ".md";
+                String filename = sanitizeFilename(note.getTitle()) + "_" + note.getId() + ".md";
                 zip.putNextEntry(new ZipEntry("notes/" + filename));
                 zip.write(buildMarkdown(note, tagMap, linkedTitles).getBytes(java.nio.charset.StandardCharsets.UTF_8));
                 zip.closeEntry();
@@ -188,7 +188,7 @@ public class ExportServiceImpl implements ExportService {
         notes.stream()
                 .sorted(Comparator.comparing(Note::getTitle))
                 .forEach(n -> sb.append("- [").append(n.getTitle()).append("](notes/")
-                        .append(sanitizeFilename(n.getTitle())).append(".md)\n"));
+                        .append(sanitizeFilename(n.getTitle())).append("_").append(n.getId()).append(".md)\n"));
         return sb.toString();
     }
 
