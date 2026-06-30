@@ -26,7 +26,7 @@ public class AiServiceImpl implements AiService {
     // Google Gemini API (OpenAI 호환 엔드포인트)
     private static final String OPENAI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
     private static final String MODEL       = "gemini-flash-latest";
-    private static final int    MAX_TOKENS  = 150;
+    private static final int    MAX_TOKENS  = 1024;
 
     private final RestTemplate restTemplate;
 
