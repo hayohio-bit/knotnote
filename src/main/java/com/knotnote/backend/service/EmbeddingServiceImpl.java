@@ -6,6 +6,7 @@ import com.knotnote.backend.embedding.EmbeddingClient;
 import com.knotnote.backend.entity.Note;
 import com.knotnote.backend.entity.NoteEmbedding;
 import com.knotnote.backend.repository.NoteEmbeddingRepository;
+import com.knotnote.backend.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -22,6 +23,7 @@ public class EmbeddingServiceImpl implements EmbeddingService {
 
     private final EmbeddingClient embeddingClient;
     private final NoteEmbeddingRepository noteEmbeddingRepository;
+    private final NoteRepository noteRepository;
     private final ObjectMapper objectMapper;
 
     // ── 비동기 인덱싱 ──────────────────────────────────────────────────────
@@ -37,7 +39,7 @@ public class EmbeddingServiceImpl implements EmbeddingService {
                 noteEmbeddingRepository.findByNoteId(note.getId()).ifPresentOrElse(
                         existing -> existing.updateEmbedding(json),
                         () -> noteEmbeddingRepository.save(
-                                NoteEmbedding.builder().note(note).embedding(json).build())
+                                NoteEmbedding.builder().note(noteRepository.getReferenceById(note.getId())).embedding(json).build())
                 );
                 log.debug("Indexed embedding for noteId={}", note.getId());
             } catch (Exception e) {
