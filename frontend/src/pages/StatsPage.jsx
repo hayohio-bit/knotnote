@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { exportApi, statsApi } from '../api/notes.js'
 import Navbar from '../components/Navbar.jsx'
 import Spinner from '../components/Spinner.jsx'
-import { statsApi, exportApi } from '../api/notes.js'
 import './StatsPage.css'
 
 function StatCard({ label, value, sub, accent }) {
@@ -29,9 +29,9 @@ function ProgressBar({ value, max, color }) {
 
 export default function StatsPage() {
   const navigate = useNavigate()
-  const [stats, setStats]       = useState(null)
+  const [stats, setStats] = useState(null)
   const [insights, setInsights] = useState(null)
-  const [loading, setLoading]   = useState(true)
+  const [loading, setLoading] = useState(true)
   const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
@@ -48,17 +48,26 @@ export default function StatsPage() {
     setExporting(true)
     try {
       const { data, headers } = await exportApi.download(format)
-      const url  = URL.createObjectURL(new Blob([data]))
+      const url = URL.createObjectURL(new Blob([data]))
       const link = document.createElement('a')
-      link.href  = url
-      link.download = `knotnote-export-${new Date().toISOString().slice(0,10)}.zip`
+      link.href = url
+      link.download = `knotnote-export-${new Date().toISOString().slice(0, 10)}.zip`
       link.click()
       URL.revokeObjectURL(url)
-    } catch { alert('내보내기 실패') }
-    finally { setExporting(false) }
+    } catch {
+      alert('내보내기 실패')
+    } finally {
+      setExporting(false)
+    }
   }
 
-  if (loading) return <><Navbar /><Spinner /></>
+  if (loading)
+    return (
+      <>
+        <Navbar />
+        <Spinner />
+      </>
+    )
 
   const vd = stats?.vitalityDistribution ?? {}
 
@@ -66,14 +75,21 @@ export default function StatsPage() {
     <div className="stats-page">
       <Navbar />
       <main className="container stats-main">
-
         <div className="stats-header">
           <h1 className="stats-title">📊 통계 대시보드</h1>
           <div className="stats-export-btns">
-            <button className="btn btn-ghost btn-sm" onClick={() => handleExport('json')} disabled={exporting}>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => handleExport('json')}
+              disabled={exporting}
+            >
               {exporting ? '내보내는 중...' : '⬇ JSON 내보내기'}
             </button>
-            <button className="btn btn-ghost btn-sm" onClick={() => handleExport('markdown')} disabled={exporting}>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => handleExport('markdown')}
+              disabled={exporting}
+            >
               {exporting ? '...' : '⬇ Markdown 내보내기'}
             </button>
           </div>
@@ -81,11 +97,30 @@ export default function StatsPage() {
 
         {/* 핵심 지표 카드 */}
         <section className="stat-cards-grid">
-          <StatCard label="전체 노트"    value={stats?.totalNotes}      sub={`최근 7일 +${stats?.recentNoteCount ?? 0}`} accent />
-          <StatCard label="전체 링크"    value={stats?.totalLinks}      sub={`매듭 확정 ${stats?.crystallizedLinks ?? 0}`} />
-          <StatCard label="전체 태그"    value={stats?.totalTags} />
-          <StatCard label="평균 Vitality" value={stats?.avgVitalityScore != null ? stats.avgVitalityScore.toFixed(2) : '-'} />
-          <StatCard label="매듭 확정률"  value={stats?.crystallizationRate != null ? `${(stats.crystallizationRate * 100).toFixed(1)}%` : '-'} />
+          <StatCard
+            label="전체 노트"
+            value={stats?.totalNotes}
+            sub={`최근 7일 +${stats?.recentNoteCount ?? 0}`}
+            accent
+          />
+          <StatCard
+            label="전체 링크"
+            value={stats?.totalLinks}
+            sub={`매듭 확정 ${stats?.crystallizedLinks ?? 0}`}
+          />
+          <StatCard label="전체 태그" value={stats?.totalTags} />
+          <StatCard
+            label="평균 Vitality"
+            value={stats?.avgVitalityScore != null ? stats.avgVitalityScore.toFixed(2) : '-'}
+          />
+          <StatCard
+            label="매듭 확정률"
+            value={
+              stats?.crystallizationRate != null
+                ? `${(stats.crystallizationRate * 100).toFixed(1)}%`
+                : '-'
+            }
+          />
         </section>
 
         {/* Vitality 분포 */}
@@ -94,11 +129,11 @@ export default function StatsPage() {
             <h2 className="stats-section-title">Vitality 분포</h2>
             <div className="vitality-bars">
               {[
-                { key: 'veryLow',  label: '매우 낮음 (0~0.2)',  color: '#ef4444' },
-                { key: 'low',      label: '낮음 (0.2~0.4)',     color: '#f59e0b' },
-                { key: 'medium',   label: '보통 (0.4~0.6)',     color: '#3b82f6' },
-                { key: 'high',     label: '높음 (0.6~0.8)',     color: '#10b981' },
-                { key: 'veryHigh', label: '매우 높음 (0.8~1)',  color: '#6366f1' },
+                { key: 'veryLow', label: '매우 낮음 (0~0.2)', color: '#ef4444' },
+                { key: 'low', label: '낮음 (0.2~0.4)', color: '#f59e0b' },
+                { key: 'medium', label: '보통 (0.4~0.6)', color: '#3b82f6' },
+                { key: 'high', label: '높음 (0.6~0.8)', color: '#10b981' },
+                { key: 'veryHigh', label: '매우 높음 (0.8~1)', color: '#6366f1' },
               ].map(({ key, label, color }) => (
                 <div key={key} className="vitality-bar-row">
                   <span className="vitality-bar-label">{label}</span>
@@ -156,7 +191,9 @@ export default function StatsPage() {
               </div>
               <div className="insight-card">
                 <span className="insight-value">
-                  {insights.connectivityRate != null ? `${(insights.connectivityRate * 100).toFixed(1)}%` : '-'}
+                  {insights.connectivityRate != null
+                    ? `${(insights.connectivityRate * 100).toFixed(1)}%`
+                    : '-'}
                 </span>
                 <span className="insight-label">연결률</span>
               </div>
@@ -175,12 +212,17 @@ export default function StatsPage() {
               <div className="insights-sub">
                 <h3 className="insights-sub-title">허브 노트 (연결 많은 순)</h3>
                 <ul className="hub-list">
-                  {insights.hubNotes.map(n => (
+                  {insights.hubNotes.map((n) => (
                     <li key={n.noteId} className="hub-item">
-                      <button className="hub-item-title" onClick={() => navigate(`/notes/${n.noteId}`)}>
+                      <button
+                        className="hub-item-title"
+                        onClick={() => navigate(`/notes/${n.noteId}`)}
+                      >
                         {n.title}
                       </button>
-                      <span className="hub-item-meta">링크 {n.degree}개 · 확정 {n.crystallized ?? 0}개</span>
+                      <span className="hub-item-meta">
+                        링크 {n.degree}개 · 확정 {n.crystallized ?? 0}개
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -192,9 +234,12 @@ export default function StatsPage() {
               <div className="insights-sub">
                 <h3 className="insights-sub-title">고립 노트 (링크 없음)</h3>
                 <ul className="orphan-list">
-                  {insights.orphanNotes.slice(0, 5).map(n => (
+                  {insights.orphanNotes.slice(0, 5).map((n) => (
                     <li key={n.noteId}>
-                      <button className="orphan-title" onClick={() => navigate(`/notes/${n.noteId}`)}>
+                      <button
+                        className="orphan-title"
+                        onClick={() => navigate(`/notes/${n.noteId}`)}
+                      >
                         {n.title}
                       </button>
                     </li>
@@ -207,7 +252,6 @@ export default function StatsPage() {
             )}
           </section>
         )}
-
       </main>
     </div>
   )

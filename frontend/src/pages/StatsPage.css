@@ -1,12 +1,27 @@
-.stats-page { min-height: 100vh; background: var(--bg); }
-.stats-main { padding: 40px 0 80px; }
+.stats-page {
+  min-height: 100vh;
+  background: var(--bg);
+}
+.stats-main {
+  padding: 40px 0 80px;
+}
 
 .stats-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
-.stats-title { font-size: 28px; font-weight: 700; }
-.stats-export-btns { display: flex; gap: 8px; }
+.stats-title {
+  font-size: 28px;
+  font-weight: 700;
+}
+.stats-export-btns {
+  display: flex;
+  gap: 8px;
+}
 
 /* 핵심 지표 카드 */
 .stat-cards-grid {
@@ -20,33 +35,85 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   padding: 20px;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
   text-align: center;
 }
-.stat-card.accent { border: 2px solid var(--accent); }
-.stat-value { font-size: 32px; font-weight: 800; color: var(--accent); }
-.stat-label { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
-.stat-sub   { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.stat-card.accent {
+  border: 2px solid var(--accent);
+}
+.stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.stat-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
 
 /* 섹션 */
-.stats-section { margin-bottom: 40px; }
+.stats-section {
+  margin-bottom: 40px;
+}
 .stats-section-title {
-  font-size: 18px; font-weight: 700; margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
   color: var(--text);
 }
 
 /* Vitality 분포 */
-.vitality-bars { display: flex; flex-direction: column; gap: 10px; }
-.vitality-bar-row {
-  display: grid; grid-template-columns: 180px 1fr 48px;
-  align-items: center; gap: 12px;
+.vitality-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.vitality-bar-label { font-size: 13px; color: var(--text-secondary); }
-.progress-bar-wrap  { display: flex; align-items: center; gap: 8px; }
-.progress-bar-bg    { flex: 1; height: 10px; background: var(--bg-dark); border-radius: 5px; overflow: hidden; }
-.progress-bar-fill  { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
-.progress-bar-pct   { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
-.vitality-bar-count { font-size: 13px; color: var(--text); text-align: right; }
+.vitality-bar-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 48px;
+  align-items: center;
+  gap: 12px;
+}
+.vitality-bar-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress-bar-bg {
+  flex: 1;
+  height: 10px;
+  background: var(--bg-dark);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+.progress-bar-pct {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.vitality-bar-count {
+  font-size: 13px;
+  color: var(--text);
+  text-align: right;
+}
 
 /* 허브 노트 */
 .hub-note-card {
@@ -54,25 +121,58 @@
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
   padding: 16px 20px;
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; max-width: 480px;
-  cursor: pointer; border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 480px;
+  cursor: pointer;
+  border: none;
   transition: transform var(--transition);
 }
-.hub-note-card:hover { transform: translateY(-2px); }
-.hub-note-title { font-size: 16px; font-weight: 600; color: var(--accent); }
-.hub-note-meta  { font-size: 13px; color: var(--text-secondary); }
+.hub-note-card:hover {
+  transform: translateY(-2px);
+}
+.hub-note-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.hub-note-meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
 
 /* 인기 태그 */
-.top-tags-list { display: flex; flex-direction: column; gap: 8px; }
-.top-tag-item  {
-  display: flex; align-items: center; gap: 12px;
-  background: var(--card); padding: 10px 16px;
-  border-radius: var(--radius-sm); box-shadow: var(--shadow-card);
+.top-tags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.top-tag-rank  { font-size: 14px; font-weight: 700; color: var(--accent); width: 24px; }
-.top-tag-name  { flex: 1; font-size: 15px; font-weight: 500; }
-.top-tag-count { font-size: 13px; color: var(--text-secondary); }
+.top-tag-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+.top-tag-rank {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  width: 24px;
+}
+.top-tag-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+}
+.top-tag-count {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
 
 /* Graph Insights */
 .insights-grid {
@@ -85,43 +185,96 @@
   background: var(--card);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
-  padding: 18px; text-align: center;
-  display: flex; flex-direction: column; gap: 4px;
+  padding: 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.insight-value { font-size: 28px; font-weight: 800; color: var(--accent); }
-.insight-label { font-size: 13px; color: var(--text-secondary); }
+.insight-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.insight-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
 
-.insights-sub { margin-top: 32px; margin-bottom: 32px; }
-.insights-sub-title { 
-  font-size: 17px; font-weight: 700; margin-bottom: 16px; 
+.insights-sub {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+.insights-sub-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
   color: var(--text);
   border-bottom: 1px solid var(--border, #eee);
   padding-bottom: 8px;
 }
 
-.hub-list { display: flex; flex-direction: column; gap: 8px; }
+.hub-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .hub-item {
-  display: flex; align-items: center; justify-content: space-between;
-  background: var(--card); padding: 10px 16px;
-  border-radius: var(--radius-sm); box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
 }
 .hub-item-title {
-  background: none; border: none; cursor: pointer;
-  font-size: 15px; font-weight: 500; color: var(--accent); padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent);
+  padding: 0;
 }
-.hub-item-title:hover { text-decoration: underline; }
-.hub-item-meta { font-size: 12px; color: var(--text-secondary); }
+.hub-item-title:hover {
+  text-decoration: underline;
+}
+.hub-item-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
 
-.orphan-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.orphan-title {
-  background: var(--bg-dark); border: none; cursor: pointer;
-  padding: 6px 12px; border-radius: 20px;
-  font-size: 13px; color: var(--text); transition: background var(--transition);
+.orphan-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-.orphan-title:hover { background: var(--accent-pale); }
-.orphan-more { font-size: 13px; color: var(--text-secondary); padding: 6px 0; }
+.orphan-title {
+  background: var(--bg-dark);
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text);
+  transition: background var(--transition);
+}
+.orphan-title:hover {
+  background: var(--accent-pale);
+}
+.orphan-more {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 6px 0;
+}
 
 @media (max-width: 600px) {
-  .vitality-bar-row { grid-template-columns: 1fr; }
-  .stats-header { flex-direction: column; align-items: flex-start; }
+  .vitality-bar-row {
+    grid-template-columns: 1fr;
+  }
+  .stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

@@ -6,7 +6,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$PROJECT_ROOT = $PSScriptRoot
+$PROJECT_ROOT = (Get-Item $PSScriptRoot).Parent.FullName
 
 Write-Host ""
 Write-Host "=== KnotNote P0 Setup ===" -ForegroundColor Cyan

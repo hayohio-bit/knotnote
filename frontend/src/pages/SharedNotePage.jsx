@@ -1,20 +1,22 @@
-import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { shareApi } from '../api/notes.js'
-import Spinner from '../components/Spinner.jsx'
 import MarkdownPreview from '../components/MarkdownPreview.jsx'
+import Spinner from '../components/Spinner.jsx'
 import './SharedNotePage.css'
 
 function fmtDate(iso) {
   if (!iso) return ''
   return new Date(iso).toLocaleDateString('ko-KR', {
-    year: 'numeric', month: 'long', day: 'numeric'
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   })
 }
 
 export default function SharedNotePage() {
   const { shareToken } = useParams()
-  const [note, setNote]   = useState(null)
+  const [note, setNote] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -30,27 +32,39 @@ export default function SharedNotePage() {
         } else {
           setError('노트를 불러오지 못했습니다.')
         }
-      } finally { setLoading(false) }
+      } finally {
+        setLoading(false)
+      }
     })()
   }, [shareToken])
 
-  if (loading) return <div className="shared-page"><Spinner /></div>
-
-  if (error) return (
-    <div className="shared-page">
-      <div className="shared-error">
-        <div className="shared-error-icon">🔗</div>
-        <h1 className="shared-error-title">링크를 사용할 수 없습니다</h1>
-        <p className="shared-error-desc">{error}</p>
-        <Link to="/" className="btn btn-primary">KnotNote 홈으로</Link>
+  if (loading)
+    return (
+      <div className="shared-page">
+        <Spinner />
       </div>
-    </div>
-  )
+    )
+
+  if (error)
+    return (
+      <div className="shared-page">
+        <div className="shared-error">
+          <div className="shared-error-icon">🔗</div>
+          <h1 className="shared-error-title">링크를 사용할 수 없습니다</h1>
+          <p className="shared-error-desc">{error}</p>
+          <Link to="/" className="btn btn-primary">
+            KnotNote 홈으로
+          </Link>
+        </div>
+      </div>
+    )
 
   return (
     <div className="shared-page">
       <header className="shared-header">
-        <Link to="/" className="shared-logo">KnotNote</Link>
+        <Link to="/" className="shared-logo">
+          KnotNote
+        </Link>
         <span className="shared-badge">읽기 전용</span>
       </header>
 
@@ -62,8 +76,10 @@ export default function SharedNotePage() {
             <span>{fmtDate(note.updatedAt)}</span>
             {note.tags?.length > 0 && (
               <div className="shared-tags">
-                {note.tags.map(t => (
-                  <span key={t.id} className="shared-tag">#{t.name}</span>
+                {note.tags.map((t) => (
+                  <span key={t.id} className="shared-tag">
+                    #{t.name}
+                  </span>
                 ))}
               </div>
             )}

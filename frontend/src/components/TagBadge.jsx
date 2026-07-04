@@ -7,7 +7,11 @@ export default function TagBadge({ name, onRemove }) {
       {onRemove && (
         <button
           className="tag-badge-remove"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemove() }}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            onRemove()
+          }}
           aria-label={`${name} 태그 제거`}
         >
           ×

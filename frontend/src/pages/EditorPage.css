@@ -390,7 +390,7 @@
   font-family: var(--font);
   cursor: pointer;
   transition: all 0.15s;
-  box-shadow: 0 1px 4px rgba(251,191,36,0.2);
+  box-shadow: 0 1px 4px rgba(251, 191, 36, 0.2);
 }
 
 .btn-crystallize:hover {
@@ -430,15 +430,19 @@
 }
 
 @keyframes ub-fade-in {
-  from { opacity: 0 }
-  to   { opacity: 1 }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .unsaved-modal {
   background: var(--bg);
   border: 1.5px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   padding: 36px 32px 28px;
   width: 100%;
   max-width: 380px;
@@ -447,8 +451,14 @@
 }
 
 @keyframes ub-slide-up {
-  from { transform: translateY(12px); opacity: 0 }
-  to   { transform: translateY(0);    opacity: 1 }
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .unsaved-icon {
@@ -665,8 +675,14 @@
 }
 
 @keyframes slide-down {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .ai-summary-header {
@@ -725,7 +741,7 @@
   background: var(--bg);
   border: 1.5px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   padding: 32px;
   width: 100%;
   max-width: 440px;

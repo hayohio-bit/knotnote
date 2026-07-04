@@ -14,12 +14,14 @@
   --shadow-card: 0 4px 20px rgba(26, 122, 94, 0.08);
   --radius: 16px;
   --radius-sm: 10px;
-  --font: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   --transition: 0.2s ease;
 }
 
 /* ── 리셋 ────────────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -48,11 +50,13 @@ button {
   font-family: inherit;
 }
 
-input, textarea {
+input,
+textarea {
   font-family: inherit;
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
@@ -122,8 +126,12 @@ ul, ol {
   padding: 0 40px;
 }
 
-.text-accent { color: var(--accent); }
-.text-secondary { color: var(--text-secondary); }
+.text-accent {
+  color: var(--accent);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
 
 .spinner-wrap {
   display: flex;
@@ -133,7 +141,9 @@ ul, ol {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spinner {

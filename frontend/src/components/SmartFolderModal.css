@@ -1,7 +1,7 @@
 .sf-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -12,7 +12,7 @@
 .sf-modal {
   background: var(--bg);
   border-radius: var(--radius);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   width: 100%;
   max-width: 460px;
   max-height: 90vh;
@@ -59,7 +59,9 @@
   margin-bottom: -6px;
 }
 
-.sf-required { color: #e11d48; }
+.sf-required {
+  color: #e11d48;
+}
 
 .sf-input {
   width: 100%;
@@ -76,7 +78,9 @@
   transition: border-color 0.15s;
 }
 
-.sf-input:focus { border-color: var(--accent); }
+.sf-input:focus {
+  border-color: var(--accent);
+}
 
 .sf-hint {
   font-size: 13px;
@@ -124,7 +128,10 @@
   font-size: 13px;
 }
 
-.sf-match-label { color: var(--text-secondary); font-weight: 600; }
+.sf-match-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
 
 .sf-radio {
   display: flex;
@@ -178,7 +185,9 @@
   flex-shrink: 0;
 }
 
-.sf-preview-text { color: var(--text); }
+.sf-preview-text {
+  color: var(--text);
+}
 
 /* 하단 버튼 */
 .sf-modal-footer {

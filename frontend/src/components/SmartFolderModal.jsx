@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { smartFoldersApi } from '../api/smartFolders.js'
 import './SmartFolderModal.css'
 
 const DATE_OPTIONS = [
-  { value: null,  label: '전체' },
-  { value: 7,    label: '최근 7일' },
-  { value: 30,   label: '최근 30일' },
-  { value: 90,   label: '최근 90일' },
+  { value: null, label: '전체' },
+  { value: 7, label: '최근 7일' },
+  { value: 30, label: '최근 30일' },
+  { value: 90, label: '최근 90일' },
 ]
 
 /**
@@ -20,30 +20,35 @@ const DATE_OPTIONS = [
 export default function SmartFolderModal({ allTags, editingFolder, onClose, onSaved }) {
   const isEdit = Boolean(editingFolder)
 
-  const [name, setName]                   = useState(editingFolder?.name ?? '')
+  const [name, setName] = useState(editingFolder?.name ?? '')
   const [selectedTagIds, setSelectedTagIds] = useState(editingFolder?.tagIds ?? [])
-  const [tagMatchMode, setTagMatchMode]   = useState(editingFolder?.tagMatchMode ?? 'ANY')
+  const [tagMatchMode, setTagMatchMode] = useState(editingFolder?.tagMatchMode ?? 'ANY')
   const [createdWithin, setCreatedWithin] = useState(editingFolder?.createdWithinDays ?? null)
-  const [keyword, setKeyword]             = useState(editingFolder?.keyword ?? '')
-  const [saving, setSaving]               = useState(false)
-  const [error, setError]                 = useState('')
+  const [keyword, setKeyword] = useState(editingFolder?.keyword ?? '')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   // ESC 닫기
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') onClose() }
+    const handler = (e) => {
+      if (e.key === 'Escape') onClose()
+    }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [onClose])
 
   const toggleTag = (tagId) => {
-    setSelectedTagIds(prev =>
-      prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
+    setSelectedTagIds((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId],
     )
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!name.trim()) { setError('폴더 이름을 입력해주세요.'); return }
+    if (!name.trim()) {
+      setError('폴더 이름을 입력해주세요.')
+      return
+    }
     setSaving(true)
     setError('')
     const payload = {
@@ -66,11 +71,18 @@ export default function SmartFolderModal({ allTags, editingFolder, onClose, onSa
   }
 
   return (
-    <div className="sf-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+    <div
+      className="sf-modal-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
       <div className="sf-modal">
         <div className="sf-modal-header">
           <h3>{isEdit ? '스마트 폴더 편집' : '새 스마트 폴더'}</h3>
-          <button className="sf-modal-close" onClick={onClose}>×</button>
+          <button className="sf-modal-close" onClick={onClose}>
+            ×
+          </button>
         </div>
 
         <form className="sf-modal-body" onSubmit={handleSubmit}>
@@ -95,7 +107,7 @@ export default function SmartFolderModal({ allTags, editingFolder, onClose, onSa
           ) : (
             <>
               <div className="sf-tag-grid">
-                {allTags.map(tag => (
+                {allTags.map((tag) => (
                   <button
                     key={tag.id}
                     type="button"
@@ -111,15 +123,21 @@ export default function SmartFolderModal({ allTags, editingFolder, onClose, onSa
                 <div className="sf-match-mode">
                   <span className="sf-match-label">조건:</span>
                   <label className="sf-radio">
-                    <input type="radio" value="ANY"
+                    <input
+                      type="radio"
+                      value="ANY"
                       checked={tagMatchMode === 'ANY'}
-                      onChange={() => setTagMatchMode('ANY')} />
+                      onChange={() => setTagMatchMode('ANY')}
+                    />
                     하나라도 포함 (OR)
                   </label>
                   <label className="sf-radio">
-                    <input type="radio" value="ALL"
+                    <input
+                      type="radio"
+                      value="ALL"
                       checked={tagMatchMode === 'ALL'}
-                      onChange={() => setTagMatchMode('ALL')} />
+                      onChange={() => setTagMatchMode('ALL')}
+                    />
                     모두 포함 (AND)
                   </label>
                 </div>
@@ -139,7 +157,7 @@ export default function SmartFolderModal({ allTags, editingFolder, onClose, onSa
           {/* 기간 */}
           <label className="sf-label">생성 기간</label>
           <div className="sf-date-row">
-            {DATE_OPTIONS.map(opt => (
+            {DATE_OPTIONS.map((opt) => (
               <button
                 key={String(opt.value)}
                 type="button"
@@ -164,7 +182,9 @@ export default function SmartFolderModal({ allTags, editingFolder, onClose, onSa
           </div>
 
           <div className="sf-modal-footer">
-            <button type="button" className="btn btn-ghost" onClick={onClose}>취소</button>
+            <button type="button" className="btn btn-ghost" onClick={onClose}>
+              취소
+            </button>
             <button type="submit" className="btn btn-primary" disabled={saving}>
               {saving ? '저장 중...' : isEdit ? '수정' : '만들기'}
             </button>

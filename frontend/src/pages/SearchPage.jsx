@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { searchApi } from '../api/search.js'
 import Navbar from '../components/Navbar.jsx'
 import NoteCard from '../components/NoteCard.jsx'
 import Spinner from '../components/Spinner.jsx'
-import { searchApi } from '../api/search.js'
 import './SearchPage.css'
 
 export default function SearchPage() {
@@ -95,7 +95,9 @@ export default function SearchPage() {
                     >
                       ← 이전
                     </button>
-                    <span className="page-info">{page + 1} / {totalPages}</span>
+                    <span className="page-info">
+                      {page + 1} / {totalPages}
+                    </span>
                     <button
                       className="btn btn-ghost"
                       disabled={page >= totalPages - 1}

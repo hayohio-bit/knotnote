@@ -11,7 +11,7 @@ const TEMPLATES = [
     label: '데일리 노트',
     titleFn: () => {
       const d = new Date()
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
     },
     content: `## 오늘의 목표
 - 
@@ -34,7 +34,7 @@ const TEMPLATES = [
     label: '회의록',
     titleFn: () => {
       const d = new Date()
-      return `회의록 ${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+      return `회의록 ${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
     },
     content: `## 참석자
 - 
@@ -119,7 +119,9 @@ export default function TemplateModal({ onClose }) {
       <div className="tpl-modal" onClick={(e) => e.stopPropagation()}>
         <div className="tpl-header">
           <h3 className="tpl-heading">📋 템플릿 선택</h3>
-          <button className="tpl-close" onClick={onClose} aria-label="닫기">✕</button>
+          <button className="tpl-close" onClick={onClose} aria-label="닫기">
+            ✕
+          </button>
         </div>
         <div className="tpl-grid">
           {TEMPLATES.map((tpl) => (

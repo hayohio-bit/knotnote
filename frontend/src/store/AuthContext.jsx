@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useCallback, useContext, useState } from 'react'
 import { authApi } from '../api/auth.js'
 import { tokenStorage } from '../lib/token.js'
 
@@ -30,9 +30,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, login, signup, logout }}>{children}</AuthContext.Provider>
   )
 }
 

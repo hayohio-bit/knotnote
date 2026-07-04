@@ -2,16 +2,13 @@ import api from './axios.js'
 
 export const notesApi = {
   // ── 기본 CRUD ─────────────────────────────────────────────
-  list: (page = 0, size = 20) =>
-    api.get('/notes', { params: { page, size } }),
+  list: (page = 0, size = 20) => api.get('/notes', { params: { page, size } }),
 
   get: (id) => api.get(`/notes/${id}`),
 
-  create: (title, content) =>
-    api.post('/notes', { title, content }),
+  create: (title, content) => api.post('/notes', { title, content }),
 
-  update: (id, title, content) =>
-    api.patch(`/notes/${id}`, { title, content }),
+  update: (id, title, content) => api.patch(`/notes/${id}`, { title, content }),
 
   delete: (id) => api.delete(`/notes/${id}`),
 
@@ -21,15 +18,12 @@ export const notesApi = {
   addLink: (id, targetNoteId, intent = null) =>
     api.post(`/notes/${id}/links`, { targetNoteId, intent }),
 
-  removeLink: (id, targetNoteId) =>
-    api.delete(`/notes/${id}/links/${targetNoteId}`),
+  removeLink: (id, targetNoteId) => api.delete(`/notes/${id}/links/${targetNoteId}`),
 
   // ── 태그 ──────────────────────────────────────────────────
-  addTag: (noteId, tagId) =>
-    api.post(`/notes/${noteId}/tags`, null, { params: { tagId } }),
+  addTag: (noteId, tagId) => api.post(`/notes/${noteId}/tags`, null, { params: { tagId } }),
 
-  removeTag: (noteId, tagId) =>
-    api.delete(`/notes/${noteId}/tags/${tagId}`),
+  removeTag: (noteId, tagId) => api.delete(`/notes/${noteId}/tags/${tagId}`),
 
   // ── 지식 그래프 ────────────────────────────────────────────
   getGraph: () => api.get('/notes/graph'),
@@ -50,8 +44,7 @@ export const notesApi = {
   // ── 버전 이력 (Phase 4) ────────────────────────────────────
   getVersions: (noteId) => api.get(`/notes/${noteId}/versions`),
 
-  restoreVersion: (noteId, versionId) =>
-    api.post(`/notes/${noteId}/versions/${versionId}/restore`),
+  restoreVersion: (noteId, versionId) => api.post(`/notes/${noteId}/versions/${versionId}/restore`),
 
   // ── AI 태그 추천 (Phase 4) ─────────────────────────────────
   suggestTags: (noteId, topN = 5) =>
@@ -63,15 +56,12 @@ export const notesApi = {
   unpin: (noteId) => api.delete(`/notes/${noteId}/pin`),
 
   // ── Low-Vitality (Phase 5) ─────────────────────────────────
-  getLowVitality: (threshold = 0.3) =>
-    api.get('/notes/low-vitality', { params: { threshold } }),
+  getLowVitality: (threshold = 0.3) => api.get('/notes/low-vitality', { params: { threshold } }),
 
   // ── 벌크 작업 (Phase 5) ────────────────────────────────────
-  bulkDelete: (noteIds) =>
-    api.post('/notes/bulk/delete', { noteIds }),
+  bulkDelete: (noteIds) => api.post('/notes/bulk/delete', { noteIds }),
 
-  bulkAddTag: (noteIds, tagId) =>
-    api.post('/notes/bulk/tag', { noteIds, tagId }),
+  bulkAddTag: (noteIds, tagId) => api.post('/notes/bulk/tag', { noteIds, tagId }),
 
   // ── 웹 클리핑 (Phase 9) ───────────────────────────────────
   clip: (url) => api.post('/notes/clip', { url }),

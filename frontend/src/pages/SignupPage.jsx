@@ -10,8 +10,7 @@ export default function SignupPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  const handleChange = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -27,9 +26,7 @@ export default function SignupPage() {
       await signup(form.email, form.password, form.nickname)
       navigate('/login', { state: { message: '회원가입 완료! 로그인해주세요.' } })
     } catch (err) {
-      setError(
-        err.response?.data?.message || '회원가입 중 오류가 발생했습니다.'
-      )
+      setError(err.response?.data?.message || '회원가입 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }
@@ -73,7 +70,9 @@ export default function SignupPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">비밀번호 <span className="text-secondary">(8자 이상)</span></label>
+            <label htmlFor="password">
+              비밀번호 <span className="text-secondary">(8자 이상)</span>
+            </label>
             <input
               id="password"
               name="password"
@@ -89,11 +88,7 @@ export default function SignupPage() {
 
           {error && <div className="auth-error">{error}</div>}
 
-          <button
-            type="submit"
-            className="btn btn-primary auth-submit"
-            disabled={loading}
-          >
+          <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
             {loading ? '가입 중...' : '회원가입'}
           </button>
         </form>

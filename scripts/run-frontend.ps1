@@ -1,7 +1,8 @@
 ## KnotNote - Start React frontend
 ## Usage: .\run-frontend.ps1
 
-$frontendDir = Join-Path $PSScriptRoot "frontend"
+$PROJECT_ROOT = (Get-Item $PSScriptRoot).Parent.FullName
+$frontendDir = Join-Path $PROJECT_ROOT "frontend"
 
 if (-not (Test-Path $frontendDir)) {
     Write-Error "frontend/ directory not found."

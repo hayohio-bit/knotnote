@@ -26,10 +26,10 @@ const FEATURES = [
 ]
 
 const STATS = [
-  { value: '5',   label: '핵심 도메인' },
+  { value: '5', label: '핵심 도메인' },
   { value: '20+', label: 'REST 엔드포인트' },
-  { value: '7',   label: 'DB 테이블' },
-  { value: '40',  label: '통합 테스트' },
+  { value: '7', label: 'DB 테이블' },
+  { value: '40', label: '통합 테스트' },
 ]
 
 export default function LandingPage() {
@@ -43,7 +43,6 @@ export default function LandingPage() {
 
   return (
     <div className="landing">
-
       {/* ── 네비 ── */}
       <header className="landing-nav">
         <div className="container landing-nav-inner">
@@ -51,13 +50,21 @@ export default function LandingPage() {
           <div className="landing-nav-actions">
             {user ? (
               <>
-                <Link to="/dashboard" className="btn btn-ghost">대시보드</Link>
-                <button onClick={handleLogout} className="btn btn-primary">로그아웃</button>
+                <Link to="/dashboard" className="btn btn-ghost">
+                  대시보드
+                </Link>
+                <button onClick={handleLogout} className="btn btn-primary">
+                  로그아웃
+                </button>
               </>
             ) : (
               <>
-                <Link to="/login"  className="btn btn-ghost">로그인</Link>
-                <Link to="/signup" className="btn btn-primary">무료로 시작</Link>
+                <Link to="/login" className="btn btn-ghost">
+                  로그인
+                </Link>
+                <Link to="/signup" className="btn btn-primary">
+                  무료로 시작
+                </Link>
               </>
             )}
           </div>
@@ -67,16 +74,17 @@ export default function LandingPage() {
       {/* ── Hero ── */}
       <section className="hero">
         <div className="container hero-container">
-
           {/* 텍스트 영역 */}
           <div className="hero-text">
             <div className="hero-badge">✨ 2026 Beta</div>
             <h1 className="hero-title">
-              메모를 연결하면<br />
+              메모를 연결하면
+              <br />
               <span className="text-accent">인사이트가 보인다</span>
             </h1>
             <p className="hero-desc">
-              AI가 메모를 분석하고 연관 노트를 추천해드려요.<br />
+              AI가 메모를 분석하고 연관 노트를 추천해드려요.
+              <br />
               복잡한 생각도 KnotNote와 함께라면 명확해집니다.
             </p>
             <div className="hero-cta">
@@ -100,7 +108,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -152,7 +159,6 @@ export default function LandingPage() {
           <span>© 2026 KnotNote · Made with ☕ by Serena</span>
         </div>
       </footer>
-
     </div>
   )
 }

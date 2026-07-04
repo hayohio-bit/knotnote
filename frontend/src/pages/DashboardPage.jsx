@@ -1,23 +1,23 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import Navbar from '../components/Navbar.jsx'
-import NoteCard from '../components/NoteCard.jsx'
-import Spinner from '../components/Spinner.jsx'
-import SmartFolderModal from '../components/SmartFolderModal.jsx'
-import TemplateModal from '../components/TemplateModal.jsx'
-import { notesApi, exportApi } from '../api/notes.js'
-import { tagsApi } from '../api/tags.js'
+import { exportApi, notesApi } from '../api/notes.js'
 import { searchApi } from '../api/search.js'
 import { smartFoldersApi } from '../api/smartFolders.js'
+import { tagsApi } from '../api/tags.js'
+import Navbar from '../components/Navbar.jsx'
+import NoteCard from '../components/NoteCard.jsx'
+import SmartFolderModal from '../components/SmartFolderModal.jsx'
+import Spinner from '../components/Spinner.jsx'
+import TemplateModal from '../components/TemplateModal.jsx'
 import './DashboardPage.css'
 
 const VIEW_KEY = 'knotnote-view-mode'
 const SORT_KEY = 'knotnote-sort'
 
 const SORT_OPTIONS = [
-  { value: 'newest',     label: '최신순' },
-  { value: 'oldest',     label: '오래된순' },
-  { value: 'title-asc',  label: '제목 가나다순' },
+  { value: 'newest', label: '최신순' },
+  { value: 'oldest', label: '오래된순' },
+  { value: 'title-asc', label: '제목 가나다순' },
   { value: 'title-desc', label: '제목 역순' },
 ]
 
@@ -30,10 +30,14 @@ const VIEW_OPTIONS = [
 function sortNotes(notes, sort) {
   const arr = [...notes]
   switch (sort) {
-    case 'oldest':    return arr.sort((a,b) => new Date(a.createdAt)-new Date(b.createdAt))
-    case 'title-asc': return arr.sort((a,b) => a.title.localeCompare(b.title,'ko'))
-    case 'title-desc':return arr.sort((a,b) => b.title.localeCompare(a.title,'ko'))
-    default:          return arr.sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt))
+    case 'oldest':
+      return arr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    case 'title-asc':
+      return arr.sort((a, b) => a.title.localeCompare(b.title, 'ko'))
+    case 'title-desc':
+      return arr.sort((a, b) => b.title.localeCompare(a.title, 'ko'))
+    default:
+      return arr.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   }
 }
 
@@ -42,20 +46,20 @@ export default function DashboardPage() {
   const [searchParams] = useSearchParams()
 
   // 기본 상태
-  const [notes, setNotes]           = useState([])
-  const [tags, setTags]             = useState([])
-  const [page, setPage]             = useState(0)
+  const [notes, setNotes] = useState([])
+  const [tags, setTags] = useState([])
+  const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const [loading, setLoading]       = useState(true)
-  const [error, setError]           = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   // 검색
-  const [query, setQuery]           = useState('')
+  const [query, setQuery] = useState('')
   const [debouncedQ, setDebouncedQ] = useState('')
   const debounceTimer = useRef(null)
 
   // 정렬·보기
-  const [sort, setSort]         = useState(() => localStorage.getItem(SORT_KEY) || 'newest')
+  const [sort, setSort] = useState(() => localStorage.getItem(SORT_KEY) || 'newest')
   const [viewMode, setViewMode] = useState(() => localStorage.getItem(VIEW_KEY) || 'card')
 
   // 다중 태그 필터
@@ -63,72 +67,98 @@ export default function DashboardPage() {
     const t = searchParams.get('tagId')
     return t ? [Number(t)] : []
   })
-  const [tagMatchMode, setTagMatchMode]     = useState('ANY')
+  const [tagMatchMode, setTagMatchMode] = useState('ANY')
 
   // 스마트 폴더
   const [smartFolders, setSmartFolders] = useState([])
-  const [activeSF, setActiveSF]         = useState(null)
-  const [sfLoading, setSfLoading]       = useState(false)
-  const [sfNotes, setSfNotes]           = useState([])
-  const [showSFModal, setShowSFModal]   = useState(false)
-  const [editingSF, setEditingSF]       = useState(null)
+  const [activeSF, setActiveSF] = useState(null)
+  const [sfLoading, setSfLoading] = useState(false)
+  const [sfNotes, setSfNotes] = useState([])
+  const [showSFModal, setShowSFModal] = useState(false)
+  const [editingSF, setEditingSF] = useState(null)
 
   // ── 벌크 선택 (Phase 6-F) ──
-  const [bulkMode, setBulkMode]         = useState(false)
-  const [selectedIds, setSelectedIds]   = useState(new Set())
-  const [bulkLoading, setBulkLoading]   = useState(false)
-  const [exporting, setExporting]       = useState(false)
+  const [bulkMode, setBulkMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState(new Set())
+  const [bulkLoading, setBulkLoading] = useState(false)
+  const [exporting, setExporting] = useState(false)
 
   // ── 템플릿 모달 (Phase 7-C) ──
   const [showTemplateModal, setShowTemplateModal] = useState(false)
 
   // ── 웹 클리핑 모달 (Phase 9-F) ──
-  const [showClipModal, setShowClipModal]   = useState(false)
-  const [clipUrl, setClipUrl]               = useState('')
-  const [clipLoading, setClipLoading]       = useState(false)
-  const [clipError, setClipError]           = useState('')
+  const [showClipModal, setShowClipModal] = useState(false)
+  const [clipUrl, setClipUrl] = useState('')
+  const [clipLoading, setClipLoading] = useState(false)
+  const [clipError, setClipError] = useState('')
 
   const isSearchMode = debouncedQ.trim().length > 0
-  const isSFMode     = Boolean(activeSF)
+  const isSFMode = Boolean(activeSF)
 
   // 검색 debounce
   const handleQueryChange = (val) => {
     setQuery(val)
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
-    debounceTimer.current = setTimeout(() => { setDebouncedQ(val); setPage(0) }, 300)
+    debounceTimer.current = setTimeout(() => {
+      setDebouncedQ(val)
+      setPage(0)
+    }, 300)
   }
 
   // 태그 토글
   const toggleTag = (tagId) => {
     setActiveSF(null)
-    setSelectedTagIds(prev => prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId])
+    setSelectedTagIds((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId],
+    )
     setPage(0)
   }
 
-  const handleSort = (val) => { setSort(val); localStorage.setItem(SORT_KEY, val) }
-  const handleView = (val) => { setViewMode(val); localStorage.setItem(VIEW_KEY, val) }
+  const handleSort = (val) => {
+    setSort(val)
+    localStorage.setItem(SORT_KEY, val)
+  }
+  const handleView = (val) => {
+    setViewMode(val)
+    localStorage.setItem(VIEW_KEY, val)
+  }
 
   // 스마트 폴더 로드
   const loadSmartFolders = useCallback(() => {
-    smartFoldersApi.list().then(({ data }) => setSmartFolders(data.data)).catch(() => {})
+    smartFoldersApi
+      .list()
+      .then(({ data }) => setSmartFolders(data.data))
+      .catch(() => {})
   }, [])
-  useEffect(() => { loadSmartFolders() }, [loadSmartFolders])
+  useEffect(() => {
+    loadSmartFolders()
+  }, [loadSmartFolders])
 
   const selectSmartFolder = async (sf) => {
-    if (activeSF?.id === sf.id) { setActiveSF(null); return }
-    setActiveSF(sf); setSelectedTagIds([]); setQuery(''); setDebouncedQ('')
+    if (activeSF?.id === sf.id) {
+      setActiveSF(null)
+      return
+    }
+    setActiveSF(sf)
+    setSelectedTagIds([])
+    setQuery('')
+    setDebouncedQ('')
     setSfLoading(true)
     try {
       const { data } = await smartFoldersApi.getNotes(sf.id)
       setSfNotes(data.data ?? [])
-    } catch { setSfNotes([]) }
-    finally { setSfLoading(false) }
+    } catch {
+      setSfNotes([])
+    } finally {
+      setSfLoading(false)
+    }
   }
 
   // 노트 로드
   const fetchNotes = useCallback(async () => {
     if (isSFMode) return
-    setLoading(true); setError('')
+    setLoading(true)
+    setError('')
     try {
       if (isSearchMode) {
         const { data } = await searchApi.search(debouncedQ, page)
@@ -139,12 +169,22 @@ export default function DashboardPage() {
         setNotes(data.data.content ?? [])
         setTotalPages(data.data.totalPages ?? 0)
       }
-    } catch { setError('메모를 불러오지 못했습니다.') }
-    finally { setLoading(false) }
+    } catch {
+      setError('메모를 불러오지 못했습니다.')
+    } finally {
+      setLoading(false)
+    }
   }, [page, debouncedQ, isSearchMode, isSFMode])
 
-  useEffect(() => { fetchNotes() }, [fetchNotes])
-  useEffect(() => { tagsApi.list().then(({ data }) => setTags(data.data)).catch(() => {}) }, [])
+  useEffect(() => {
+    fetchNotes()
+  }, [fetchNotes])
+  useEffect(() => {
+    tagsApi
+      .list()
+      .then(({ data }) => setTags(data.data))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const t = searchParams.get('tagId')
@@ -156,23 +196,23 @@ export default function DashboardPage() {
 
   // 현재 표시 노트
   const sourceNotes = isSFMode ? sfNotes : notes
-  const tagFilteredNotes = (!isSFMode && selectedTagIds.length > 0)
-    ? sourceNotes.filter(n => {
-        const ids = (n.tags ?? []).map(t => t.id)
-        return tagMatchMode === 'ALL' ? selectedTagIds.every(id => ids.includes(id))
-                                     : selectedTagIds.some(id => ids.includes(id))
-      })
-    : sourceNotes
+  const tagFilteredNotes =
+    !isSFMode && selectedTagIds.length > 0
+      ? sourceNotes.filter((n) => {
+          const ids = (n.tags ?? []).map((t) => t.id)
+          return tagMatchMode === 'ALL'
+            ? selectedTagIds.every((id) => ids.includes(id))
+            : selectedTagIds.some((id) => ids.includes(id))
+        })
+      : sourceNotes
 
   // 핀 노트 상단 정렬
   const sorted = sortNotes(tagFilteredNotes, sort)
-  const displayNotes = [
-    ...sorted.filter(n => n.isPinned),
-    ...sorted.filter(n => !n.isPinned),
-  ]
+  const displayNotes = [...sorted.filter((n) => n.isPinned), ...sorted.filter((n) => !n.isPinned)]
 
   const handleSFSaved = (savedSF) => {
-    setShowSFModal(false); setEditingSF(null)
+    setShowSFModal(false)
+    setEditingSF(null)
     loadSmartFolders()
     if (activeSF?.id === savedSF.id) selectSmartFolder(savedSF)
   }
@@ -186,7 +226,7 @@ export default function DashboardPage() {
 
   // ── 벌크 선택 토글 ───────────────────────────────────────
   const toggleSelectNote = (noteId) => {
-    setSelectedIds(prev => {
+    setSelectedIds((prev) => {
       const next = new Set(prev)
       next.has(noteId) ? next.delete(noteId) : next.add(noteId)
       return next
@@ -194,11 +234,11 @@ export default function DashboardPage() {
   }
 
   const toggleBulkMode = () => {
-    setBulkMode(m => !m)
+    setBulkMode((m) => !m)
     setSelectedIds(new Set())
   }
 
-  const selectAll = () => setSelectedIds(new Set(displayNotes.map(n => n.id)))
+  const selectAll = () => setSelectedIds(new Set(displayNotes.map((n) => n.id)))
   const clearSelect = () => setSelectedIds(new Set())
 
   // 벌크 삭제
@@ -211,27 +251,36 @@ export default function DashboardPage() {
       setSelectedIds(new Set())
       setBulkMode(false)
       fetchNotes()
-    } catch { alert('벌크 삭제 실패') }
-    finally { setBulkLoading(false) }
+    } catch {
+      alert('벌크 삭제 실패')
+    } finally {
+      setBulkLoading(false)
+    }
   }
 
   // 벌크 태그 부착
   const handleBulkTag = async () => {
     if (selectedIds.size === 0 || tags.length === 0) return
     const tagName = window.prompt(
-      `태그를 선택하세요 (이름 입력):\n${tags.map(t => t.name).join(', ')}`
+      `태그를 선택하세요 (이름 입력):\n${tags.map((t) => t.name).join(', ')}`,
     )
     if (!tagName) return
-    const tag = tags.find(t => t.name === tagName.trim())
-    if (!tag) { alert('존재하지 않는 태그입니다.'); return }
+    const tag = tags.find((t) => t.name === tagName.trim())
+    if (!tag) {
+      alert('존재하지 않는 태그입니다.')
+      return
+    }
     setBulkLoading(true)
     try {
       await notesApi.bulkAddTag([...selectedIds], tag.id)
       alert(`${selectedIds.size}개 메모에 #${tag.name} 태그를 부착했습니다.`)
       setSelectedIds(new Set())
       setBulkMode(false)
-    } catch { alert('벌크 태그 실패') }
-    finally { setBulkLoading(false) }
+    } catch {
+      alert('벌크 태그 실패')
+    } finally {
+      setBulkLoading(false)
+    }
   }
 
   // 웹 클리핑
@@ -262,45 +311,78 @@ export default function DashboardPage() {
     setExporting(true)
     try {
       const { data } = await exportApi.download(format)
-      const url  = URL.createObjectURL(new Blob([data]))
+      const url = URL.createObjectURL(new Blob([data]))
       const link = document.createElement('a')
-      link.href  = url
-      link.download = `knotnote-${new Date().toISOString().slice(0,10)}.zip`
+      link.href = url
+      link.download = `knotnote-${new Date().toISOString().slice(0, 10)}.zip`
       link.click()
       URL.revokeObjectURL(url)
-    } catch { alert('내보내기 실패') }
-    finally { setExporting(false) }
+    } catch {
+      alert('내보내기 실패')
+    } finally {
+      setExporting(false)
+    }
   }
 
   return (
     <div className="dashboard-page">
       <Navbar />
       <div className="dashboard-body">
-
         {/* 스마트 폴더 사이드바 */}
         <aside className="sf-sidebar">
           <div className="sf-sidebar-header">
             <span className="sf-sidebar-title">📁 스마트 폴더</span>
-            <button className="sf-add-btn" onClick={() => { setEditingSF(null); setShowSFModal(true) }} title="새 스마트 폴더">+</button>
+            <button
+              className="sf-add-btn"
+              onClick={() => {
+                setEditingSF(null)
+                setShowSFModal(true)
+              }}
+              title="새 스마트 폴더"
+            >
+              +
+            </button>
           </div>
 
           {smartFolders.length === 0 ? (
             <p className="sf-sidebar-empty">
-              저장된 필터가 없습니다.<br/>
-              <button className="sf-create-link" onClick={() => { setEditingSF(null); setShowSFModal(true) }}>
+              저장된 필터가 없습니다.
+              <br />
+              <button
+                className="sf-create-link"
+                onClick={() => {
+                  setEditingSF(null)
+                  setShowSFModal(true)
+                }}
+              >
                 + 첫 스마트 폴더 만들기
               </button>
             </p>
           ) : (
             <ul className="sf-list">
-              {smartFolders.map(sf => (
+              {smartFolders.map((sf) => (
                 <li key={sf.id} className={`sf-item ${activeSF?.id === sf.id ? 'active' : ''}`}>
                   <button className="sf-name" onClick={() => selectSmartFolder(sf)}>
                     🗂 {sf.name}
                   </button>
                   <div className="sf-actions">
-                    <button className="sf-action-btn" onClick={() => { setEditingSF(sf); setShowSFModal(true) }} title="편집">✎</button>
-                    <button className="sf-action-btn sf-action-delete" onClick={() => handleSFDelete(sf.id)} title="삭제">×</button>
+                    <button
+                      className="sf-action-btn"
+                      onClick={() => {
+                        setEditingSF(sf)
+                        setShowSFModal(true)
+                      }}
+                      title="편집"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      className="sf-action-btn sf-action-delete"
+                      onClick={() => handleSFDelete(sf.id)}
+                      title="삭제"
+                    >
+                      ×
+                    </button>
                   </div>
                 </li>
               ))}
@@ -315,7 +397,7 @@ export default function DashboardPage() {
                 {selectedTagIds.length >= 2 && (
                   <button
                     className="tag-mode-toggle"
-                    onClick={() => setTagMatchMode(m => m === 'ANY' ? 'ALL' : 'ANY')}
+                    onClick={() => setTagMatchMode((m) => (m === 'ANY' ? 'ALL' : 'ANY'))}
                     title="AND/OR 전환"
                   >
                     {tagMatchMode}
@@ -323,7 +405,7 @@ export default function DashboardPage() {
                 )}
               </div>
               <div className="sf-tags-list">
-                {tags.map(tag => (
+                {tags.map((tag) => (
                   <button
                     key={tag.id}
                     className={`sf-tag-btn ${selectedTagIds.includes(tag.id) ? 'active' : ''}`}
@@ -340,29 +422,40 @@ export default function DashboardPage() {
 
         {/* 메인 */}
         <main className="dashboard-main">
-
           {/* 검색 바 */}
           <div className="search-bar-wrap">
             <input
               className="search-input"
               placeholder="메모 검색..."
               value={query}
-              onChange={e => handleQueryChange(e.target.value)}
+              onChange={(e) => handleQueryChange(e.target.value)}
             />
           </div>
 
           {/* 툴바 */}
           <div className="dashboard-toolbar">
             <div className="toolbar-left">
-              <select className="select-sm" value={sort} onChange={e => handleSort(e.target.value)}>
-                {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <select
+                className="select-sm"
+                value={sort}
+                onChange={(e) => handleSort(e.target.value)}
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </select>
 
               <div className="view-toggle">
-                {VIEW_OPTIONS.map(o => (
-                  <button key={o.value}
+                {VIEW_OPTIONS.map((o) => (
+                  <button
+                    key={o.value}
                     className={`view-btn ${viewMode === o.value ? 'active' : ''}`}
-                    onClick={() => handleView(o.value)}>{o.label}</button>
+                    onClick={() => handleView(o.value)}
+                  >
+                    {o.label}
+                  </button>
                 ))}
               </div>
             </div>
@@ -370,7 +463,12 @@ export default function DashboardPage() {
             <div className="toolbar-right">
               {/* 내보내기 드롭다운 */}
               <div className="export-group">
-                <button className="btn btn-ghost btn-sm" onClick={() => handleExport('markdown')} disabled={exporting} title="Markdown ZIP 내보내기">
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => handleExport('markdown')}
+                  disabled={exporting}
+                  title="Markdown ZIP 내보내기"
+                >
                   {exporting ? '...' : '⬇ 내보내기'}
                 </button>
               </div>
@@ -386,7 +484,11 @@ export default function DashboardPage() {
 
               <button
                 className="btn btn-secondary btn-sm"
-                onClick={() => { setShowClipModal(true); setClipUrl(''); setClipError('') }}
+                onClick={() => {
+                  setShowClipModal(true)
+                  setClipUrl('')
+                  setClipError('')
+                }}
                 title="URL에서 노트 생성"
               >
                 🌐 웹 클리핑
@@ -399,7 +501,9 @@ export default function DashboardPage() {
               >
                 📋 템플릿
               </button>
-              <Link to="/notes/new" className="btn btn-primary btn-sm">+ 새 메모</Link>
+              <Link to="/notes/new" className="btn btn-primary btn-sm">
+                + 새 메모
+              </Link>
             </div>
           </div>
 
@@ -407,8 +511,12 @@ export default function DashboardPage() {
           {bulkMode && (
             <div className="bulk-action-bar">
               <span className="bulk-count">{selectedIds.size}개 선택됨</span>
-              <button className="btn btn-ghost btn-sm" onClick={selectAll}>전체 선택</button>
-              <button className="btn btn-ghost btn-sm" onClick={clearSelect}>선택 해제</button>
+              <button className="btn btn-ghost btn-sm" onClick={selectAll}>
+                전체 선택
+              </button>
+              <button className="btn btn-ghost btn-sm" onClick={clearSelect}>
+                선택 해제
+              </button>
               <button
                 className="btn btn-ghost btn-sm"
                 onClick={handleBulkTag}
@@ -423,14 +531,18 @@ export default function DashboardPage() {
               >
                 {bulkLoading ? '삭제 중...' : '🗑 삭제'}
               </button>
-              <button className="btn btn-ghost btn-sm" onClick={toggleBulkMode}>취소</button>
+              <button className="btn btn-ghost btn-sm" onClick={toggleBulkMode}>
+                취소
+              </button>
             </div>
           )}
 
           {/* 스마트폴더 활성 표시 */}
           {isSFMode && (
             <div className="sf-active-bar">
-              <span>🗂 <strong>{activeSF.name}</strong></span>
+              <span>
+                🗂 <strong>{activeSF.name}</strong>
+              </span>
               <span className="sf-active-desc">
                 {activeSF.tagIds?.length > 0
                   ? `태그 ${activeSF.tagIds.length}개 (${activeSF.tagMatchMode})`
@@ -438,7 +550,9 @@ export default function DashboardPage() {
                 {activeSF.keyword ? ` · "${activeSF.keyword}"` : ''}
                 {activeSF.createdWithinDays ? ` · 최근 ${activeSF.createdWithinDays}일` : ''}
               </span>
-              <button className="sf-active-close" onClick={() => setActiveSF(null)}>× 해제</button>
+              <button className="sf-active-close" onClick={() => setActiveSF(null)}>
+                × 해제
+              </button>
             </div>
           )}
 
@@ -446,8 +560,8 @@ export default function DashboardPage() {
           {!isSFMode && selectedTagIds.length > 0 && (
             <div className="active-tags-bar">
               <span>태그 필터:</span>
-              {selectedTagIds.map(id => {
-                const tag = tags.find(t => t.id === id)
+              {selectedTagIds.map((id) => {
+                const tag = tags.find((t) => t.id === id)
                 return tag ? (
                   <span key={id} className="active-tag-chip">
                     #{tag.name}
@@ -468,17 +582,23 @@ export default function DashboardPage() {
             <p className="dashboard-error">{error}</p>
           ) : displayNotes.length === 0 ? (
             <div className="dashboard-empty">
-              {isSFMode
-                ? <p>이 스마트 폴더 조건에 맞는 메모가 없습니다.</p>
-                : isSearchMode
-                  ? <p>"{debouncedQ}" 검색 결과가 없습니다.</p>
-                  : <><p>메모가 없습니다.</p><Link to="/notes/new" className="btn btn-primary">첫 메모 작성하기</Link></>
-              }
+              {isSFMode ? (
+                <p>이 스마트 폴더 조건에 맞는 메모가 없습니다.</p>
+              ) : isSearchMode ? (
+                <p>"{debouncedQ}" 검색 결과가 없습니다.</p>
+              ) : (
+                <>
+                  <p>메모가 없습니다.</p>
+                  <Link to="/notes/new" className="btn btn-primary">
+                    첫 메모 작성하기
+                  </Link>
+                </>
+              )}
             </div>
           ) : (
             <>
               <div className={`notes-grid view-${viewMode}`}>
-                {displayNotes.map(note => (
+                {displayNotes.map((note) => (
                   <NoteCard
                     key={note.id}
                     note={note}
@@ -492,11 +612,23 @@ export default function DashboardPage() {
 
               {!isSFMode && !isSearchMode && totalPages > 1 && (
                 <div className="pagination">
-                  <button className="btn btn-ghost btn-sm" disabled={page === 0}
-                    onClick={() => setPage(p => p - 1)}>← 이전</button>
-                  <span className="pagination-info">{page + 1} / {totalPages}</span>
-                  <button className="btn btn-ghost btn-sm" disabled={page >= totalPages - 1}
-                    onClick={() => setPage(p => p + 1)}>다음 →</button>
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    disabled={page === 0}
+                    onClick={() => setPage((p) => p - 1)}
+                  >
+                    ← 이전
+                  </button>
+                  <span className="pagination-info">
+                    {page + 1} / {totalPages}
+                  </span>
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    disabled={page >= totalPages - 1}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    다음 →
+                  </button>
                 </div>
               )}
             </>
@@ -508,39 +640,57 @@ export default function DashboardPage() {
         <SmartFolderModal
           allTags={tags}
           editingFolder={editingSF}
-          onClose={() => { setShowSFModal(false); setEditingSF(null) }}
+          onClose={() => {
+            setShowSFModal(false)
+            setEditingSF(null)
+          }}
           onSaved={handleSFSaved}
         />
       )}
 
-      {showTemplateModal && (
-        <TemplateModal onClose={() => setShowTemplateModal(false)} />
-      )}
+      {showTemplateModal && <TemplateModal onClose={() => setShowTemplateModal(false)} />}
 
       {/* 웹 클리핑 모달 */}
       {showClipModal && (
         <div className="modal-backdrop" onClick={() => !clipLoading && setShowClipModal(false)}>
-          <div className="clip-modal" onClick={e => e.stopPropagation()}>
+          <div className="clip-modal" onClick={(e) => e.stopPropagation()}>
             <div className="clip-modal-header">
               <h3>🌐 웹 클리핑</h3>
-              <button className="modal-close-btn" onClick={() => setShowClipModal(false)} disabled={clipLoading}>×</button>
+              <button
+                className="modal-close-btn"
+                onClick={() => setShowClipModal(false)}
+                disabled={clipLoading}
+              >
+                ×
+              </button>
             </div>
-            <p className="clip-modal-desc">URL을 입력하면 제목과 본문을 자동으로 추출해 새 노트로 저장합니다.</p>
+            <p className="clip-modal-desc">
+              URL을 입력하면 제목과 본문을 자동으로 추출해 새 노트로 저장합니다.
+            </p>
             <div className="clip-url-row">
               <input
                 className="clip-url-input"
                 type="url"
                 placeholder="https://example.com/article"
                 value={clipUrl}
-                onChange={e => { setClipUrl(e.target.value); setClipError('') }}
-                onKeyDown={e => e.key === 'Enter' && !clipLoading && handleClip()}
+                onChange={(e) => {
+                  setClipUrl(e.target.value)
+                  setClipError('')
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && !clipLoading && handleClip()}
                 autoFocus
                 disabled={clipLoading}
               />
             </div>
             {clipError && <p className="clip-error">{clipError}</p>}
             <div className="clip-modal-actions">
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowClipModal(false)} disabled={clipLoading}>취소</button>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => setShowClipModal(false)}
+                disabled={clipLoading}
+              >
+                취소
+              </button>
               <button
                 className="btn btn-primary btn-sm"
                 onClick={handleClip}

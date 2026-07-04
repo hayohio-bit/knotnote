@@ -16,11 +16,11 @@ export default function CrystallizeModal({ noteId, pendingLinks, onComplete, onC
   const handleCrystallize = async (link) => {
     const summary = summaries[link.linkId] || ''
     if (summary.trim().length < 5) {
-      setErrors(prev => ({ ...prev, [link.linkId]: '최소 5자 이상 입력해주세요' }))
+      setErrors((prev) => ({ ...prev, [link.linkId]: '최소 5자 이상 입력해주세요' }))
       return
     }
-    setErrors(prev => ({ ...prev, [link.linkId]: null }))
-    setLoading(prev => ({ ...prev, [link.linkId]: true }))
+    setErrors((prev) => ({ ...prev, [link.linkId]: null }))
+    setLoading((prev) => ({ ...prev, [link.linkId]: true }))
 
     try {
       await notesApi.crystallizeLink(noteId, link.linkId, summary.trim())
@@ -32,9 +32,9 @@ export default function CrystallizeModal({ noteId, pendingLinks, onComplete, onC
         setTimeout(() => onComplete(), 500)
       }
     } catch (e) {
-      setErrors(prev => ({ ...prev, [link.linkId]: '저장에 실패했습니다. 다시 시도해주세요.' }))
+      setErrors((prev) => ({ ...prev, [link.linkId]: '저장에 실패했습니다. 다시 시도해주세요.' }))
     } finally {
-      setLoading(prev => ({ ...prev, [link.linkId]: false }))
+      setLoading((prev) => ({ ...prev, [link.linkId]: false }))
     }
   }
 
@@ -47,7 +47,7 @@ export default function CrystallizeModal({ noteId, pendingLinks, onComplete, onC
 
   return (
     <div className="crystallize-backdrop" onClick={onClose}>
-      <div className="crystallize-modal" onClick={e => e.stopPropagation()}>
+      <div className="crystallize-modal" onClick={(e) => e.stopPropagation()}>
         {/* 헤더 */}
         <div className="crystallize-header">
           <div className="crystallize-title-row">
@@ -75,16 +75,13 @@ export default function CrystallizeModal({ noteId, pendingLinks, onComplete, onC
 
         {/* 링크 목록 */}
         <div className="crystallize-list">
-          {pendingLinks.map(link => {
+          {pendingLinks.map((link) => {
             const isDone = completed.has(link.linkId)
             const isLoading = loading[link.linkId]
             const error = errors[link.linkId]
 
             return (
-              <div
-                key={link.linkId}
-                className={`crystallize-item ${isDone ? 'done' : 'pending'}`}
-              >
+              <div key={link.linkId} className={`crystallize-item ${isDone ? 'done' : 'pending'}`}>
                 {/* 연결 쌍 */}
                 <div className="link-pair">
                   <span className="link-note-name">{link.fromTitle}</span>
@@ -99,10 +96,10 @@ export default function CrystallizeModal({ noteId, pendingLinks, onComplete, onC
                       type="text"
                       placeholder="이 둘의 관계는..."
                       value={summaries[link.linkId] || ''}
-                      onChange={e =>
-                        setSummaries(prev => ({ ...prev, [link.linkId]: e.target.value }))
+                      onChange={(e) =>
+                        setSummaries((prev) => ({ ...prev, [link.linkId]: e.target.value }))
                       }
-                      onKeyDown={e => handleKeyDown(e, link)}
+                      onKeyDown={(e) => handleKeyDown(e, link)}
                       autoComplete="off"
                       className="crystallize-input"
                       disabled={isLoading}
@@ -116,9 +113,7 @@ export default function CrystallizeModal({ noteId, pendingLinks, onComplete, onC
                     </button>
                   </div>
                 ) : (
-                  <p className="crystallize-done-text">
-                    ✓ {summaries[link.linkId]}
-                  </p>
+                  <p className="crystallize-done-text">✓ {summaries[link.linkId]}</p>
                 )}
 
                 {error && <p className="crystallize-error">{error}</p>}

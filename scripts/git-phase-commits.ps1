@@ -14,7 +14,8 @@ $env:LANG                      = "en_US.UTF-8"
 $env:GIT_TERMINAL_PROMPT       = "0"
 $ErrorActionPreference         = "Continue"
 
-$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$root = Split-Path -Parent $scriptDir
 Set-Location $root
 
 # ── 기존 .git 삭제 후 재초기화 ──────────────────────────────

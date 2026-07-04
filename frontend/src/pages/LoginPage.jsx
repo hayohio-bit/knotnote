@@ -10,8 +10,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  const handleChange = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -21,9 +20,7 @@ export default function LoginPage() {
       await login(form.email, form.password)
       navigate('/dashboard')
     } catch (err) {
-      setError(
-        err.response?.data?.message || '이메일 또는 비밀번호가 올바르지 않습니다.'
-      )
+      setError(err.response?.data?.message || '이메일 또는 비밀번호가 올바르지 않습니다.')
     } finally {
       setLoading(false)
     }
@@ -69,11 +66,7 @@ export default function LoginPage() {
 
           {error && <div className="auth-error">{error}</div>}
 
-          <button
-            type="submit"
-            className="btn btn-primary auth-submit"
-            disabled={loading}
-          >
+          <button type="submit" className="btn btn-primary auth-submit" disabled={loading}>
             {loading ? '로그인 중...' : '로그인'}
           </button>
         </form>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { notesApi } from '../api/notes.js'
 import './QuickCapture.css'
@@ -37,26 +37,29 @@ export default function QuickCapture() {
     }
   }, [open])
 
-  const handleSave = useCallback(async (andOpen = false) => {
-    if (!title.trim()) {
-      setError('제목을 입력해 주세요.')
-      titleRef.current?.focus()
-      return
-    }
-    setSaving(true)
-    try {
-      const res = await notesApi.create(title.trim(), content.trim())
-      const newId = res.data?.data?.id
-      setOpen(false)
-      if (andOpen && newId) {
-        navigate(`/notes/${newId}`)
+  const handleSave = useCallback(
+    async (andOpen = false) => {
+      if (!title.trim()) {
+        setError('제목을 입력해 주세요.')
+        titleRef.current?.focus()
+        return
       }
-    } catch {
-      setError('저장에 실패했습니다. 다시 시도해 주세요.')
-    } finally {
-      setSaving(false)
-    }
-  }, [title, content, navigate])
+      setSaving(true)
+      try {
+        const res = await notesApi.create(title.trim(), content.trim())
+        const newId = res.data?.data?.id
+        setOpen(false)
+        if (andOpen && newId) {
+          navigate(`/notes/${newId}`)
+        }
+      } catch {
+        setError('저장에 실패했습니다. 다시 시도해 주세요.')
+      } finally {
+        setSaving(false)
+      }
+    },
+    [title, content, navigate],
+  )
 
   // Ctrl+Enter → 저장하고 에디터로
   const handleKeyDown = (e) => {
@@ -81,7 +84,10 @@ export default function QuickCapture() {
           className="qc-title-input"
           placeholder="제목"
           value={title}
-          onChange={(e) => { setTitle(e.target.value); setError('') }}
+          onChange={(e) => {
+            setTitle(e.target.value)
+            setError('')
+          }}
         />
 
         <textarea

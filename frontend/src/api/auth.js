@@ -4,12 +4,9 @@ import axios from 'axios'
 const plain = axios.create({ baseURL: '/api', timeout: 10000 })
 
 export const authApi = {
-  signup: (email, password, nickname) =>
-    plain.post('/auth/signup', { email, password, nickname }),
+  signup: (email, password, nickname) => plain.post('/auth/signup', { email, password, nickname }),
 
-  login: (email, password) =>
-    plain.post('/auth/login', { email, password }),
+  login: (email, password) => plain.post('/auth/login', { email, password }),
 
-  refresh: (refreshToken) =>
-    plain.post('/auth/refresh', { refreshToken }),
+  refresh: (refreshToken) => plain.post('/auth/refresh', { refreshToken }),
 }

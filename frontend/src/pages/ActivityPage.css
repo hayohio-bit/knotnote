@@ -1,11 +1,30 @@
-.activity-page { min-height: 100vh; background: var(--bg); }
-.activity-main { padding: 40px 0 80px; }
+.activity-page {
+  min-height: 100vh;
+  background: var(--bg);
+}
+.activity-main {
+  padding: 40px 0 80px;
+}
 
-.activity-header { margin-bottom: 32px; }
-.activity-title  { font-size: 28px; font-weight: 700; color: var(--text); }
-.activity-sub    { margin-top: 6px; color: var(--text-secondary); font-size: 15px; }
+.activity-header {
+  margin-bottom: 32px;
+}
+.activity-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+.activity-sub {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
 
-.activity-list   { display: flex; flex-direction: column; gap: 10px; }
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .activity-item {
   display: flex;
@@ -18,17 +37,37 @@
   border-left: 4px solid var(--border);
   transition: transform var(--transition);
 }
-.activity-item:hover { transform: translateX(4px); }
+.activity-item:hover {
+  transform: translateX(4px);
+}
 
-.activity-item.color-green  { border-left-color: #2a9d7a; }
-.activity-item.color-blue   { border-left-color: #3b82f6; }
-.activity-item.color-red    { border-left-color: #ef4444; }
-.activity-item.color-purple { border-left-color: #8b5cf6; }
-.activity-item.color-orange { border-left-color: #f59e0b; }
-.activity-item.color-teal   { border-left-color: #14b8a6; }
-.activity-item.color-gray   { border-left-color: #9ca3af; }
+.activity-item.color-green {
+  border-left-color: #2a9d7a;
+}
+.activity-item.color-blue {
+  border-left-color: #3b82f6;
+}
+.activity-item.color-red {
+  border-left-color: #ef4444;
+}
+.activity-item.color-purple {
+  border-left-color: #8b5cf6;
+}
+.activity-item.color-orange {
+  border-left-color: #f59e0b;
+}
+.activity-item.color-teal {
+  border-left-color: #14b8a6;
+}
+.activity-item.color-gray {
+  border-left-color: #9ca3af;
+}
 
-.activity-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.activity-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
 
 .activity-body {
   flex: 1;
@@ -56,7 +95,9 @@
   padding: 0;
   text-align: left;
 }
-.activity-note-title:hover { text-decoration: underline; }
+.activity-note-title:hover {
+  text-decoration: underline;
+}
 .activity-detail {
   font-size: 13px;
   color: var(--text-secondary);
@@ -77,4 +118,7 @@
   font-size: 16px;
 }
 
-.activity-more { text-align: center; margin-top: 24px; }
+.activity-more {
+  text-align: center;
+  margin-top: 24px;
+}

@@ -2,7 +2,8 @@
 ## Usage: .\run.ps1
 
 # Load .env.local
-$envFile = Join-Path $PSScriptRoot ".env.local"
+$PROJECT_ROOT = (Get-Item $PSScriptRoot).Parent.FullName
+$envFile = Join-Path $PROJECT_ROOT ".env.local"
 if (-not (Test-Path $envFile)) {
     Write-Error ".env.local not found. Run .\setup.ps1 first."
     exit 1
@@ -22,4 +23,4 @@ Write-Host "Starting KnotNote..." -ForegroundColor Cyan
 Write-Host "  Swagger : http://localhost:8080/swagger-ui.html" -ForegroundColor Cyan
 Write-Host ""
 
-& "$PSScriptRoot\gradlew.bat" bootRun
+& "$PROJECT_ROOT\gradlew.bat" bootRun

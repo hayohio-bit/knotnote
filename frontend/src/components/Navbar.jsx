@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../store/AuthContext.jsx'
 import './Navbar.css'
 
@@ -18,7 +18,7 @@ export default function Navbar({ onNavigate }) {
     navigate('/')
   }
 
-  const isActive = (path) => pathname === path ? 'active' : ''
+  const isActive = (path) => (pathname === path ? 'active' : '')
 
   return (
     <header className="navbar">
@@ -68,8 +68,16 @@ export default function Navbar({ onNavigate }) {
             </>
           ) : (
             <>
-              <Link to="/login"  className="nav-link" onClick={(e) => go('/login', e)}>로그인</Link>
-              <Link to="/signup" className="btn btn-primary btn-sm" onClick={(e) => go('/signup', e)}>시작하기</Link>
+              <Link to="/login" className="nav-link" onClick={(e) => go('/login', e)}>
+                로그인
+              </Link>
+              <Link
+                to="/signup"
+                className="btn btn-primary btn-sm"
+                onClick={(e) => go('/signup', e)}
+              >
+                시작하기
+              </Link>
             </>
           )}
         </nav>

@@ -10,7 +10,7 @@ set -e
 export LANG=en_US.UTF-8
 export GIT_TERMINAL_PROMPT=0
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 # ── 기존 .git 초기화 ─────────────────────────────────────────
 if [ -d ".git" ]; then

@@ -1,21 +1,21 @@
-import { useRef, useState, useCallback, useLayoutEffect, memo } from 'react'
+import { memo, useCallback, useLayoutEffect, useRef, useState } from 'react'
 import './SimpleEditor.css'
 
 // ── 블록 타입 서식 버튼 ───────────────────────────────────────
 const BLOCK_FORMATS = [
-  { type: 'h1',       label: '제목' },
-  { type: 'h2',       label: '부제목' },
-  { type: 'h3',       label: '소제목' },
-  { type: 'p',        label: '본문' },
-  { type: 'ul',       label: '• 목록' },
-  { type: 'ol',       label: '1. 번호' },
+  { type: 'h1', label: '제목' },
+  { type: 'h2', label: '부제목' },
+  { type: 'h3', label: '소제목' },
+  { type: 'p', label: '본문' },
+  { type: 'ul', label: '• 목록' },
+  { type: 'ol', label: '1. 번호' },
   { type: 'checkbox', label: '☑ 체크' },
 ]
 
 // 인라인 서식 버튼 (마크다운 마커 삽입)
 const INLINE_FORMATS = [
   { syntax: '**', label: 'B', tip: '굵게 (Ctrl+B)', style: { fontWeight: 700 } },
-  { syntax: '*',  label: 'I', tip: '기울임 (Ctrl+I)', style: { fontStyle: 'italic' } },
+  { syntax: '*', label: 'I', tip: '기울임 (Ctrl+I)', style: { fontStyle: 'italic' } },
 ]
 
 let _nextId = 1
@@ -25,30 +25,33 @@ const uid = () => _nextId++
 function mdToBlocks(md) {
   if (!md) return [{ id: uid(), type: 'p', text: '' }]
   const lines = md.split('\n')
-  return lines.map(line => {
+  return lines.map((line) => {
     if (line === '---') return { id: uid(), type: 'hr', text: '' }
     if (line.startsWith('### ')) return { id: uid(), type: 'h3', text: line.slice(4) }
-    if (line.startsWith('## '))  return { id: uid(), type: 'h2', text: line.slice(3) }
-    if (line.startsWith('# '))   return { id: uid(), type: 'h1', text: line.slice(2) }
+    if (line.startsWith('## ')) return { id: uid(), type: 'h2', text: line.slice(3) }
+    if (line.startsWith('# ')) return { id: uid(), type: 'h1', text: line.slice(2) }
     const cbMatch = line.match(/^- \[([ x])\] (.*)/)
-    if (cbMatch) return { id: uid(), type: 'checkbox', text: cbMatch[2], checked: cbMatch[1] === 'x' }
-    if (line.startsWith('- '))   return { id: uid(), type: 'ul', text: line.slice(2) }
-    if (/^\d+\. /.test(line))    return { id: uid(), type: 'ol', text: line.replace(/^\d+\. /, '') }
+    if (cbMatch)
+      return { id: uid(), type: 'checkbox', text: cbMatch[2], checked: cbMatch[1] === 'x' }
+    if (line.startsWith('- ')) return { id: uid(), type: 'ul', text: line.slice(2) }
+    if (/^\d+\. /.test(line)) return { id: uid(), type: 'ol', text: line.replace(/^\d+\. /, '') }
     return { id: uid(), type: 'p', text: line }
   })
 }
 
 function blocksToMd(blocks) {
-  return blocks.map(b => {
-    if (b.type === 'hr')       return '---'
-    if (b.type === 'h1')       return `# ${b.text}`
-    if (b.type === 'h2')       return `## ${b.text}`
-    if (b.type === 'h3')       return `### ${b.text}`
-    if (b.type === 'ul')       return `- ${b.text}`
-    if (b.type === 'ol')       return `1. ${b.text}`
-    if (b.type === 'checkbox') return `- [${b.checked ? 'x' : ' '}] ${b.text}`
-    return b.text
-  }).join('\n')
+  return blocks
+    .map((b) => {
+      if (b.type === 'hr') return '---'
+      if (b.type === 'h1') return `# ${b.text}`
+      if (b.type === 'h2') return `## ${b.text}`
+      if (b.type === 'h3') return `### ${b.text}`
+      if (b.type === 'ul') return `- ${b.text}`
+      if (b.type === 'ol') return `1. ${b.text}`
+      if (b.type === 'checkbox') return `- [${b.checked ? 'x' : ' '}] ${b.text}`
+      return b.text
+    })
+    .join('\n')
 }
 
 // ── 커서 위치 계산 ────────────────────────────────────────────
@@ -56,7 +59,7 @@ function getCaretOffset(el) {
   const sel = window.getSelection()
   if (!sel || !sel.rangeCount) return 0
   const range = sel.getRangeAt(0).cloneRange()
-  const temp  = document.createRange()
+  const temp = document.createRange()
   temp.selectNodeContents(el)
   temp.setEnd(range.startContainer, range.startOffset)
   return temp.toString().length
@@ -68,7 +71,8 @@ function getSelectionOffsets(el) {
   const range = sel.getRangeAt(0)
   const measure = (container, offset) => {
     const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
-    let total = 0, node = walk.nextNode()
+    let total = 0,
+      node = walk.nextNode()
     while (node) {
       if (node === container) return total + offset
       total += node.textContent.length
@@ -78,7 +82,7 @@ function getSelectionOffsets(el) {
   }
   return {
     start: measure(range.startContainer, range.startOffset),
-    end:   measure(range.endContainer,   range.endOffset),
+    end: measure(range.endContainer, range.endOffset),
   }
 }
 
@@ -86,37 +90,52 @@ function setCaretOffset(el, offset) {
   if (!el) return
   try {
     const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
-    let rem = offset, node = walk.nextNode()
+    let rem = offset,
+      node = walk.nextNode()
     const range = document.createRange()
     while (node) {
       if (rem <= node.textContent.length) {
-        range.setStart(node, rem); range.collapse(true)
+        range.setStart(node, rem)
+        range.collapse(true)
         const sel = window.getSelection()
-        sel.removeAllRanges(); sel.addRange(range)
+        sel.removeAllRanges()
+        sel.addRange(range)
         return
       }
       rem -= node.textContent.length
       node = walk.nextNode()
     }
-    range.selectNodeContents(el); range.collapse(false)
+    range.selectNodeContents(el)
+    range.collapse(false)
     const sel = window.getSelection()
-    sel.removeAllRanges(); sel.addRange(range)
+    sel.removeAllRanges()
+    sel.addRange(range)
   } catch (_) {}
 }
 
 // ── 블록 DOM 컴포넌트 ─────────────────────────────────────────
 const BlockEl = memo(function BlockEl({
-  id, type, text, checked,
+  id,
+  type,
+  text,
+  checked,
   olIndex,
-  onInput, onKeyDown, onFocus, onRef, onToggleCheck,
+  onInput,
+  onKeyDown,
+  onFocus,
+  onRef,
+  onToggleCheck,
 }) {
-  const elRef    = useRef(null)
+  const elRef = useRef(null)
   const composing = useRef(false)
 
-  const refCb = useCallback((el) => {
-    elRef.current = el
-    onRef(id, el)
-  }, [id, onRef])
+  const refCb = useCallback(
+    (el) => {
+      elRef.current = el
+      onRef(id, el)
+    },
+    [id, onRef],
+  )
 
   // DOM 동기화 (포커스 중이 아닐 때만)
   useLayoutEffect(() => {
@@ -126,14 +145,28 @@ const BlockEl = memo(function BlockEl({
     }
   })
 
-  const handleInput = useCallback((e) => {
-    if (!composing.current) onInput(id, e.currentTarget.textContent)
-  }, [id, onInput])
-  const handleCompositionEnd = useCallback((e) => {
-    composing.current = false; onInput(id, e.currentTarget.textContent)
-  }, [id, onInput])
-  const handleKeyDownCb = useCallback((e) => { onKeyDown(e, id) }, [id, onKeyDown])
-  const handleFocusCb   = useCallback(() => { onFocus(id) }, [id, onFocus])
+  const handleInput = useCallback(
+    (e) => {
+      if (!composing.current) onInput(id, e.currentTarget.textContent)
+    },
+    [id, onInput],
+  )
+  const handleCompositionEnd = useCallback(
+    (e) => {
+      composing.current = false
+      onInput(id, e.currentTarget.textContent)
+    },
+    [id, onInput],
+  )
+  const handleKeyDownCb = useCallback(
+    (e) => {
+      onKeyDown(e, id)
+    },
+    [id, onKeyDown],
+  )
+  const handleFocusCb = useCallback(() => {
+    onFocus(id)
+  }, [id, onFocus])
 
   // ── hr 블록 ──
   if (type === 'hr') {
@@ -166,7 +199,9 @@ const BlockEl = memo(function BlockEl({
           contentEditable
           suppressContentEditableWarning
           data-placeholder="할 일..."
-          onCompositionStart={() => { composing.current = true }}
+          onCompositionStart={() => {
+            composing.current = true
+          }}
           onCompositionEnd={handleCompositionEnd}
           onInput={handleInput}
           onKeyDown={handleKeyDownCb}
@@ -187,7 +222,9 @@ const BlockEl = memo(function BlockEl({
           contentEditable
           suppressContentEditableWarning
           data-placeholder="목록 항목..."
-          onCompositionStart={() => { composing.current = true }}
+          onCompositionStart={() => {
+            composing.current = true
+          }}
           onCompositionEnd={handleCompositionEnd}
           onInput={handleInput}
           onKeyDown={handleKeyDownCb}
@@ -208,7 +245,9 @@ const BlockEl = memo(function BlockEl({
           contentEditable
           suppressContentEditableWarning
           data-placeholder="항목..."
-          onCompositionStart={() => { composing.current = true }}
+          onCompositionStart={() => {
+            composing.current = true
+          }}
           onCompositionEnd={handleCompositionEnd}
           onInput={handleInput}
           onKeyDown={handleKeyDownCb}
@@ -227,11 +266,17 @@ const BlockEl = memo(function BlockEl({
       contentEditable
       suppressContentEditableWarning
       data-placeholder={
-        type === 'h1' ? '제목' :
-        type === 'h2' ? '부제목' :
-        type === 'h3' ? '소제목' : '내용을 입력하세요...'
+        type === 'h1'
+          ? '제목'
+          : type === 'h2'
+            ? '부제목'
+            : type === 'h3'
+              ? '소제목'
+              : '내용을 입력하세요...'
       }
-      onCompositionStart={() => { composing.current = true }}
+      onCompositionStart={() => {
+        composing.current = true
+      }}
       onCompositionEnd={handleCompositionEnd}
       onInput={handleInput}
       onKeyDown={handleKeyDownCb}
@@ -245,9 +290,9 @@ const MAX_HISTORY = 100
 const DEBOUNCE_MS = 500
 
 function useHistory(initialMd) {
-  const stack     = useRef([initialMd])
-  const index     = useRef(0)
-  const debounce  = useRef(null)
+  const stack = useRef([initialMd])
+  const index = useRef(0)
+  const debounce = useRef(null)
   const restoring = useRef(false)
 
   const pushNow = useCallback((md) => {
@@ -260,12 +305,15 @@ function useHistory(initialMd) {
     index.current = trimmed.length - 1
   }, [])
 
-  const push = useCallback((md, immediate = false) => {
-    if (restoring.current) return
-    clearTimeout(debounce.current)
-    if (immediate) pushNow(md)
-    else debounce.current = setTimeout(() => pushNow(md), DEBOUNCE_MS)
-  }, [pushNow])
+  const push = useCallback(
+    (md, immediate = false) => {
+      if (restoring.current) return
+      clearTimeout(debounce.current)
+      if (immediate) pushNow(md)
+      else debounce.current = setTimeout(() => pushNow(md), DEBOUNCE_MS)
+    },
+    [pushNow],
+  )
 
   const undo = useCallback(() => {
     clearTimeout(debounce.current)
@@ -289,9 +337,9 @@ function useHistory(initialMd) {
 
 // ── SimpleEditor 메인 ─────────────────────────────────────────
 export default function SimpleEditor({ value, onChange }) {
-  const [blocks,   setBlocks]   = useState(() => mdToBlocks(value))
+  const [blocks, setBlocks] = useState(() => mdToBlocks(value))
   const [activeId, setActiveId] = useState(null)
-  const refs         = useRef({})
+  const refs = useRef({})
   const pendingFocus = useRef(null)
   const hist = useHistory(value ?? '')
 
@@ -308,7 +356,10 @@ export default function SimpleEditor({ value, onChange }) {
     const { id, offset } = pendingFocus.current
     pendingFocus.current = null
     const el = refs.current[id]
-    if (el) { el.focus(); setCaretOffset(el, offset) }
+    if (el) {
+      el.focus()
+      setCaretOffset(el, offset)
+    }
   })
 
   const handleRef = useCallback((id, el) => {
@@ -317,275 +368,362 @@ export default function SimpleEditor({ value, onChange }) {
   }, [])
 
   // 블록 변경 → md 변환 + 상위 알림 + 히스토리
-  const applyBlocks = useCallback((newBlocks, { immediate = false } = {}) => {
-    const md = blocksToMd(newBlocks)
-    setBlocks(newBlocks)
-    onChange(md)
-    hist.push(md, immediate)
-    setTimeout(refreshUR, 10)
-  }, [onChange, hist, refreshUR])
+  const applyBlocks = useCallback(
+    (newBlocks, { immediate = false } = {}) => {
+      const md = blocksToMd(newBlocks)
+      setBlocks(newBlocks)
+      onChange(md)
+      hist.push(md, immediate)
+      setTimeout(refreshUR, 10)
+    },
+    [onChange, hist, refreshUR],
+  )
 
   // 히스토리 복원
-  const restoreFromMd = useCallback((md) => {
-    if (md === null) return
-    hist.restoring.current = true
-    const newBlocks = mdToBlocks(md)
-    setBlocks(newBlocks)
-    onChange(md)
-    pendingFocus.current = { id: newBlocks[0]?.id, offset: 0 }
-    setTimeout(() => { hist.restoring.current = false; refreshUR() }, 20)
-  }, [hist, onChange, refreshUR])
+  const restoreFromMd = useCallback(
+    (md) => {
+      if (md === null) return
+      hist.restoring.current = true
+      const newBlocks = mdToBlocks(md)
+      setBlocks(newBlocks)
+      onChange(md)
+      pendingFocus.current = { id: newBlocks[0]?.id, offset: 0 }
+      setTimeout(() => {
+        hist.restoring.current = false
+        refreshUR()
+      }, 20)
+    },
+    [hist, onChange, refreshUR],
+  )
 
   const handleUndo = useCallback(() => restoreFromMd(hist.undo()), [hist, restoreFromMd])
   const handleRedo = useCallback(() => restoreFromMd(hist.redo()), [hist, restoreFromMd])
 
   // 타이핑
-  const handleInput = useCallback((id, text) => {
-    setBlocks(prev => {
-      const next = prev.map(b => b.id === id ? { ...b, text } : b)
-      const md = blocksToMd(next)
-      onChange(md)
-      hist.push(md, false)
-      setTimeout(refreshUR, 10)
-      return next
-    })
-  }, [onChange, hist, refreshUR])
+  const handleInput = useCallback(
+    (id, text) => {
+      setBlocks((prev) => {
+        const next = prev.map((b) => (b.id === id ? { ...b, text } : b))
+        const md = blocksToMd(next)
+        onChange(md)
+        hist.push(md, false)
+        setTimeout(refreshUR, 10)
+        return next
+      })
+    },
+    [onChange, hist, refreshUR],
+  )
 
   const handleFocus = useCallback((id) => setActiveId(id), [])
 
   // ── 키보드 처리 ──────────────────────────────────────────────
-  const handleKeyDown = useCallback((e, id) => {
-    const el = refs.current[id]
-    if (!el) return
-    const ctrl = e.ctrlKey || e.metaKey
+  const handleKeyDown = useCallback(
+    (e, id) => {
+      const el = refs.current[id]
+      if (!el) return
+      const ctrl = e.ctrlKey || e.metaKey
 
-    // 실행취소 / 다시실행
-    if (ctrl && e.key === 'z' && !e.shiftKey) { e.preventDefault(); handleUndo(); return }
-    if ((ctrl && e.key === 'y') || (ctrl && e.shiftKey && (e.key === 'z' || e.key === 'Z'))) {
-      e.preventDefault(); handleRedo(); return
-    }
-
-    // 인라인 서식 단축키
-    if (ctrl && e.key === 'b') { e.preventDefault(); handleInlineFormat('**'); return }
-    if (ctrl && e.key === 'i') { e.preventDefault(); handleInlineFormat('*');  return }
-
-    const blockType = blocks.find(b => b.id === id)?.type ?? 'p'
-
-    // hr 블록: Enter → 다음 p 블록 생성, Backspace → 삭제
-    if (blockType === 'hr') {
-      if (e.key === 'Enter' || e.key === 'Backspace') {
+      // 실행취소 / 다시실행
+      if (ctrl && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
-        setBlocks(prev => {
-          const latest = prev.map(b => ({ ...b, text: refs.current[b.id]?.textContent ?? b.text }))
-          hist.push(blocksToMd(latest), true)
-          const idx = latest.findIndex(b => b.id === id)
-          let updated
-          if (e.key === 'Enter') {
-            const newId = uid()
-            updated = [...latest.slice(0, idx + 1), { id: newId, type: 'p', text: '' }, ...latest.slice(idx + 1)]
-            const md = blocksToMd(updated)
-            onChange(md); hist.push(md, true); setTimeout(refreshUR, 10)
-            pendingFocus.current = { id: newId, offset: 0 }
-          } else {
-            if (latest.length === 1) return prev
-            updated = [...latest.slice(0, idx), ...latest.slice(idx + 1)]
-            const md = blocksToMd(updated)
-            onChange(md); hist.push(md, true); setTimeout(refreshUR, 10)
-            const focusId = (latest[idx - 1] ?? latest[idx + 1])?.id
-            if (focusId) pendingFocus.current = { id: focusId, offset: 0 }
-          }
-          return updated
-        })
+        handleUndo()
+        return
       }
-      return
-    }
-
-    // Enter: 새 블록 추가
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      const offset   = getCaretOffset(el)
-      const text     = el.textContent
-      const before   = text.slice(0, offset)
-      const after    = text.slice(offset)
-
-      // 목록 계열 빈 블록 → 본문으로
-      const listTypes = ['ul', 'ol', 'checkbox']
-      const newType = listTypes.includes(blockType)
-        ? (before === '' ? 'p' : blockType)
-        : 'p'
-
-      setBlocks(prev => {
-        const latest = prev.map(b => ({
-          ...b, text: refs.current[b.id]?.textContent ?? b.text,
-        }))
-        hist.push(blocksToMd(latest), true)
-        const idx   = latest.findIndex(b => b.id === id)
-        const newId = uid()
-        const newBlock = { id: newId, type: newType, text: after }
-        if (newType === 'checkbox') newBlock.checked = false
-
-        // 빈 목록 블록 Enter → 본문으로 전환 (현재 블록 type 변경)
-        const currentBlock = newType === 'p' && listTypes.includes(blockType)
-          ? { ...latest[idx], type: 'p', text: before }
-          : { ...latest[idx], text: before }
-
-        const updated = [
-          ...latest.slice(0, idx),
-          currentBlock,
-          { ...newBlock },
-          ...latest.slice(idx + 1),
-        ]
-        const md = blocksToMd(updated)
-        onChange(md); hist.push(md, true); setTimeout(refreshUR, 10)
-        pendingFocus.current = { id: newId, offset: 0 }
-        return updated
-      })
-    }
-
-    // Backspace: 줄 앞 → 이전 블록과 병합
-    else if (e.key === 'Backspace') {
-      const offset = getCaretOffset(el)
-      if (offset === 0) {
+      if ((ctrl && e.key === 'y') || (ctrl && e.shiftKey && (e.key === 'z' || e.key === 'Z'))) {
         e.preventDefault()
-        setBlocks(prev => {
-          if (prev.length === 1) return prev
-          const latest = prev.map(b => ({
-            ...b, text: refs.current[b.id]?.textContent ?? b.text,
+        handleRedo()
+        return
+      }
+
+      // 인라인 서식 단축키
+      if (ctrl && e.key === 'b') {
+        e.preventDefault()
+        handleInlineFormat('**')
+        return
+      }
+      if (ctrl && e.key === 'i') {
+        e.preventDefault()
+        handleInlineFormat('*')
+        return
+      }
+
+      const blockType = blocks.find((b) => b.id === id)?.type ?? 'p'
+
+      // hr 블록: Enter → 다음 p 블록 생성, Backspace → 삭제
+      if (blockType === 'hr') {
+        if (e.key === 'Enter' || e.key === 'Backspace') {
+          e.preventDefault()
+          setBlocks((prev) => {
+            const latest = prev.map((b) => ({
+              ...b,
+              text: refs.current[b.id]?.textContent ?? b.text,
+            }))
+            hist.push(blocksToMd(latest), true)
+            const idx = latest.findIndex((b) => b.id === id)
+            let updated
+            if (e.key === 'Enter') {
+              const newId = uid()
+              updated = [
+                ...latest.slice(0, idx + 1),
+                { id: newId, type: 'p', text: '' },
+                ...latest.slice(idx + 1),
+              ]
+              const md = blocksToMd(updated)
+              onChange(md)
+              hist.push(md, true)
+              setTimeout(refreshUR, 10)
+              pendingFocus.current = { id: newId, offset: 0 }
+            } else {
+              if (latest.length === 1) return prev
+              updated = [...latest.slice(0, idx), ...latest.slice(idx + 1)]
+              const md = blocksToMd(updated)
+              onChange(md)
+              hist.push(md, true)
+              setTimeout(refreshUR, 10)
+              const focusId = (latest[idx - 1] ?? latest[idx + 1])?.id
+              if (focusId) pendingFocus.current = { id: focusId, offset: 0 }
+            }
+            return updated
+          })
+        }
+        return
+      }
+
+      // Enter: 새 블록 추가
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        const offset = getCaretOffset(el)
+        const text = el.textContent
+        const before = text.slice(0, offset)
+        const after = text.slice(offset)
+
+        // 목록 계열 빈 블록 → 본문으로
+        const listTypes = ['ul', 'ol', 'checkbox']
+        const newType = listTypes.includes(blockType) ? (before === '' ? 'p' : blockType) : 'p'
+
+        setBlocks((prev) => {
+          const latest = prev.map((b) => ({
+            ...b,
+            text: refs.current[b.id]?.textContent ?? b.text,
           }))
           hist.push(blocksToMd(latest), true)
-          const idx = latest.findIndex(b => b.id === id)
-          if (idx === 0) return prev
-          const prevBlock = latest[idx - 1]
-          const prevLen   = prevBlock.text.length
-          const merged    = { ...prevBlock, text: prevBlock.text + el.textContent }
-          const updated   = [...latest.slice(0, idx - 1), merged, ...latest.slice(idx + 1)]
+          const idx = latest.findIndex((b) => b.id === id)
+          const newId = uid()
+          const newBlock = { id: newId, type: newType, text: after }
+          if (newType === 'checkbox') newBlock.checked = false
+
+          // 빈 목록 블록 Enter → 본문으로 전환 (현재 블록 type 변경)
+          const currentBlock =
+            newType === 'p' && listTypes.includes(blockType)
+              ? { ...latest[idx], type: 'p', text: before }
+              : { ...latest[idx], text: before }
+
+          const updated = [
+            ...latest.slice(0, idx),
+            currentBlock,
+            { ...newBlock },
+            ...latest.slice(idx + 1),
+          ]
           const md = blocksToMd(updated)
-          onChange(md); hist.push(md, true); setTimeout(refreshUR, 10)
-          pendingFocus.current = { id: prevBlock.id, offset: prevLen }
+          onChange(md)
+          hist.push(md, true)
+          setTimeout(refreshUR, 10)
+          pendingFocus.current = { id: newId, offset: 0 }
           return updated
         })
       }
-    }
-  }, [blocks, onChange, hist, handleUndo, handleRedo, refreshUR])
+
+      // Backspace: 줄 앞 → 이전 블록과 병합
+      else if (e.key === 'Backspace') {
+        const offset = getCaretOffset(el)
+        if (offset === 0) {
+          e.preventDefault()
+          setBlocks((prev) => {
+            if (prev.length === 1) return prev
+            const latest = prev.map((b) => ({
+              ...b,
+              text: refs.current[b.id]?.textContent ?? b.text,
+            }))
+            hist.push(blocksToMd(latest), true)
+            const idx = latest.findIndex((b) => b.id === id)
+            if (idx === 0) return prev
+            const prevBlock = latest[idx - 1]
+            const prevLen = prevBlock.text.length
+            const merged = { ...prevBlock, text: prevBlock.text + el.textContent }
+            const updated = [...latest.slice(0, idx - 1), merged, ...latest.slice(idx + 1)]
+            const md = blocksToMd(updated)
+            onChange(md)
+            hist.push(md, true)
+            setTimeout(refreshUR, 10)
+            pendingFocus.current = { id: prevBlock.id, offset: prevLen }
+            return updated
+          })
+        }
+      }
+    },
+    [blocks, onChange, hist, handleUndo, handleRedo, refreshUR],
+  )
 
   // ── 블록 서식 변경 ───────────────────────────────────────────
-  const handleFormat = useCallback((type) => {
-    if (!activeId) return
-    const el = refs.current[activeId]
-    const offset = el ? getCaretOffset(el) : 0
-    setBlocks(prev => {
-      const latest = prev.map(b => ({
-        ...b, text: refs.current[b.id]?.textContent ?? b.text,
-      }))
-      hist.push(blocksToMd(latest), true)
-      const updated = latest.map(b => {
-        if (b.id !== activeId) return b
-        const base = { ...b, type }
-        if (type === 'checkbox' && base.checked === undefined) base.checked = false
-        return base
+  const handleFormat = useCallback(
+    (type) => {
+      if (!activeId) return
+      const el = refs.current[activeId]
+      const offset = el ? getCaretOffset(el) : 0
+      setBlocks((prev) => {
+        const latest = prev.map((b) => ({
+          ...b,
+          text: refs.current[b.id]?.textContent ?? b.text,
+        }))
+        hist.push(blocksToMd(latest), true)
+        const updated = latest.map((b) => {
+          if (b.id !== activeId) return b
+          const base = { ...b, type }
+          if (type === 'checkbox' && base.checked === undefined) base.checked = false
+          return base
+        })
+        const md = blocksToMd(updated)
+        onChange(md)
+        hist.push(md, true)
+        setTimeout(refreshUR, 10)
+        pendingFocus.current = { id: activeId, offset }
+        return updated
       })
-      const md = blocksToMd(updated)
-      onChange(md); hist.push(md, true); setTimeout(refreshUR, 10)
-      pendingFocus.current = { id: activeId, offset }
-      return updated
-    })
-  }, [activeId, onChange, hist, refreshUR])
+    },
+    [activeId, onChange, hist, refreshUR],
+  )
 
   // ── 구분선 삽입 ──────────────────────────────────────────────
   const handleInsertHr = useCallback(() => {
     const targetId = activeId
-    setBlocks(prev => {
-      const latest = prev.map(b => ({
-        ...b, text: refs.current[b.id]?.textContent ?? b.text,
+    setBlocks((prev) => {
+      const latest = prev.map((b) => ({
+        ...b,
+        text: refs.current[b.id]?.textContent ?? b.text,
       }))
       hist.push(blocksToMd(latest), true)
-      const idx    = targetId ? latest.findIndex(b => b.id === targetId) : latest.length - 1
-      const hrId   = uid()
+      const idx = targetId ? latest.findIndex((b) => b.id === targetId) : latest.length - 1
+      const hrId = uid()
       const nextId = uid()
       const updated = [
         ...latest.slice(0, idx + 1),
-        { id: hrId,   type: 'hr', text: '' },
-        { id: nextId, type: 'p',  text: '' },
+        { id: hrId, type: 'hr', text: '' },
+        { id: nextId, type: 'p', text: '' },
         ...latest.slice(idx + 1),
       ]
       const md = blocksToMd(updated)
-      onChange(md); hist.push(md, true); setTimeout(refreshUR, 10)
+      onChange(md)
+      hist.push(md, true)
+      setTimeout(refreshUR, 10)
       pendingFocus.current = { id: nextId, offset: 0 }
       return updated
     })
   }, [activeId, onChange, hist, refreshUR])
 
   // ── 인라인 서식 삽입 ─────────────────────────────────────────
-  const handleInlineFormat = useCallback((syntax) => {
-    if (!activeId) return
-    const el = refs.current[activeId]
-    if (!el) return
-    const { start, end } = getSelectionOffsets(el)
-    const text     = el.textContent
-    const selected = text.slice(start, end)
-    const inner    = selected || '텍스트'
-    const newText  = text.slice(0, start) + syntax + inner + syntax + text.slice(end)
-    const newEnd   = start + syntax.length + inner.length
+  const handleInlineFormat = useCallback(
+    (syntax) => {
+      if (!activeId) return
+      const el = refs.current[activeId]
+      if (!el) return
+      const { start, end } = getSelectionOffsets(el)
+      const text = el.textContent
+      const selected = text.slice(start, end)
+      const inner = selected || '텍스트'
+      const newText = text.slice(0, start) + syntax + inner + syntax + text.slice(end)
+      const newEnd = start + syntax.length + inner.length
 
-    // DOM 즉시 업데이트 (포커스 중이어도)
-    el.textContent = newText
-    setCaretOffset(el, newEnd)
+      // DOM 즉시 업데이트 (포커스 중이어도)
+      el.textContent = newText
+      setCaretOffset(el, newEnd)
 
-    setBlocks(prev => {
-      const latest = prev.map(b => b.id === activeId
-        ? { ...b, text: newText }
-        : { ...b, text: refs.current[b.id]?.textContent ?? b.text }
-      )
-      const md = blocksToMd(latest)
-      onChange(md); hist.push(md, true); setTimeout(refreshUR, 10)
-      return latest
-    })
-  }, [activeId, onChange, hist, refreshUR])
+      setBlocks((prev) => {
+        const latest = prev.map((b) =>
+          b.id === activeId
+            ? { ...b, text: newText }
+            : { ...b, text: refs.current[b.id]?.textContent ?? b.text },
+        )
+        const md = blocksToMd(latest)
+        onChange(md)
+        hist.push(md, true)
+        setTimeout(refreshUR, 10)
+        return latest
+      })
+    },
+    [activeId, onChange, hist, refreshUR],
+  )
 
   // ── 체크박스 토글 ────────────────────────────────────────────
-  const handleToggleCheck = useCallback((id) => {
-    setBlocks(prev => {
-      const updated = prev.map(b => b.id === id ? { ...b, checked: !b.checked } : b)
-      const md = blocksToMd(updated)
-      onChange(md); hist.push(md, true); setTimeout(refreshUR, 10)
-      return updated
-    })
-  }, [onChange, hist, refreshUR])
+  const handleToggleCheck = useCallback(
+    (id) => {
+      setBlocks((prev) => {
+        const updated = prev.map((b) => (b.id === id ? { ...b, checked: !b.checked } : b))
+        const md = blocksToMd(updated)
+        onChange(md)
+        hist.push(md, true)
+        setTimeout(refreshUR, 10)
+        return updated
+      })
+    },
+    [onChange, hist, refreshUR],
+  )
 
-  const activeType = blocks.find(b => b.id === activeId)?.type ?? 'p'
+  const activeType = blocks.find((b) => b.id === activeId)?.type ?? 'p'
 
   // ol 인덱스 계산
   let olCounter = 0
   const olIndexMap = {}
-  blocks.forEach(b => {
-    if (b.type === 'ol') { olCounter++; olIndexMap[b.id] = olCounter }
-    else olCounter = 0
+  blocks.forEach((b) => {
+    if (b.type === 'ol') {
+      olCounter++
+      olIndexMap[b.id] = olCounter
+    } else olCounter = 0
   })
 
   return (
     <div className="se-editor">
       {/* ── 툴바 ── */}
       <div className="se-toolbar">
-
         {/* 실행취소 / 다시실행 */}
         <div className="se-undo-group">
-          <button type="button" className="se-undo-btn"
-            onMouseDown={(e) => { e.preventDefault(); handleUndo() }}
-            disabled={!canUndo} title="실행취소 (Ctrl+Z)">↩</button>
-          <button type="button" className="se-undo-btn"
-            onMouseDown={(e) => { e.preventDefault(); handleRedo() }}
-            disabled={!canRedo} title="다시실행 (Ctrl+Y)">↪</button>
+          <button
+            type="button"
+            className="se-undo-btn"
+            onMouseDown={(e) => {
+              e.preventDefault()
+              handleUndo()
+            }}
+            disabled={!canUndo}
+            title="실행취소 (Ctrl+Z)"
+          >
+            ↩
+          </button>
+          <button
+            type="button"
+            className="se-undo-btn"
+            onMouseDown={(e) => {
+              e.preventDefault()
+              handleRedo()
+            }}
+            disabled={!canRedo}
+            title="다시실행 (Ctrl+Y)"
+          >
+            ↪
+          </button>
         </div>
 
         <span className="se-toolbar-divider" />
 
         {/* 블록 서식 */}
-        {BLOCK_FORMATS.map(fmt => (
+        {BLOCK_FORMATS.map((fmt) => (
           <button
             key={fmt.type}
             type="button"
             className={`se-fmt-btn${activeType === fmt.type ? ' active' : ''}`}
-            onMouseDown={(e) => { e.preventDefault(); handleFormat(fmt.type) }}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              handleFormat(fmt.type)
+            }}
           >
             {fmt.label}
           </button>
@@ -594,14 +732,17 @@ export default function SimpleEditor({ value, onChange }) {
         <span className="se-toolbar-divider" />
 
         {/* 인라인 서식 */}
-        {INLINE_FORMATS.map(fmt => (
+        {INLINE_FORMATS.map((fmt) => (
           <button
             key={fmt.syntax}
             type="button"
             className="se-fmt-btn se-inline-btn"
             title={fmt.tip}
             style={fmt.style}
-            onMouseDown={(e) => { e.preventDefault(); handleInlineFormat(fmt.syntax) }}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              handleInlineFormat(fmt.syntax)
+            }}
           >
             {fmt.label}
           </button>
@@ -614,16 +755,18 @@ export default function SimpleEditor({ value, onChange }) {
           type="button"
           className="se-fmt-btn"
           title="구분선 삽입"
-          onMouseDown={(e) => { e.preventDefault(); handleInsertHr() }}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            handleInsertHr()
+          }}
         >
           ─ 구분선
         </button>
-
       </div>
 
       {/* ── 블록 목록 ── */}
       <div className="se-content">
-        {blocks.map(block => (
+        {blocks.map((block) => (
           <BlockEl
             key={`${block.id}-${block.type}`}
             id={block.id}

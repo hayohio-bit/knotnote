@@ -32,7 +32,9 @@ function feedPreview(text, maxChars = 800) {
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString('ko-KR', {
-    year: 'numeric', month: 'short', day: 'numeric',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   })
 }
 
@@ -58,7 +60,11 @@ function ListItem({ note, bulkMode, selected, onSelect }) {
           {selected ? '☑' : '☐'}
         </span>
       )}
-      {note.isPinned && <span className="note-pin-badge" title="고정됨">📌</span>}
+      {note.isPinned && (
+        <span className="note-pin-badge" title="고정됨">
+          📌
+        </span>
+      )}
       <span className="note-list-title">{note.title}</span>
       <div className="note-list-right">
         {note.tags?.slice(0, 3).map((tag) => (
@@ -93,7 +99,11 @@ function FeedItem({ note, bulkMode, selected, onSelect }) {
         </span>
       )}
       <div className="note-feed-meta">
-        {note.isPinned && <span className="note-pin-badge" title="고정됨">📌</span>}
+        {note.isPinned && (
+          <span className="note-pin-badge" title="고정됨">
+            📌
+          </span>
+        )}
         <span className="note-feed-date">{formatDate(note.updatedAt || note.createdAt)}</span>
         {note.tags?.slice(0, 4).map((tag) => (
           <TagBadge key={tag.id} name={tag.name} />
@@ -136,7 +146,11 @@ function CardItem({ note, bulkMode, selected, onSelect }) {
       )}
       <div className="note-card-header">
         <h3 className="note-card-title">
-          {note.isPinned && <span className="note-pin-badge" title="고정됨">📌 </span>}
+          {note.isPinned && (
+            <span className="note-pin-badge" title="고정됨">
+              📌{' '}
+            </span>
+          )}
           {note.title}
         </h3>
         <span className="note-card-date">{formatDate(note.updatedAt || note.createdAt)}</span>
@@ -154,7 +168,13 @@ function CardItem({ note, bulkMode, selected, onSelect }) {
 }
 
 // ── 공통 export ───────────────────────────────────────────────
-export default function NoteCard({ note, viewMode = 'card', bulkMode = false, selected = false, onSelect }) {
+export default function NoteCard({
+  note,
+  viewMode = 'card',
+  bulkMode = false,
+  selected = false,
+  onSelect,
+}) {
   const props = { note, bulkMode, selected, onSelect }
   if (viewMode === 'list') return <ListItem {...props} />
   if (viewMode === 'feed') return <FeedItem {...props} />
