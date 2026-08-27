@@ -39,13 +39,18 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
-  padding: 6px 4px;
-  transition: color var(--transition);
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: color var(--transition), background var(--transition);
 }
 
-.nav-link:hover,
+.nav-link:hover {
+  color: var(--accent);
+}
+
 .nav-link.active {
   color: var(--accent);
+  background: var(--accent-pale);
 }
 
 .btn-sm {

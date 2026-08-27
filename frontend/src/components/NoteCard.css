@@ -15,8 +15,8 @@
 
 .note-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--shadow-card);
-  border-color: var(--accent);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
 }
 
 .note-card-header {

@@ -110,6 +110,7 @@ ol {
 
 .btn-primary:hover {
   background: var(--accent-light);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .btn-secondary {

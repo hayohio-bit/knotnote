@@ -595,7 +595,9 @@ export default function DashboardPage() {
                 <p>"{debouncedQ}" 검색 결과가 없습니다.</p>
               ) : (
                 <>
-                  <p>메모가 없습니다.</p>
+                  <span className="empty-icon">📝</span>
+                  <p className="empty-title">아직 메모가 없습니다</p>
+                  <p className="empty-desc">첫 메모를 쓰면 AI가 연관 노트를 연결해 드립니다.</p>
                   <Link to="/notes/new" className="btn btn-primary">
                     첫 메모 작성하기
                   </Link>

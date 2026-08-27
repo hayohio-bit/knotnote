@@ -32,10 +32,45 @@
 
 /* ── Hero ─────────────────────────────────────────────────── */
 .hero {
+  position: relative;
   padding: 80px 0 60px;
+  overflow: hidden;
+}
+
+/* 도트 그리드: 그래프 주변에서만 서서히 드러난다 */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--text-secondary) 25%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(720px 500px at 72% 40%, rgba(0, 0, 0, 0.9), transparent 75%);
+  mask-image: radial-gradient(720px 500px at 72% 40%, rgba(0, 0, 0, 0.9), transparent 75%);
+  pointer-events: none;
+}
+
+/* 청록 글로우 */
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 640px;
+  height: 480px;
+  right: 2%;
+  top: 4%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--accent) 13%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
 }
 
 .hero-container {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 60px;
@@ -122,6 +157,18 @@
 .hero-graph-lines line.dashed {
   stroke-dasharray: 5 4;
   opacity: 0.8;
+  animation: dashflow 1.4s linear infinite;
+}
+
+@keyframes dashflow {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+
+.hero-graph-lines line.faint {
+  opacity: 0.22;
+  animation: none;
 }
 
 .hero-node {
@@ -141,6 +188,28 @@
   left: 12px;
   border-color: var(--accent);
   padding: 12px 16px;
+  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* 위성 노드 점 */
+.hero-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.55;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.hero-dot-a {
+  top: 96px;
+  left: 328px;
+}
+
+.hero-dot-b {
+  top: 300px;
+  left: 250px;
 }
 
 .hero-node-title {
@@ -192,6 +261,15 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+}
+
+.how-item {
+  transition: transform var(--transition), border-color var(--transition);
+}
+
+.how-item:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
 }
 
 .how-step {
@@ -246,11 +324,12 @@
 }
 
 .feature-card {
-  transition: transform var(--transition);
+  transition: transform var(--transition), border-color var(--transition);
 }
 
 .feature-card:hover {
   transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
 }
 
 .feature-icon {
@@ -276,9 +355,13 @@
 }
 
 .cta-inner {
-  background: var(--bg);
+  background: radial-gradient(
+      480px 220px at 50% 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 70%
+    ), var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-out);
   text-align: center;
   padding: 64px 48px;
 }

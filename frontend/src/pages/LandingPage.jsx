@@ -120,6 +120,9 @@ export default function LandingPage() {
                 <line x1="120" y1="70" x2="270" y2="185" />
                 <line x1="110" y1="70" x2="115" y2="265" />
                 <line className="dashed" x1="270" y1="195" x2="130" y2="265" />
+                <line className="faint" x1="130" y1="60" x2="330" y2="100" />
+                <line className="faint" x1="290" y1="205" x2="255" y2="302" />
+                <line className="faint" x1="333" y1="101" x2="290" y2="185" />
               </svg>
               <div className="hero-node hero-node-main">
                 <div className="hero-node-title">📝 React 상태관리 정리</div>
@@ -130,6 +133,8 @@ export default function LandingPage() {
               </div>
               <div className="hero-node hero-node-b">Redux vs Zustand</div>
               <div className="hero-node hero-node-c">서버 상태와 캐싱</div>
+              <span className="hero-dot hero-dot-a" />
+              <span className="hero-dot hero-dot-b" />
               <div className="hero-ai-chip">✨ AI 추천 연결</div>
             </div>
           </div>
