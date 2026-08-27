@@ -22,7 +22,10 @@ const Mermaid = ({ chart }) => {
         }
       } catch (e) {
         if (isMounted && containerRef.current) {
-          containerRef.current.innerHTML = `<p style="color:red; font-size:12px;">Mermaid Error: ${e.message}</p>`
+          const p = document.createElement('p')
+          p.className = 'md-mermaid-error'
+          p.textContent = `Mermaid Error: ${e.message}`
+          containerRef.current.replaceChildren(p)
         }
       }
     }

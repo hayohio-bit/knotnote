@@ -116,3 +116,8 @@
   border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
 }
+
+.md-mermaid-error {
+  color: var(--danger);
+  font-size: 12px;
+}

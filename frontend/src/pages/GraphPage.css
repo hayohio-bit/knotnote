@@ -1,7 +1,7 @@
 .graph-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   background: var(--bg);
 }
 
@@ -116,7 +116,7 @@
   position: absolute;
   bottom: 24px;
   left: 24px;
-  background: var(--bg);
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
@@ -168,11 +168,13 @@
 }
 
 .graph-legend-line.solid {
-  background: rgba(99, 102, 241, 0.8);
+  background: var(--accent);
+  opacity: 0.8;
 }
 
 .graph-legend-line.dashed {
-  border-top: 2px dashed rgba(99, 102, 241, 0.5);
+  border-top: 2px dashed var(--accent);
+  opacity: 0.5;
   background: transparent;
 }
 
@@ -207,4 +209,25 @@
   display: flex;
   align-items: baseline;
   gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .graph-header {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 10px 16px;
+  }
+  .graph-hint {
+    display: none;
+  }
+  .graph-legend {
+    bottom: 12px;
+    left: 12px;
+    padding: 8px 10px;
+    min-width: 0;
+    gap: 4px;
+  }
+  .graph-legend-label {
+    font-size: 11px;
+  }
 }

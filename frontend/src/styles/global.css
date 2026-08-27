@@ -172,6 +172,12 @@ ol {
   padding: 0 40px;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
 .text-accent {
   color: var(--accent);
 }

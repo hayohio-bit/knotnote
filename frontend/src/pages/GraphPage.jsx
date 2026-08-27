@@ -34,10 +34,25 @@ function tagColor(tag) {
  *   >= 0.4 : 노랑 (주의)
  *   < 0.4  : 빨강 (Knot Decay 위험)
  */
+/** CSS 토큰 값을 읽는다 — 라이트/다크 팔레트를 캔버스에도 반영하기 위함 */
+function cssVar(name, fallback) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return v || fallback
+}
+
+/** --accent 를 알파가 있는 rgba 문자열로 변환 */
+function accentRgba(alpha) {
+  const hex = cssVar('--accent', '#0d9488').replace('#', '')
+  const r = Number.parseInt(hex.slice(0, 2), 16)
+  const g = Number.parseInt(hex.slice(2, 4), 16)
+  const b = Number.parseInt(hex.slice(4, 6), 16)
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
 function vitalityColor(vitalityScore) {
-  if (vitalityScore >= 0.7) return '#10b981' // 에메랄드 (건강)
-  if (vitalityScore >= 0.4) return '#f59e0b' // 앰버 (주의)
-  return '#ef4444' // 빨강 (위험)
+  if (vitalityScore >= 0.7) return cssVar('--success', '#10b981') // 건강
+  if (vitalityScore >= 0.4) return cssVar('--warning', '#f59e0b') // 주의
+  return cssVar('--danger', '#ef4444') // Knot Decay 위험
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -142,13 +157,13 @@ function drawGraph(ctx, nodeArr, edgeArr, hoveredId, W, H) {
 
     const strength = edge.strength ?? 0
     const lineWidth = 0.5 + strength * 4 // 0.5px ~ 4.5px
-    const alpha = 0.2 + strength * 0.75 // 0.2 ~ 0.95
+    const alpha = 0.3 + strength * 0.65 // 0.3 ~ 0.95 (다크 배경에서도 보이도록)
 
     ctx.save()
     ctx.beginPath()
     ctx.moveTo(s.x, s.y)
     ctx.lineTo(t.x, t.y)
-    ctx.strokeStyle = `rgba(99,102,241,${alpha})`
+    ctx.strokeStyle = accentRgba(alpha)
     ctx.lineWidth = lineWidth
 
     if (!edge.crystallized) {
@@ -331,9 +346,9 @@ export default function GraphPage() {
 
   // ── 범례 데이터 ──
   const legend = [
-    { color: '#10b981', label: '활력 높음 (≥0.7)' },
-    { color: '#f59e0b', label: '주의 (0.4~0.7)' },
-    { color: '#ef4444', label: 'Knot Decay 위험' },
+    { color: 'var(--success)', label: '활력 높음 (≥0.7)' },
+    { color: 'var(--warning)', label: '주의 (0.4~0.7)' },
+    { color: 'var(--danger)', label: 'Knot Decay 위험' },
   ]
 
   return (
