@@ -173,7 +173,7 @@ export default function DashboardPage() {
     setError('')
     try {
       if (isSearchMode) {
-        const { data } = await searchApi.search(debouncedQ, page)
+        const { data } = await searchApi.keyword(debouncedQ, page)
         setNotes(data.data.content ?? [])
         setTotalPages(data.data.totalPages ?? 0)
       } else {
