@@ -28,7 +28,9 @@ com.knotnote.backend
 ### A. Docker Compose (전체 스택)
 MySQL + 임베딩 서버 + 백엔드 + 프론트엔드 + Caddy를 한 번에 실행한다.
 ```bash
-OPENAI_API_KEY=<gemini-or-openai-key> docker compose up -d
+JWT_SECRET=<at-least-32-byte-random-string> \
+OPENAI_API_KEY=<gemini-or-openai-key> \
+docker compose up -d
 ```
 
 ### B. 로컬 개발 (MySQL)
@@ -53,6 +55,28 @@ JWT_SECRET=<at-least-32-byte-random-string> \
 - 프론트엔드 개발 서버: http://localhost:3000 (API는 8080으로 프록시)
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - `OPENAI_API_KEY` 미설정 시 AI 요약이, 임베딩 서버(8000) 미실행 시 시맨틱 검색이 비활성화되고 나머지 기능은 정상 동작한다.
+
+## 화면
+
+| 대시보드 | 지식 그래프 |
+| --- | --- |
+| ![대시보드](docs/screenshots/03-dashboard.jpg) | ![지식 그래프](docs/screenshots/06-graph.jpg) |
+
+| 메모 편집기 | 통계 대시보드 |
+| --- | --- |
+| ![메모 편집기](docs/screenshots/05-editor.jpg) | ![통계 대시보드](docs/screenshots/08-stats.jpg) |
+
+화면별 사용 방법은 **[사용 가이드](docs/USAGE.md)** 에 정리해 두었습니다.
+
+## 빠른 사용법
+
+1. 회원가입 후 로그인하면 대시보드로 이동합니다.
+2. **+ 새 메모** 로 메모를 작성하고 오른쪽 사이드바에서 태그를 붙입니다.
+3. 편집기의 **연결 추천** 에서 관련 있는 메모를 이어 둡니다.
+4. **그래프** 메뉴에서 연결 구조와 각 메모의 활력(Knot Vitality)을 확인합니다.
+5. **통계** 메뉴에서 축적 현황을 보고, Markdown 또는 JSON 으로 내보냅니다.
+
+각 단계의 화면과 세부 옵션은 [사용 가이드](docs/USAGE.md) 를 참고해 주세요.
 
 ## Domains & Endpoints
 - `Auth` /api/auth/signup, /api/auth/login, /api/auth/refresh
