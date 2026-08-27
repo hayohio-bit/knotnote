@@ -22,36 +22,118 @@ let _nextId = 1
 const uid = () => _nextId++
 
 // ── 마크다운 ↔ 블록 변환 ─────────────────────────────────────
-function mdToBlocks(md) {
+// 코드 펜스(```)로 열린 구간은 내부를 해석하지 않고 하나의 code 블록으로 묶는다.
+// 그러지 않으면 코드 안의 "2. foo" 같은 줄이 목록으로 오인되어 원문이 변형된다.
+const FENCE_RE = /^```(.*)$/
+
+export function mdToBlocks(md) {
   if (!md) return [{ id: uid(), type: 'p', text: '' }]
   const lines = md.split('\n')
-  return lines.map((line) => {
-    if (line === '---') return { id: uid(), type: 'hr', text: '' }
-    if (line.startsWith('### ')) return { id: uid(), type: 'h3', text: line.slice(4) }
-    if (line.startsWith('## ')) return { id: uid(), type: 'h2', text: line.slice(3) }
-    if (line.startsWith('# ')) return { id: uid(), type: 'h1', text: line.slice(2) }
+  const blocks = []
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+
+    const fence = line.match(FENCE_RE)
+    if (fence) {
+      const lang = fence[1]
+      const body = []
+      let closed = false
+      i++
+      while (i < lines.length) {
+        if (lines[i] === '```') {
+          closed = true
+          break
+        }
+        body.push(lines[i])
+        i++
+      }
+      blocks.push({
+        id: uid(),
+        type: 'code',
+        text: body.join('\n'),
+        lang,
+        empty: body.length === 0,
+        unclosed: !closed,
+      })
+      continue
+    }
+
+    if (line === '---') {
+      blocks.push({ id: uid(), type: 'hr', text: '' })
+      continue
+    }
+    if (line.startsWith('### ')) {
+      blocks.push({ id: uid(), type: 'h3', text: line.slice(4) })
+      continue
+    }
+    if (line.startsWith('## ')) {
+      blocks.push({ id: uid(), type: 'h2', text: line.slice(3) })
+      continue
+    }
+    if (line.startsWith('# ')) {
+      blocks.push({ id: uid(), type: 'h1', text: line.slice(2) })
+      continue
+    }
+
     const cbMatch = line.match(/^- \[([ x])\] (.*)/)
-    if (cbMatch)
-      return { id: uid(), type: 'checkbox', text: cbMatch[2], checked: cbMatch[1] === 'x' }
-    if (line.startsWith('- ')) return { id: uid(), type: 'ul', text: line.slice(2) }
-    if (/^\d+\. /.test(line)) return { id: uid(), type: 'ol', text: line.replace(/^\d+\. /, '') }
-    return { id: uid(), type: 'p', text: line }
-  })
+    if (cbMatch) {
+      blocks.push({ id: uid(), type: 'checkbox', text: cbMatch[2], checked: cbMatch[1] === 'x' })
+      continue
+    }
+    if (line.startsWith('- ')) {
+      blocks.push({ id: uid(), type: 'ul', text: line.slice(2) })
+      continue
+    }
+    const olMatch = line.match(/^(\d+)\. (.*)/)
+    if (olMatch) {
+      blocks.push({ id: uid(), type: 'ol', text: olMatch[2], num: Number(olMatch[1]) })
+      continue
+    }
+    blocks.push({ id: uid(), type: 'p', text: line })
+  }
+
+  return blocks.length ? blocks : [{ id: uid(), type: 'p', text: '' }]
 }
 
-function blocksToMd(blocks) {
-  return blocks
-    .map((b) => {
-      if (b.type === 'hr') return '---'
-      if (b.type === 'h1') return `# ${b.text}`
-      if (b.type === 'h2') return `## ${b.text}`
-      if (b.type === 'h3') return `### ${b.text}`
-      if (b.type === 'ul') return `- ${b.text}`
-      if (b.type === 'ol') return `1. ${b.text}`
-      if (b.type === 'checkbox') return `- [${b.checked ? 'x' : ' '}] ${b.text}`
-      return b.text
-    })
-    .join('\n')
+export function blocksToMd(blocks) {
+  // 순서 목록은 원문 번호를 유지한다. 새로 만들어져 번호가 없는 항목만
+  // 직전 항목의 번호에서 이어 붙인다.
+  let lastOlNum = 0
+  const out = []
+
+  for (const b of blocks) {
+    if (b.type !== 'ol') lastOlNum = 0
+
+    if (b.type === 'code') {
+      const fence = '```' + (b.lang ?? '')
+      if (b.empty && !b.text) out.push(b.unclosed ? fence : fence + '\n```')
+      else if (b.unclosed) out.push(fence + '\n' + b.text)
+      else out.push(fence + '\n' + b.text + '\n```')
+    } else if (b.type === 'hr') out.push('---')
+    else if (b.type === 'h1') out.push(`# ${b.text}`)
+    else if (b.type === 'h2') out.push(`## ${b.text}`)
+    else if (b.type === 'h3') out.push(`### ${b.text}`)
+    else if (b.type === 'ul') out.push(`- ${b.text}`)
+    else if (b.type === 'ol') {
+      const num = b.num ?? lastOlNum + 1
+      lastOlNum = num
+      out.push(`${num}. ${b.text}`)
+    } else if (b.type === 'checkbox') out.push(`- [${b.checked ? 'x' : ' '}] ${b.text}`)
+    else out.push(b.text)
+  }
+
+  return out.join('\n')
+}
+
+// code 블록은 textarea 로 그린다. contentEditable 은 끝의 개행을 렌더링하지
+// 않아 커서가 어긋나기 때문이다. 두 종류의 요소에서 텍스트를 같은 방법으로 읽는다.
+const isTextarea = (el) => el?.tagName === 'TEXTAREA'
+const readText = (el) => (el ? (isTextarea(el) ? el.value : el.textContent) : null)
+// textarea 는 내용 높이만큼 늘려 스크롤바 없이 전체 코드를 보여 준다.
+const autoGrow = (el) => {
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
 }
 
 // ── 커서 위치 계산 ────────────────────────────────────────────
@@ -120,6 +202,7 @@ const BlockEl = memo(function BlockEl({
   text,
   checked,
   olIndex,
+  lang,
   onInput,
   onKeyDown,
   onFocus,
@@ -140,21 +223,29 @@ const BlockEl = memo(function BlockEl({
   // DOM 동기화 (포커스 중이 아닐 때만)
   useLayoutEffect(() => {
     const el = elRef.current
-    if (el && el !== document.activeElement && el.textContent !== text) {
+    if (!el) return
+    if (isTextarea(el)) {
+      if (el.value !== text) el.value = text
+      autoGrow(el)
+      return
+    }
+    if (el !== document.activeElement && el.textContent !== text) {
       el.textContent = text
     }
   })
 
   const handleInput = useCallback(
     (e) => {
-      if (!composing.current) onInput(id, e.currentTarget.textContent)
+      const el = e.currentTarget
+      if (isTextarea(el)) autoGrow(el)
+      if (!composing.current) onInput(id, readText(el))
     },
     [id, onInput],
   )
   const handleCompositionEnd = useCallback(
     (e) => {
       composing.current = false
-      onInput(id, e.currentTarget.textContent)
+      onInput(id, readText(e.currentTarget))
     },
     [id, onInput],
   )
@@ -167,6 +258,31 @@ const BlockEl = memo(function BlockEl({
   const handleFocusCb = useCallback(() => {
     onFocus(id)
   }, [id, onFocus])
+
+  // ── code 블록 ──
+  // 코드 펜스 구간 전체를 textarea 하나가 담는다. 개행과 커서 이동을 브라우저가
+  // 그대로 처리하므로 원문이 변형되지 않는다.
+  if (type === 'code') {
+    return (
+      <div className="se-code-wrap">
+        {lang ? <span className="se-code-lang">{lang}</span> : null}
+        <textarea
+          ref={refCb}
+          className="se-block se-code"
+          rows={1}
+          spellCheck={false}
+          placeholder="코드를 입력하세요..."
+          onCompositionStart={() => {
+            composing.current = true
+          }}
+          onCompositionEnd={handleCompositionEnd}
+          onInput={handleInput}
+          onKeyDown={handleKeyDownCb}
+          onFocus={handleFocusCb}
+        />
+      </div>
+    )
+  }
 
   // ── hr 블록 ──
   if (type === 'hr') {
@@ -449,6 +565,15 @@ export default function SimpleEditor({ value, onChange }) {
 
       const blockType = blocks.find((b) => b.id === id)?.type ?? 'p'
 
+      // code 블록은 textarea 라 Enter 와 Backspace 를 브라우저에 맡긴다. 다만 맨 앞에서
+      // Backspace 를 누르면 앞 블록과 병합되어 코드가 본문으로 흡수되므로 막는다.
+      if (blockType === 'code') {
+        if (e.key === 'Backspace' && el.selectionStart === 0 && el.value !== '') {
+          e.preventDefault()
+        }
+        return
+      }
+
       // hr 블록: Enter → 다음 p 블록 생성, Backspace → 삭제
       if (blockType === 'hr') {
         if (e.key === 'Enter' || e.key === 'Backspace') {
@@ -456,7 +581,7 @@ export default function SimpleEditor({ value, onChange }) {
           setBlocks((prev) => {
             const latest = prev.map((b) => ({
               ...b,
-              text: refs.current[b.id]?.textContent ?? b.text,
+              text: readText(refs.current[b.id]) ?? b.text,
             }))
             hist.push(blocksToMd(latest), true)
             const idx = latest.findIndex((b) => b.id === id)
@@ -504,7 +629,7 @@ export default function SimpleEditor({ value, onChange }) {
         setBlocks((prev) => {
           const latest = prev.map((b) => ({
             ...b,
-            text: refs.current[b.id]?.textContent ?? b.text,
+            text: readText(refs.current[b.id]) ?? b.text,
           }))
           hist.push(blocksToMd(latest), true)
           const idx = latest.findIndex((b) => b.id === id)
@@ -542,7 +667,7 @@ export default function SimpleEditor({ value, onChange }) {
             if (prev.length === 1) return prev
             const latest = prev.map((b) => ({
               ...b,
-              text: refs.current[b.id]?.textContent ?? b.text,
+              text: readText(refs.current[b.id]) ?? b.text,
             }))
             hist.push(blocksToMd(latest), true)
             const idx = latest.findIndex((b) => b.id === id)
@@ -561,19 +686,21 @@ export default function SimpleEditor({ value, onChange }) {
         }
       }
     },
-    [blocks, onChange, hist, handleUndo, handleRedo, refreshUR],
+    [blocks, onChange, hist, handleUndo, handleRedo, refreshUR, handleInput],
   )
 
   // ── 블록 서식 변경 ───────────────────────────────────────────
   const handleFormat = useCallback(
     (type) => {
       if (!activeId) return
+      // code 블록을 다른 타입으로 바꾸면 여러 줄이 한 줄짜리 블록으로 뭉개진다.
+      if (blocks.find((b) => b.id === activeId)?.type === 'code') return
       const el = refs.current[activeId]
       const offset = el ? getCaretOffset(el) : 0
       setBlocks((prev) => {
         const latest = prev.map((b) => ({
           ...b,
-          text: refs.current[b.id]?.textContent ?? b.text,
+          text: readText(refs.current[b.id]) ?? b.text,
         }))
         hist.push(blocksToMd(latest), true)
         const updated = latest.map((b) => {
@@ -590,7 +717,7 @@ export default function SimpleEditor({ value, onChange }) {
         return updated
       })
     },
-    [activeId, onChange, hist, refreshUR],
+    [activeId, blocks, onChange, hist, refreshUR],
   )
 
   // ── 구분선 삽입 ──────────────────────────────────────────────
@@ -599,7 +726,7 @@ export default function SimpleEditor({ value, onChange }) {
     setBlocks((prev) => {
       const latest = prev.map((b) => ({
         ...b,
-        text: refs.current[b.id]?.textContent ?? b.text,
+        text: readText(refs.current[b.id]) ?? b.text,
       }))
       hist.push(blocksToMd(latest), true)
       const idx = targetId ? latest.findIndex((b) => b.id === targetId) : latest.length - 1
@@ -641,7 +768,7 @@ export default function SimpleEditor({ value, onChange }) {
         const latest = prev.map((b) =>
           b.id === activeId
             ? { ...b, text: newText }
-            : { ...b, text: refs.current[b.id]?.textContent ?? b.text },
+            : { ...b, text: readText(refs.current[b.id]) ?? b.text },
         )
         const md = blocksToMd(latest)
         onChange(md)
@@ -774,6 +901,7 @@ export default function SimpleEditor({ value, onChange }) {
             text={block.text}
             checked={block.checked}
             olIndex={olIndexMap[block.id] ?? 1}
+            lang={block.lang}
             onInput={handleInput}
             onKeyDown={handleKeyDown}
             onFocus={handleFocus}

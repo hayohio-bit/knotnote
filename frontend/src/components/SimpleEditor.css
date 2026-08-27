@@ -258,3 +258,44 @@
   outline-offset: 2px;
   border-radius: 2px;
 }
+
+/* ── code 블록 ── */
+/* 코드 펜스 구간 전체를 하나의 요소가 담는다. 개행이 그대로 유지되어야
+   하므로 white-space 는 .se-block 의 pre-wrap 을 그대로 쓴다. */
+.se-code-wrap {
+  position: relative;
+  margin: 6px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-dark);
+}
+
+.se-code-lang {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  user-select: none;
+  pointer-events: none;
+}
+
+.se-block.se-code {
+  display: block;
+  margin: 0;
+  padding: 12px 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 2;
+  background: transparent;
+  border: none;
+  resize: none;
+  overflow: hidden;
+}
+
+.se-block.se-code::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.35;
+}
