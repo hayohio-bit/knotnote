@@ -66,6 +66,10 @@ api.interceptors.response.use(
       })
       const newAccess = data.data.accessToken
       tokenStorage.setAccess(newAccess)
+      // 백엔드가 refresh 시 refreshToken을 회전시키므로 새 토큰도 반드시 저장한다
+      if (data.data.refreshToken) {
+        tokenStorage.setRefresh(data.data.refreshToken)
+      }
       processQueue(null, newAccess)
       original.headers.Authorization = `Bearer ${newAccess}`
       return api(original)
