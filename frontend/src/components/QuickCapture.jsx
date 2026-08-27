@@ -49,6 +49,8 @@ export default function QuickCapture() {
         const res = await notesApi.create(title.trim(), content.trim())
         const newId = res.data?.data?.id
         setOpen(false)
+        // 대시보드 등 열려 있는 목록이 새 노트를 반영하도록 알린다
+        window.dispatchEvent(new CustomEvent('knotnote:notes-changed'))
         if (andOpen && newId) {
           navigate(`/notes/${newId}`)
         }

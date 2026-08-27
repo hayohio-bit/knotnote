@@ -69,6 +69,9 @@ export default function DashboardPage() {
   })
   const [tagMatchMode, setTagMatchMode] = useState('ANY')
 
+  // 고정 메모 (사이드바, 전체 기준)
+  const [pinnedNotes, setPinnedNotes] = useState([])
+
   // 스마트 폴더
   const [smartFolders, setSmartFolders] = useState([])
   const [activeSF, setActiveSF] = useState(null)
@@ -134,15 +137,7 @@ export default function DashboardPage() {
     loadSmartFolders()
   }, [loadSmartFolders])
 
-  const selectSmartFolder = async (sf) => {
-    if (activeSF?.id === sf.id) {
-      setActiveSF(null)
-      return
-    }
-    setActiveSF(sf)
-    setSelectedTagIds([])
-    setQuery('')
-    setDebouncedQ('')
+  const loadSFNotes = async (sf) => {
     setSfLoading(true)
     try {
       const { data } = await smartFoldersApi.getNotes(sf.id)
@@ -152,6 +147,18 @@ export default function DashboardPage() {
     } finally {
       setSfLoading(false)
     }
+  }
+
+  const selectSmartFolder = async (sf) => {
+    if (activeSF?.id === sf.id) {
+      setActiveSF(null)
+      return
+    }
+    setActiveSF(sf)
+    setSelectedTagIds([])
+    setQuery('')
+    setDebouncedQ('')
+    await loadSFNotes(sf)
   }
 
   // 노트 로드
@@ -165,7 +172,8 @@ export default function DashboardPage() {
         setNotes(data.data.content ?? [])
         setTotalPages(data.data.totalPages ?? 0)
       } else {
-        const { data } = await notesApi.list(page)
+        // 태그 필터는 서버에서 처리한다 (페이지네이션과 어긋나지 않도록)
+        const { data } = await notesApi.list(page, 20, selectedTagIds, tagMatchMode)
         setNotes(data.data.content ?? [])
         setTotalPages(data.data.totalPages ?? 0)
       }
@@ -174,17 +182,39 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, debouncedQ, isSearchMode, isSFMode])
+  }, [page, debouncedQ, isSearchMode, isSFMode, selectedTagIds, tagMatchMode])
 
-  useEffect(() => {
-    fetchNotes()
-  }, [fetchNotes])
-  useEffect(() => {
+  const loadTags = useCallback(() => {
     tagsApi
       .list()
       .then(({ data }) => setTags(data.data))
       .catch(() => {})
   }, [])
+
+  const loadPinned = useCallback(() => {
+    notesApi
+      .listPinned()
+      .then(({ data }) => setPinnedNotes(data.data ?? []))
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetchNotes()
+  }, [fetchNotes])
+  useEffect(() => {
+    loadTags()
+    loadPinned()
+  }, [loadTags, loadPinned])
+
+  // 빠른 캡처 등 외부에서 노트가 생성되면 목록을 갱신한다
+  useEffect(() => {
+    const onNotesChanged = () => {
+      fetchNotes()
+      loadPinned()
+    }
+    window.addEventListener('knotnote:notes-changed', onNotesChanged)
+    return () => window.removeEventListener('knotnote:notes-changed', onNotesChanged)
+  }, [fetchNotes, loadPinned])
 
   useEffect(() => {
     const t = searchParams.get('tagId')
@@ -194,10 +224,11 @@ export default function DashboardPage() {
     }
   }, [searchParams])
 
-  // 현재 표시 노트
+  // 현재 표시 노트 (일반 목록의 태그 필터는 서버에서 처리되므로,
+  // 클라이언트 필터는 검색 결과에만 적용한다)
   const sourceNotes = isSFMode ? sfNotes : notes
   const tagFilteredNotes =
-    !isSFMode && selectedTagIds.length > 0
+    isSearchMode && selectedTagIds.length > 0
       ? sourceNotes.filter((n) => {
           const ids = (n.tags ?? []).map((t) => t.id)
           return tagMatchMode === 'ALL'
@@ -214,7 +245,11 @@ export default function DashboardPage() {
     setShowSFModal(false)
     setEditingSF(null)
     loadSmartFolders()
-    if (activeSF?.id === savedSF.id) selectSmartFolder(savedSF)
+    // 활성 폴더를 편집한 경우: 토글 해제가 아니라 새 조건으로 재조회한다
+    if (activeSF?.id === savedSF.id) {
+      setActiveSF(savedSF)
+      loadSFNotes(savedSF)
+    }
   }
 
   const handleSFDelete = async (sfId) => {
@@ -276,6 +311,8 @@ export default function DashboardPage() {
       alert(`${selectedIds.size}개 메모에 #${tag.name} 태그를 부착했습니다.`)
       setSelectedIds(new Set())
       setBulkMode(false)
+      fetchNotes()
+      loadTags()
     } catch {
       alert('벌크 태그 실패')
     } finally {
@@ -420,19 +457,17 @@ export default function DashboardPage() {
           )}
 
           {/* 고정 메모 */}
-          {notes.some((n) => n.isPinned) && (
+          {pinnedNotes.length > 0 && (
             <div className="sf-pinned-section">
               <span className="sf-tags-title">📌 고정 메모</span>
               <ul className="sf-pinned-list">
-                {notes
-                  .filter((n) => n.isPinned)
-                  .map((n) => (
-                    <li key={n.id}>
-                      <Link to={`/notes/${n.id}`} className="sf-pinned-link">
-                        {n.title}
-                      </Link>
-                    </li>
-                  ))}
+                {pinnedNotes.map((n) => (
+                  <li key={n.id}>
+                    <Link to={`/notes/${n.id}`} className="sf-pinned-link">
+                      {n.title}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           )}

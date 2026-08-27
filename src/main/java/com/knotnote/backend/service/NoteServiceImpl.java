@@ -62,6 +62,26 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<NoteSummaryResponse> getNotesByTags(Long userId, List<Long> tagIds, boolean matchAll, Pageable pageable) {
+        Page<Note> page = matchAll
+                ? noteRepository.findByUserIdAndAllTags(userId, tagIds, tagIds.stream().distinct().count(), pageable)
+                : noteRepository.findByUserIdAndAnyTag(userId, tagIds, pageable);
+        List<Long> noteIds = page.getContent().stream().map(Note::getId).collect(Collectors.toList());
+        Map<Long, List<NoteDetailResponse.TagRef>> tagMap = buildTagMap(noteIds);
+        return page.map(note -> toSummaryWithTagMap(note, tagMap));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NoteSummaryResponse> getPinnedNotes(Long userId) {
+        List<Note> pinned = noteRepository.findByUserIdAndIsDeletedFalseAndIsPinnedTrueOrderByUpdatedAtDesc(userId);
+        List<Long> ids = pinned.stream().map(Note::getId).collect(Collectors.toList());
+        Map<Long, List<NoteDetailResponse.TagRef>> tagMap = buildTagMap(ids);
+        return pinned.stream().map(n -> toSummaryWithTagMap(n, tagMap)).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public NoteDetailResponse getNote(Long noteId, Long userId) {
         return toDetail(findNoteOrThrow(noteId, userId));
     }

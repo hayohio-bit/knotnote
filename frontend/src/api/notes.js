@@ -2,7 +2,16 @@ import api from './axios.js'
 
 export const notesApi = {
   // ── 기본 CRUD ─────────────────────────────────────────────
-  list: (page = 0, size = 20) => api.get('/notes', { params: { page, size } }),
+  list: (page = 0, size = 20, tagIds = null, tagMatch = 'ANY') =>
+    api.get('/notes', {
+      params: {
+        page,
+        size,
+        ...(tagIds?.length ? { tagIds: tagIds.join(','), tagMatch } : {}),
+      },
+    }),
+
+  listPinned: () => api.get('/notes/pinned'),
 
   get: (id) => api.get(`/notes/${id}`),
 

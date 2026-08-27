@@ -12,6 +12,12 @@ import java.util.List;
 
 public interface NoteService {
     Page<NoteSummaryResponse> getNotes(Long userId, Pageable pageable);
+
+    /** 태그 필터 목록 조회 — matchAll=true 면 태그 전부 일치(AND), false 면 하나라도 일치(OR) */
+    Page<NoteSummaryResponse> getNotesByTags(Long userId, List<Long> tagIds, boolean matchAll, Pageable pageable);
+
+    /** 상단 고정 노트 전체 (사이드바용) */
+    List<NoteSummaryResponse> getPinnedNotes(Long userId);
     NoteDetailResponse getNote(Long noteId, Long userId);
     NoteDetailResponse createNote(NoteCreateRequest request, Long userId);
     NoteDetailResponse updateNote(Long noteId, NoteUpdateRequest request, Long userId);

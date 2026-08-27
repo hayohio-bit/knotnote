@@ -35,11 +35,24 @@ public class NoteController {
     // ── 기본 CRUD ──────────────────────────────────────────────────
 
     @GetMapping
-    @Operation(summary = "메모 목록 조회")
+    @Operation(summary = "메모 목록 조회 (tagIds 지정 시 태그 필터, tagMatch=ANY|ALL)")
     public ApiResponse<Page<NoteSummaryResponse>> getNotes(
+            @RequestParam(required = false) List<Long> tagIds,
+            @RequestParam(defaultValue = "ANY") String tagMatch,
             @PageableDefault(size = 20, sort = "createdAt",
                     direction = Sort.Direction.DESC) Pageable pageable) {
-        return ApiResponse.ok(noteService.getNotes(SecurityUtil.currentUserId(), pageable));
+        Long userId = SecurityUtil.currentUserId();
+        if (tagIds == null || tagIds.isEmpty()) {
+            return ApiResponse.ok(noteService.getNotes(userId, pageable));
+        }
+        boolean matchAll = "ALL".equalsIgnoreCase(tagMatch);
+        return ApiResponse.ok(noteService.getNotesByTags(userId, tagIds, matchAll, pageable));
+    }
+
+    @GetMapping("/pinned")
+    @Operation(summary = "상단 고정 노트 전체 조회")
+    public ApiResponse<List<NoteSummaryResponse>> getPinnedNotes() {
+        return ApiResponse.ok(noteService.getPinnedNotes(SecurityUtil.currentUserId()));
     }
 
     @GetMapping("/{noteId}")
