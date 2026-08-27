@@ -82,16 +82,18 @@
   font-size: 16px;
 }
 
-/* Hero 카드 (시각적 장식) */
+/* Hero 미니 지식 그래프 목업 */
 .hero-visual {
   flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
 }
 
-.hero-card {
-  width: 280px;
-  animation: float 3s ease-in-out infinite;
+.hero-graph {
+  position: relative;
+  width: 380px;
+  height: 330px;
+  animation: float 4s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -104,59 +106,118 @@
   }
 }
 
-.hero-card-title {
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: var(--text);
+.hero-graph-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.hero-card-body {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
+.hero-graph-lines line {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  opacity: 0.5;
 }
 
-.hero-card-links {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.hero-graph-lines line.dashed {
+  stroke-dasharray: 5 4;
+  opacity: 0.8;
 }
 
-.hero-link-badge {
-  font-size: 13px;
-  background: var(--accent-pale);
-  color: var(--accent);
-  padding: 4px 10px;
+.hero-node {
+  position: absolute;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  display: inline-block;
+  box-shadow: var(--shadow-card);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
 }
 
-/* ── Stats ────────────────────────────────────────────────── */
-.stats {
-  padding: 40px 0;
+.hero-node-main {
+  top: 24px;
+  left: 12px;
+  border-color: var(--accent);
+  padding: 12px 16px;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1;
+.hero-node-title {
+  font-weight: 600;
   margin-bottom: 8px;
 }
 
-.stat-label {
+.hero-node-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.hero-node-tags span {
+  font-size: 11px;
+  background: var(--accent-pale);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.hero-node-b {
+  top: 170px;
+  left: 210px;
+}
+
+.hero-node-c {
+  top: 250px;
+  left: 40px;
+}
+
+.hero-ai-chip {
+  position: absolute;
+  top: 218px;
+  left: 168px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--accent-pale);
+  color: var(--accent);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* ── 사용 흐름 ────────────────────────────────────────────── */
+.how {
+  padding: 40px 0;
+}
+
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.how-step {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-pale);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 50%;
+  margin-bottom: 14px;
+}
+
+.how-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.how-desc {
   font-size: 14px;
   color: var(--text-secondary);
+  line-height: 1.7;
 }
 
 /* ── Features ─────────────────────────────────────────────── */
@@ -233,6 +294,36 @@
   margin-bottom: 32px;
 }
 
+/* ── 기술 스택 ────────────────────────────────────────────── */
+.tech-strip {
+  padding: 32px 0 48px;
+  text-align: center;
+}
+
+.tech-strip-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.tech-badges {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tech-badge {
+  font-size: 13px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+
 /* ── Footer ───────────────────────────────────────────────── */
 .landing-footer {
   padding: 24px 0;
@@ -254,8 +345,8 @@
   .hero-cta {
     justify-content: center;
   }
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .how-grid {
+    grid-template-columns: 1fr;
   }
   .features-grid {
     grid-template-columns: 1fr;

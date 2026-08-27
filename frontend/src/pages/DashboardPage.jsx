@@ -418,68 +418,75 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+
+          {/* 고정 메모 */}
+          {notes.some((n) => n.isPinned) && (
+            <div className="sf-pinned-section">
+              <span className="sf-tags-title">📌 고정 메모</span>
+              <ul className="sf-pinned-list">
+                {notes
+                  .filter((n) => n.isPinned)
+                  .map((n) => (
+                    <li key={n.id}>
+                      <Link to={`/notes/${n.id}`} className="sf-pinned-link">
+                        {n.title}
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
         </aside>
 
         {/* 메인 */}
         <main className="dashboard-main">
-          {/* 검색 바 */}
-          <div className="search-bar-wrap">
-            <input
-              className="search-input"
-              placeholder="메모 검색..."
-              value={query}
-              onChange={(e) => handleQueryChange(e.target.value)}
-            />
-          </div>
-
-          {/* 툴바 */}
+          {/* 툴바: 검색 + 정렬 + 보기 + 액션 한 줄 */}
           <div className="dashboard-toolbar">
-            <div className="toolbar-left">
-              <select
-                className="select-sm"
-                value={sort}
-                onChange={(e) => handleSort(e.target.value)}
-              >
-                {SORT_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-
-              <div className="view-toggle">
-                {VIEW_OPTIONS.map((o) => (
-                  <button
-                    key={o.value}
-                    className={`view-btn ${viewMode === o.value ? 'active' : ''}`}
-                    onClick={() => handleView(o.value)}
-                  >
-                    {o.label}
-                  </button>
-                ))}
-              </div>
+            <div className="search-wrap">
+              <input
+                className="search-input"
+                placeholder="메모 검색..."
+                value={query}
+                onChange={(e) => handleQueryChange(e.target.value)}
+              />
             </div>
 
-            <div className="toolbar-right">
-              {/* 내보내기 드롭다운 */}
-              <div className="export-group">
-                <button
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => handleExport('markdown')}
-                  disabled={exporting}
-                  title="Markdown ZIP 내보내기"
-                >
-                  {exporting ? '...' : '⬇ 내보내기'}
-                </button>
-              </div>
+            <select className="select-sm" value={sort} onChange={(e) => handleSort(e.target.value)}>
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
 
-              {/* 벌크 모드 토글 */}
+            <div className="view-toggle">
+              {VIEW_OPTIONS.map((o) => (
+                <button
+                  key={o.value}
+                  className={`view-btn ${viewMode === o.value ? 'active' : ''}`}
+                  onClick={() => handleView(o.value)}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="toolbar-actions">
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => handleExport('markdown')}
+                disabled={exporting}
+                title="Markdown ZIP 내보내기"
+              >
+                {exporting ? '...' : '내보내기'}
+              </button>
+
               <button
                 className={`btn btn-ghost btn-sm ${bulkMode ? 'active' : ''}`}
                 onClick={toggleBulkMode}
                 title="다중 선택"
               >
-                ☑ 선택
+                선택
               </button>
 
               <button
@@ -491,7 +498,7 @@ export default function DashboardPage() {
                 }}
                 title="URL에서 노트 생성"
               >
-                🌐 웹 클리핑
+                웹 클리핑
               </button>
 
               <button
@@ -499,7 +506,7 @@ export default function DashboardPage() {
                 onClick={() => setShowTemplateModal(true)}
                 title="템플릿으로 새 메모"
               >
-                📋 템플릿
+                템플릿
               </button>
               <Link to="/notes/new" className="btn btn-primary btn-sm">
                 + 새 메모

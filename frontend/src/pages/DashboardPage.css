@@ -180,38 +180,43 @@
 }
 
 .tag-mode-toggle {
-  display: flex;
-  gap: 2px;
-  background: var(--bg);
-  border: 1.5px solid var(--border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 2px;
-}
-
-.tag-mode-btn {
-  background: none;
-  border: none;
   padding: 2px 8px;
-  border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 700;
+  color: var(--accent);
   cursor: pointer;
+}
+
+/* ── 사이드바: 태그 필터 ── */
+.sf-tags-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.sf-tags-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sf-tags-title {
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-secondary);
-  transition: all 0.12s;
 }
 
-.tag-mode-btn.active {
-  background: var(--accent);
-  color: #fff;
-}
-
-.tag-browser-list {
+.sf-tags-list {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.tag-filter-btn {
+.sf-tag-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -227,18 +232,17 @@
   width: 100%;
 }
 
-.tag-filter-btn:hover {
+.sf-tag-btn:hover,
+.sf-tag-btn.active {
   background: var(--accent-pale);
   color: var(--accent);
 }
 
-.tag-filter-btn.selected {
-  background: var(--accent-pale);
-  color: var(--accent);
+.sf-tag-btn.active {
   font-weight: 600;
 }
 
-.tag-count {
+.sf-tag-count {
   font-size: 11px;
   color: var(--text-secondary);
   background: var(--bg-dark);
@@ -246,14 +250,35 @@
   border-radius: var(--radius-sm);
 }
 
-.tag-clear-btn {
-  background: none;
-  border: none;
-  font-size: 12px;
-  color: var(--danger);
-  cursor: pointer;
-  padding: 4px 8px;
-  text-align: left;
+/* ── 사이드바: 고정 메모 ── */
+.sf-pinned-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.sf-pinned-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sf-pinned-link {
+  display: block;
+  font-size: 13px;
+  color: var(--text);
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all 0.12s;
+}
+
+.sf-pinned-link:hover {
+  background: var(--accent-pale);
+  color: var(--accent);
 }
 
 /* ── 메인 영역 ── */
@@ -265,8 +290,8 @@
   min-width: 0;
 }
 
-/* 상단 컨트롤 바 */
-.dashboard-controls {
+/* 상단 툴바: 검색 + 정렬 + 보기 + 액션 한 줄 */
+.dashboard-toolbar {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -275,8 +300,26 @@
 
 .search-wrap {
   flex: 1;
-  min-width: 180px;
+  min-width: 200px;
   position: relative;
+}
+
+.select-sm {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .search-input {
@@ -299,45 +342,20 @@
   color: var(--text-secondary);
 }
 
-.search-clear {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.sort-select {
-  background: var(--bg);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 12px;
-  font-size: 13px;
-  font-family: var(--font);
-  color: var(--text);
-  box-shadow: var(--shadow-out);
-  cursor: pointer;
-}
-
 .view-toggle {
   display: flex;
   gap: 4px;
 }
 
 .view-btn {
-  background: var(--bg);
-  border: 1.5px solid var(--border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 7px 12px;
   font-size: 12px;
   font-family: var(--font);
   color: var(--text-secondary);
   cursor: pointer;
-  box-shadow: var(--shadow-out);
   transition: all 0.12s;
 }
 
@@ -503,7 +521,7 @@
 }
 
 @media (max-width: 600px) {
-  .dashboard-controls {
+  .dashboard-toolbar {
     flex-direction: column;
     align-items: stretch;
   }

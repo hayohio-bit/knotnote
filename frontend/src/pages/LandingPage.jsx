@@ -9,27 +9,43 @@ const FEATURES = [
     desc: '메모와 메모를 연결해 지식 그래프를 만들어요. 아이디어가 자연스럽게 연결됩니다.',
   },
   {
+    icon: '🕸️',
+    title: '지식 그래프',
+    desc: '연결된 메모를 한눈에 보는 그래프 뷰. 방치된 지식은 Vitality 점수로 알려드려요.',
+  },
+  {
     icon: '🤖',
     title: 'AI 시맨틱 검색',
     desc: '키워드가 기억 안 나도 괜찮아요. AI가 의미 기반으로 관련 메모를 찾아줍니다.',
   },
   {
-    icon: '🏷️',
-    title: '스마트 태그',
-    desc: '태그로 메모를 분류하고, 필터링으로 원하는 내용만 빠르게 모아보세요.',
-  },
-  {
-    icon: '🔒',
-    title: 'JWT 보안 인증',
-    desc: '내 메모는 나만 볼 수 있어요. 안전한 토큰 인증으로 개인 정보를 보호합니다.',
+    icon: '✨',
+    title: 'AI 요약 · 웹 클리핑',
+    desc: '긴 메모는 AI가 요약하고, URL 하나로 웹의 글을 내 노트로 가져옵니다.',
   },
 ]
 
-const STATS = [
-  { value: '5', label: '핵심 도메인' },
-  { value: '20+', label: 'REST 엔드포인트' },
-  { value: '7', label: 'DB 테이블' },
-  { value: '40', label: '통합 테스트' },
+const HOW_STEPS = [
+  {
+    step: '1',
+    title: '메모를 쓰면',
+    desc: '떠오르는 대로 기록하세요. 태그와 템플릿이 정리를 도와줍니다.',
+  },
+  { step: '2', title: 'AI가 연결하고', desc: 'AI가 의미가 닿는 노트를 찾아 연결을 추천합니다.' },
+  {
+    step: '3',
+    title: '인사이트가 보입니다',
+    desc: '지식 그래프에서 흩어진 생각이 하나의 맥락으로 이어집니다.',
+  },
+]
+
+const TECH_STACK = [
+  'Java 17',
+  'Spring Boot 3',
+  'React 18 + Vite',
+  'MySQL 8',
+  'JWT 인증',
+  'Gemini API',
 ]
 
 export default function LandingPage() {
@@ -97,27 +113,37 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* 장식 카드 */}
+          {/* 미니 지식 그래프 목업 */}
           <div className="hero-visual">
-            <div className="hero-card neu-card">
-              <div className="hero-card-title">📝 오늘의 메모</div>
-              <div className="hero-card-body">React 상태관리 패턴 정리...</div>
-              <div className="hero-card-links">
-                <span className="hero-link-badge">🔗 Redux 정리</span>
-                <span className="hero-link-badge">🔗 Zustand 비교</span>
+            <div className="hero-graph">
+              <svg className="hero-graph-lines" viewBox="0 0 380 330" aria-hidden="true">
+                <line x1="120" y1="70" x2="270" y2="185" />
+                <line x1="110" y1="70" x2="115" y2="265" />
+                <line className="dashed" x1="270" y1="195" x2="130" y2="265" />
+              </svg>
+              <div className="hero-node hero-node-main">
+                <div className="hero-node-title">📝 React 상태관리 정리</div>
+                <div className="hero-node-tags">
+                  <span>#react</span>
+                  <span>#패턴</span>
+                </div>
               </div>
+              <div className="hero-node hero-node-b">Redux vs Zustand</div>
+              <div className="hero-node hero-node-c">서버 상태와 캐싱</div>
+              <div className="hero-ai-chip">✨ AI 추천 연결</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className="stats">
-        <div className="container stats-grid">
-          {STATS.map((s) => (
-            <div key={s.label} className="stat-item neu-card">
-              <div className="stat-value">{s.value}</div>
-              <div className="stat-label">{s.label}</div>
+      {/* ── 사용 흐름 ── */}
+      <section className="how">
+        <div className="container how-grid">
+          {HOW_STEPS.map((s) => (
+            <div key={s.step} className="how-item neu-card">
+              <div className="how-step">{s.step}</div>
+              <div className="how-title">{s.title}</div>
+              <div className="how-desc">{s.desc}</div>
             </div>
           ))}
         </div>
@@ -149,6 +175,20 @@ export default function LandingPage() {
             <Link to="/signup" className="btn btn-primary btn-lg">
               무료로 시작하기 →
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 기술 스택 ── */}
+      <section className="tech-strip">
+        <div className="container">
+          <p className="tech-strip-label">Built with</p>
+          <div className="tech-badges">
+            {TECH_STACK.map((t) => (
+              <span key={t} className="tech-badge">
+                {t}
+              </span>
+            ))}
           </div>
         </div>
       </section>
