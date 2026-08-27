@@ -21,8 +21,9 @@
 }
 
 .crystallize-modal {
-  background: var(--bg);
-  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
   padding: 28px;
   width: 100%;
@@ -72,9 +73,9 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--accent);
-  background: #e6f4ef;
+  background: var(--accent-pale);
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius);
 }
 
 /* 설명 */
@@ -86,7 +87,7 @@
 }
 
 .crystallize-notice {
-  color: #b45309;
+  color: var(--warning);
   font-style: normal;
   font-weight: 500;
 }
@@ -95,7 +96,7 @@
 .crystallize-progress-bar {
   height: 4px;
   background: var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   margin-bottom: 20px;
   overflow: hidden;
 }
@@ -103,7 +104,7 @@
 .crystallize-progress-fill {
   height: 100%;
   background: var(--accent);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transition: width 0.3s ease;
 }
 
@@ -117,19 +118,19 @@
 
 .crystallize-item {
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1.5px solid;
   transition: border-color 0.2s;
 }
 
 .crystallize-item.pending {
-  border-color: #fcd34d;
-  background: #fffbeb;
+  border-color: var(--warning);
+  background: var(--warning-bg);
 }
 
 .crystallize-item.done {
-  border-color: #6ee7b7;
-  background: #f0fdf4;
+  border-color: var(--success);
+  background: var(--success-bg);
 }
 
 /* 연결 쌍 */
@@ -193,14 +194,14 @@
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.15s;
   font-family: var(--font);
 }
 
 .crystallize-confirm-btn:hover:not(:disabled) {
-  background: #1a7a5e;
+  background: var(--accent-light);
 }
 
 .crystallize-confirm-btn:disabled {
@@ -211,7 +212,7 @@
 /* 완료 표시 */
 .crystallize-done-text {
   font-size: 13px;
-  color: #059669;
+  color: var(--success);
   font-weight: 500;
   margin: 0;
   display: flex;
@@ -222,7 +223,7 @@
 /* 에러 */
 .crystallize-error {
   font-size: 12px;
-  color: #dc2626;
+  color: var(--danger);
   margin: 6px 0 0;
 }
 
@@ -233,7 +234,7 @@
   padding: 10px;
   background: none;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 13px;
   color: var(--text-secondary);
   cursor: pointer;

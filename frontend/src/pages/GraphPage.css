@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f0f4f2;
+  background: var(--bg);
 }
 
 .graph-header {
@@ -10,8 +10,8 @@
   align-items: center;
   gap: 16px;
   padding: 12px 24px;
-  background: #fff;
-  border-bottom: 1px solid #d1e0d8;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
@@ -19,20 +19,20 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1a7a5e;
+  color: var(--accent);
 }
 
 .graph-meta {
   font-size: 0.82rem;
-  color: #6b7280;
-  background: #f0f4f2;
+  color: var(--text-secondary);
+  background: var(--bg-dark);
   padding: 3px 10px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
 }
 
 .graph-hint {
   font-size: 0.78rem;
-  color: #9ca3af;
+  color: var(--text-secondary);
   margin-left: auto;
 }
 
@@ -55,7 +55,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
+  color: var(--text-secondary);
   gap: 6px;
   font-size: 0.95rem;
 }
@@ -66,18 +66,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e11d48;
+  color: var(--danger);
   font-size: 0.95rem;
 }
 
 /* 툴팁 */
 .graph-tooltip {
   position: absolute;
-  background: #fff;
-  border: 1px solid #d1e0d8;
-  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card);
   pointer-events: none;
   max-width: 200px;
   z-index: 10;
@@ -86,7 +86,7 @@
 .graph-tooltip strong {
   display: block;
   font-size: 0.88rem;
-  color: #1a2e26;
+  color: var(--text);
   margin-bottom: 6px;
   word-break: break-all;
 }
@@ -99,16 +99,16 @@
 }
 
 .graph-tooltip-tag {
-  background: #e6f4ef;
-  color: #1a7a5e;
+  background: var(--accent-pale);
+  color: var(--accent);
   font-size: 0.72rem;
   padding: 2px 7px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .graph-tooltip-degree {
   font-size: 0.76rem;
-  color: #9ca3af;
+  color: var(--text-secondary);
 }
 
 /* ── 범례 ──────────────────────────────────────────────── */
@@ -118,7 +118,7 @@
   left: 24px;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
   box-shadow: var(--shadow-out);
   display: flex;

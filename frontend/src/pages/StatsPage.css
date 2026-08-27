@@ -210,7 +210,7 @@
   font-weight: 700;
   margin-bottom: 16px;
   color: var(--text);
-  border-bottom: 1px solid var(--border, #eee);
+  border-bottom: 1px solid var(--border);
   padding-bottom: 8px;
 }
 
@@ -255,7 +255,7 @@
   border: none;
   cursor: pointer;
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius: 999px;
   font-size: 13px;
   color: var(--text);
   transition: background var(--transition);

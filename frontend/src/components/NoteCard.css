@@ -3,9 +3,10 @@
 ══════════════════════════════════════════ */
 .note-card {
   display: block;
-  background: var(--bg);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-out);
+  box-shadow: var(--shadow-card);
   padding: 20px 24px;
   transition: transform var(--transition), box-shadow var(--transition);
   color: var(--text);
@@ -14,7 +15,8 @@
 
 .note-card:hover {
   transform: translateY(-3px);
-  box-shadow: 8px 8px 18px #c0ccc8, -8px -8px 18px #ffffff;
+  box-shadow: var(--shadow-card);
+  border-color: var(--accent);
 }
 
 .note-card-header {
@@ -71,8 +73,7 @@
 }
 
 .note-list-item:hover {
-  background: var(--bg);
-  box-shadow: var(--shadow-out);
+  background: var(--bg-dark);
 }
 
 .note-list-title {

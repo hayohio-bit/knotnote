@@ -14,9 +14,9 @@
 .tpl-modal {
   width: 100%;
   max-width: 480px;
-  background: var(--bg);
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
@@ -33,7 +33,7 @@
   font-size: 16px;
   font-weight: 700;
   margin: 0;
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 .tpl-close {
@@ -43,14 +43,14 @@
   font-size: 16px;
   color: var(--text-secondary);
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   line-height: 1;
   transition: all var(--transition);
 }
 
 .tpl-close:hover {
-  background: var(--surface);
-  color: var(--text-primary);
+  background: var(--bg-dark);
+  color: var(--text);
 }
 
 .tpl-grid {
@@ -67,8 +67,8 @@
   gap: 8px;
   padding: 18px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
+  border-radius: var(--radius-sm);
+  background: var(--bg-dark);
   cursor: pointer;
   transition: all var(--transition);
   position: relative;
@@ -76,7 +76,7 @@
 
 .tpl-item:hover:not(:disabled) {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-dark));
   transform: translateY(-1px);
 }
 
@@ -93,7 +93,7 @@
 .tpl-label {
   font-size: 12px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text);
   text-align: center;
   word-break: keep-all;
 }

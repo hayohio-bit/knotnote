@@ -1,21 +1,51 @@
-/* ── CSS 변수 (뉴모피즘 + 네오 민트) ─────────────────────────── */
+/* ── CSS 변수 (미니멀 지식도구 · 청록 포인트) ─────────────────── */
 :root {
-  --bg: #f0f4f2;
-  --bg-dark: #e4ebe7;
+  color-scheme: light dark;
+  --bg: #fafafa;
+  --bg-dark: #f1f1f2;
   --card: #ffffff;
-  --accent: #1a7a5e;
-  --accent-light: #2a9d7a;
-  --accent-pale: #e0f5ee;
-  --text: #1e2d27;
-  --text-secondary: #5a7068;
-  --border: #d0ddd7;
-  --shadow-out: 6px 6px 14px #c8d4cf, -6px -6px 14px #ffffff;
-  --shadow-in: inset 4px 4px 10px #c8d4cf, inset -4px -4px 10px #ffffff;
-  --shadow-card: 0 4px 20px rgba(26, 122, 94, 0.08);
-  --radius: 16px;
-  --radius-sm: 10px;
+  --accent: #0d9488;
+  --accent-light: #14b8a6;
+  --accent-pale: #e6f7f5;
+  --text: #18181b;
+  --text-secondary: #6b7280;
+  --border: #e4e4e7;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --success: #15803d;
+  --success-bg: #f0fdf4;
+  --warning: #b45309;
+  --warning-bg: #fffbeb;
+  --shadow-out: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-in: none;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --radius: 10px;
+  --radius-sm: 6px;
   --font: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
-  --transition: 0.2s ease;
+  --transition: 0.15s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111113;
+    --bg-dark: #1a1a1d;
+    --card: #1c1c1f;
+    --accent: #2dd4bf;
+    --accent-light: #5eead4;
+    --accent-pale: rgba(45, 212, 191, 0.12);
+    --text: #e4e4e7;
+    --text-secondary: #9ca3af;
+    --border: #2a2a2e;
+    --danger: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.12);
+    --success: #4ade80;
+    --success-bg: rgba(74, 222, 128, 0.12);
+    --warning: #fbbf24;
+    --warning-bg: rgba(251, 191, 36, 0.12);
+    --shadow-out: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-in: none;
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
 }
 
 /* ── 리셋 ────────────────────────────────────────────────────── */
@@ -66,12 +96,11 @@ ol {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: 9px 18px;
   border-radius: var(--radius-sm);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   transition: all var(--transition);
-  box-shadow: var(--shadow-out);
 }
 
 .btn-primary {
@@ -81,42 +110,58 @@ ol {
 
 .btn-primary:hover {
   background: var(--accent-light);
-  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-dark);
 }
 
 .btn-ghost {
-  background: var(--bg);
-  color: var(--accent);
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 .btn-ghost:hover {
-  background: var(--accent-pale);
+  background: var(--bg-dark);
+  border-color: var(--text-secondary);
 }
 
 /* ── 공통 입력 ──────────────────────────────────────────────── */
 .input {
   width: 100%;
-  padding: 12px 16px;
-  border: 1.5px solid var(--border);
+  padding: 9px 12px;
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--bg);
+  background: var(--card);
   color: var(--text);
-  font-size: 15px;
-  box-shadow: var(--shadow-in);
-  transition: border-color var(--transition);
+  font-size: 14px;
+  transition: border-color var(--transition), box-shadow var(--transition);
   outline: none;
 }
 
 .input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-pale);
 }
 
-/* ── 뉴모피즘 카드 ──────────────────────────────────────────── */
+.input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* ── 카드 (구 뉴모피즘 → 플랫) ──────────────────────────────── */
 .neu-card {
-  background: var(--bg);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-out);
-  padding: 24px;
+  box-shadow: var(--shadow-card);
+  padding: 20px;
 }
 
 /* ── 유틸리티 ───────────────────────────────────────────────── */
@@ -147,8 +192,8 @@ ol {
 }
 
 .spinner {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: 3px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;

@@ -1,7 +1,7 @@
 .markdown-preview-body {
   font-size: 15px;
   line-height: 1.6;
-  color: var(--text, #333);
+  color: var(--text);
   word-wrap: break-word;
 }
 
@@ -23,12 +23,12 @@
 
 .markdown-preview-body h1 {
   font-size: 2em;
-  border-bottom: 1px solid var(--border, #eee);
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.3em;
 }
 .markdown-preview-body h2 {
   font-size: 1.5em;
-  border-bottom: 1px solid var(--border, #eee);
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.3em;
 }
 .markdown-preview-body h3 {
@@ -41,14 +41,23 @@
   margin-bottom: 16px;
 }
 
+/* global.css 리셋(list-style: none)을 미리보기 스코프에서 복원 */
+.markdown-preview-body ul {
+  list-style: disc;
+}
+
+.markdown-preview-body ol {
+  list-style: decimal;
+}
+
 .markdown-preview-body li + li {
   margin-top: 0.25em;
 }
 
 .markdown-preview-body blockquote {
   padding: 0 1em;
-  color: var(--text-secondary, #666);
-  border-left: 0.25em solid var(--border, #dfe2e5);
+  color: var(--text-secondary);
+  border-left: 0.25em solid var(--border);
   margin-bottom: 16px;
 }
 
@@ -56,8 +65,8 @@
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
-  background-color: var(--bg-dark, #f6f8fa);
-  border-radius: 6px;
+  background-color: var(--bg-dark);
+  border-radius: var(--radius-sm);
   font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
 }
 
@@ -69,14 +78,14 @@
 .markdown-preview-body img {
   max-width: 100%;
   box-sizing: content-box;
-  background-color: var(--bg, #fff);
+  background-color: var(--card);
 }
 
 .markdown-preview-body hr {
   height: 0.25em;
   padding: 0;
   margin: 24px 0;
-  background-color: var(--border, #e1e4e8);
+  background-color: var(--border);
   border: 0;
 }
 
@@ -90,19 +99,20 @@
 .markdown-preview-body table th,
 .markdown-preview-body table td {
   padding: 6px 13px;
-  border: 1px solid var(--border, #dfe2e5);
+  border: 1px solid var(--border);
 }
 
 .markdown-preview-body table tr:nth-child(2n) {
-  background-color: var(--bg-dark, #f6f8fa);
+  background-color: var(--bg-dark);
 }
 
 .mermaid-container {
   display: flex;
   justify-content: center;
   margin: 16px 0;
-  background-color: var(--bg, #fff);
+  background-color: var(--card);
   padding: 16px;
-  border-radius: var(--radius, 8px);
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
 }

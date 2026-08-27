@@ -9,7 +9,7 @@ import './GraphPage.css'
  * 색상 팔레트 (태그 첫 번째 기준)
  * ──────────────────────────────────────────────────────────── */
 const TAG_COLORS = [
-  '#1a7a5e',
+  '#0d9488',
   '#2563eb',
   '#7c3aed',
   '#db2777',
@@ -128,6 +128,7 @@ function stepPhysics(nodeArr, edgeArr, W, H) {
  * ──────────────────────────────────────────────────────────── */
 function drawGraph(ctx, nodeArr, edgeArr, hoveredId, W, H) {
   ctx.clearRect(0, 0, W, H)
+  const rootStyle = getComputedStyle(document.documentElement)
   const idxMap = {}
   nodeArr.forEach((n, i) => {
     idxMap[n.id] = i
@@ -180,7 +181,7 @@ function drawGraph(ctx, nodeArr, edgeArr, hoveredId, W, H) {
     ctx.arc(node.x, node.y, r, 0, Math.PI * 2)
     ctx.fillStyle = isHov ? baseColor : baseColor + 'cc'
     ctx.fill()
-    ctx.strokeStyle = '#fff'
+    ctx.strokeStyle = rootStyle.getPropertyValue('--card').trim() || '#fff'
     ctx.lineWidth = 2
     ctx.stroke()
     ctx.shadowBlur = 0
@@ -189,7 +190,7 @@ function drawGraph(ctx, nodeArr, edgeArr, hoveredId, W, H) {
     const maxChars = isHov ? 20 : 10
     const label = node.title.length > maxChars ? node.title.slice(0, maxChars) + '…' : node.title
     ctx.font = isHov ? 'bold 12px Pretendard, sans-serif' : '11px Pretendard, sans-serif'
-    ctx.fillStyle = '#1a2e26'
+    ctx.fillStyle = rootStyle.getPropertyValue('--text').trim() || '#1a2e26'
     ctx.textAlign = 'center'
     ctx.fillText(label, node.x, node.y + r + 14)
   })

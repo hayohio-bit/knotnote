@@ -7,7 +7,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(240, 244, 242, 0.88);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
@@ -52,7 +52,7 @@
   font-size: 13px;
   font-weight: 600;
   padding: 4px 14px;
-  border-radius: 20px;
+  border-radius: 999px;
   margin-bottom: 24px;
 }
 
@@ -127,7 +127,7 @@
   background: var(--accent-pale);
   color: var(--accent);
   padding: 4px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   display: inline-block;
 }
 

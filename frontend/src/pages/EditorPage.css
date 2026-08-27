@@ -34,9 +34,9 @@
 }
 
 .editor-error {
-  background: #fff1f0;
-  color: #c0392b;
-  border: 1px solid #fca5a5;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   font-size: 14px;
@@ -86,7 +86,6 @@
   color: var(--text);
   resize: vertical;
   outline: none;
-  box-shadow: var(--shadow-in);
   transition: border-color var(--transition);
 }
 
@@ -223,7 +222,7 @@
   align-items: center;
   background: var(--bg);
   border: 1.5px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--radius);
   padding: 2px;
   gap: 0;
 }
@@ -232,7 +231,7 @@
   background: none;
   border: none;
   padding: 4px 14px;
-  border-radius: 18px;
+  border-radius: var(--radius);
   font-size: 12px;
   font-weight: 500;
   font-family: var(--font);
@@ -255,12 +254,12 @@
 }
 
 .sidebar-count {
-  background: #e6f4ef;
+  background: var(--accent-pale);
   color: var(--accent);
   font-size: 11px;
   font-weight: 700;
   padding: 1px 6px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   letter-spacing: 0;
   text-transform: none;
 }
@@ -288,7 +287,7 @@
   gap: 8px;
   padding: 8px 10px;
   border-radius: var(--radius-sm);
-  background: #f8fbfa;
+  background: var(--bg-dark);
   border: 1px solid var(--border);
   transition: border-color 0.15s;
 }
@@ -322,10 +321,10 @@
 
 .rec-reason {
   font-size: 11px;
-  color: #1a7a5e;
-  background: #e6f4ef;
+  color: var(--accent);
+  background: var(--accent-pale);
   padding: 1px 6px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   width: fit-content;
 }
 
@@ -350,19 +349,20 @@
 }
 
 .rec-link-btn:hover:not(:disabled) {
-  background: #e6f4ef;
+  background: var(--accent-pale);
   border-color: var(--accent);
 }
 
 /* 삭제 버튼 */
 .btn-danger {
-  background: #fff1f0;
-  color: #c0392b;
+  background: var(--danger-bg);
+  color: var(--danger);
   box-shadow: none;
 }
 
 .btn-danger:hover {
-  background: #fca5a5;
+  background: var(--danger);
+  color: #fff;
 }
 
 /* 반응형 */
@@ -380,9 +380,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  border: 1.5px solid #fcd34d;
-  color: #92400e;
+  background: var(--warning-bg);
+  border: 1.5px solid var(--warning);
+  color: var(--warning);
   border-radius: var(--radius-sm);
   padding: 6px 14px;
   font-size: 13px;
@@ -390,30 +390,29 @@
   font-family: var(--font);
   cursor: pointer;
   transition: all 0.15s;
-  box-shadow: 0 1px 4px rgba(251, 191, 36, 0.2);
 }
 
 .btn-crystallize:hover {
-  background: linear-gradient(135deg, #fde68a, #fcd34d);
-  border-color: #f59e0b;
+  background: var(--warning-bg);
+  border-color: var(--warning);
   transform: translateY(-1px);
 }
 
 .crystallize-badge {
-  background: #f59e0b;
+  background: var(--warning);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
   padding: 1px 6px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   min-width: 18px;
   text-align: center;
 }
 
 /* pending 링크 카운트 */
 .pending-count {
-  background: #fef3c7 !important;
-  color: #92400e !important;
+  background: var(--warning-bg) !important;
+  color: var(--warning) !important;
 }
 
 /* ── 미저장 변경사항 경고 모달 ── */
@@ -439,9 +438,9 @@
 }
 
 .unsaved-modal {
-  background: var(--bg);
+  background: var(--card);
   border: 1.5px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   padding: 36px 32px 28px;
   width: 100%;
@@ -522,7 +521,7 @@
 .pin-btn {
   background: none;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 4px 10px;
   font-size: 13px;
   cursor: pointer;
@@ -571,7 +570,7 @@
 .sidebar-action-btn {
   background: none;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 3px 8px;
   font-size: 12px;
   cursor: pointer;
@@ -599,7 +598,7 @@
   align-items: center;
   gap: 4px;
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius);
   border: 1px dashed var(--accent);
   background: none;
   font-size: 12px;
@@ -632,8 +631,8 @@
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  border-radius: 6px;
-  background: var(--surface);
+  border-radius: var(--radius-sm);
+  background: var(--card);
   font-size: 12px;
   border: 1px solid var(--border);
 }
@@ -661,15 +660,15 @@
 .btn-xs {
   padding: 2px 8px !important;
   font-size: 11px !important;
-  border-radius: 4px !important;
+  border-radius: var(--radius-sm) !important;
   line-height: 1.6 !important;
 }
 
 /* ── AI 요약 배너 ─────────────────────────────────────────────── */
 .ai-summary-banner {
-  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-  border: 1.5px solid #86efac;
-  border-radius: 10px;
+  background: var(--success-bg);
+  border: 1.5px solid var(--success);
+  border-radius: var(--radius-sm);
   padding: 14px 16px;
   animation: slide-down 0.2s ease;
 }
@@ -692,7 +691,7 @@
   margin-bottom: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #15803d;
+  color: var(--success);
 }
 
 .ai-summary-actions {
@@ -702,7 +701,7 @@
 
 .ai-summary-text {
   font-size: 14px;
-  color: #166534;
+  color: var(--success);
   line-height: 1.65;
   margin: 0;
   white-space: pre-wrap;
@@ -713,7 +712,7 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #15803d;
+  color: var(--success);
   padding: 4px 0;
 }
 
@@ -738,9 +737,9 @@
 }
 
 .share-modal {
-  background: var(--bg);
+  background: var(--card);
   border: 1.5px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   padding: 32px;
   width: 100%;
@@ -766,7 +765,7 @@
 }
 
 .share-expires {
-  color: #d97706;
+  color: var(--warning);
   font-size: 12px;
   display: block;
   margin-top: 4px;

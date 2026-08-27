@@ -42,25 +42,25 @@
 }
 
 .activity-item.color-green {
-  border-left-color: #2a9d7a;
+  border-left-color: var(--accent-light);
 }
 .activity-item.color-blue {
   border-left-color: #3b82f6;
 }
 .activity-item.color-red {
-  border-left-color: #ef4444;
+  border-left-color: var(--danger);
 }
 .activity-item.color-purple {
   border-left-color: #8b5cf6;
 }
 .activity-item.color-orange {
-  border-left-color: #f59e0b;
+  border-left-color: var(--warning);
 }
 .activity-item.color-teal {
   border-left-color: #14b8a6;
 }
 .activity-item.color-gray {
-  border-left-color: #9ca3af;
+  border-left-color: var(--text-secondary);
 }
 
 .activity-icon {
@@ -82,7 +82,7 @@
   color: var(--text-secondary);
   background: var(--bg);
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--radius);
   white-space: nowrap;
 }
 .activity-note-title {

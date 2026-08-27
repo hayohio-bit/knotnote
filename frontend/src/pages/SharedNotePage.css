@@ -1,6 +1,6 @@
 .shared-page {
   min-height: 100vh;
-  background: var(--surface);
+  background: var(--bg);
   display: flex;
   flex-direction: column;
 }
@@ -28,10 +28,10 @@
 .shared-badge {
   font-size: 12px;
   padding: 3px 10px;
-  border-radius: 20px;
-  background: #f0fdf4;
-  color: #15803d;
-  border: 1px solid #86efac;
+  border-radius: 999px;
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success);
   font-weight: 500;
 }
 
@@ -44,9 +44,9 @@
 }
 
 .shared-article {
-  background: var(--bg);
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 40px 44px;
 }
 
@@ -79,16 +79,16 @@
 .shared-tag {
   font-size: 12px;
   padding: 2px 8px;
-  border-radius: 12px;
-  background: var(--surface);
+  border-radius: var(--radius-sm);
+  background: var(--accent-pale);
   color: var(--accent);
   border: 1px solid var(--border);
 }
 
 .shared-ai-summary {
-  background: #f0fdf4;
-  border: 1.5px solid #86efac;
-  border-radius: 10px;
+  background: var(--success-bg);
+  border: 1px solid var(--success);
+  border-radius: var(--radius-sm);
   padding: 14px 16px;
   margin-bottom: 24px;
 }
@@ -97,13 +97,13 @@
   display: block;
   font-size: 12px;
   font-weight: 600;
-  color: #15803d;
+  color: var(--success);
   margin-bottom: 6px;
 }
 
 .shared-ai-summary p {
   font-size: 14px;
-  color: #166534;
+  color: var(--success);
   line-height: 1.65;
   margin: 0;
 }
