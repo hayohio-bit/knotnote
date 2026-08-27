@@ -31,7 +31,11 @@ const HOW_STEPS = [
     title: '메모를 쓰면',
     desc: '떠오르는 대로 기록하세요. 태그와 템플릿이 정리를 도와줍니다.',
   },
-  { step: '2', title: 'AI가 연결하고', desc: 'AI가 의미가 닿는 노트를 찾아 연결을 추천합니다.' },
+  {
+    step: '2',
+    title: 'AI가 연결하고',
+    desc: 'AI가 의미가 닿는 노트를 찾아 연결을 추천합니다.',
+  },
   {
     step: '3',
     title: '인사이트가 보입니다',
@@ -104,12 +108,20 @@ export default function LandingPage() {
               복잡한 생각도 KnotNote와 함께라면 명확해집니다.
             </p>
             <div className="hero-cta">
-              <Link to="/signup" className="btn btn-primary btn-lg">
-                지금 무료로 시작 →
-              </Link>
-              <Link to="/login" className="btn btn-ghost btn-lg">
-                기존 계정 로그인
-              </Link>
+              {user ? (
+                <Link to="/dashboard" className="btn btn-primary btn-lg">
+                  대시보드로 가기 →
+                </Link>
+              ) : (
+                <>
+                  <Link to="/signup" className="btn btn-primary btn-lg">
+                    지금 무료로 시작 →
+                  </Link>
+                  <Link to="/login" className="btn btn-ghost btn-lg">
+                    기존 계정 로그인
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -175,11 +187,23 @@ export default function LandingPage() {
       <section className="cta-section">
         <div className="container">
           <div className="cta-inner">
-            <h2>지금 바로 시작해보세요</h2>
-            <p>회원가입은 이메일 하나로 충분합니다</p>
-            <Link to="/signup" className="btn btn-primary btn-lg">
-              무료로 시작하기 →
-            </Link>
+            {user ? (
+              <>
+                <h2>이어서 기록해보세요</h2>
+                <p>작성한 메모가 대시보드에서 기다리고 있습니다</p>
+                <Link to="/dashboard" className="btn btn-primary btn-lg">
+                  대시보드로 가기 →
+                </Link>
+              </>
+            ) : (
+              <>
+                <h2>지금 바로 시작해보세요</h2>
+                <p>회원가입은 이메일 하나로 충분합니다</p>
+                <Link to="/signup" className="btn btn-primary btn-lg">
+                  무료로 시작하기 →
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
