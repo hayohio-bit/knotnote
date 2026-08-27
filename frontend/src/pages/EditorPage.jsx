@@ -8,6 +8,7 @@ import Navbar from '../components/Navbar.jsx'
 import SimpleEditor from '../components/SimpleEditor.jsx'
 import Spinner from '../components/Spinner.jsx'
 import TagBadge from '../components/TagBadge.jsx'
+import { toast } from '../lib/toast.js'
 import './EditorPage.css'
 
 const MODE_KEY = 'knotnote-editor-mode'
@@ -41,6 +42,8 @@ export default function EditorPage() {
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
   const [linkingId, setLinkingId] = useState(null)
+  const [deleting, setDeleting] = useState(false)
+  const [tagBusy, setTagBusy] = useState(false)
 
   // 핀
   const [isPinned, setIsPinned] = useState(false)
@@ -176,7 +179,7 @@ export default function EditorPage() {
         setAutoSaveStatus('saved')
         setTimeout(() => setAutoSaveStatus(''), 2000)
       } catch {
-        setAutoSaveStatus('')
+        setAutoSaveStatus('error')
       }
     }, 1500)
     return () => clearTimeout(autoSaveTimer.current)
@@ -245,7 +248,7 @@ export default function EditorPage() {
       setVersions([])
       setShowVersions(false)
     } catch {
-      alert('복원 실패')
+      toast.error('복원에 실패했어요.')
     } finally {
       setRestoringId(null)
     }
@@ -277,7 +280,7 @@ export default function EditorPage() {
         setIsPinned(true)
       }
     } catch {
-      alert('핀 변경 실패')
+      toast.error('핀 변경에 실패했어요.')
     } finally {
       setPinLoading(false)
     }
@@ -286,7 +289,7 @@ export default function EditorPage() {
   // 수동 저장
   const handleSave = async () => {
     if (!title.trim()) {
-      setError('제목을 입력해주세요.')
+      setError('제목을 입력해 주세요.')
       return
     }
     setSaving(true)
@@ -317,7 +320,7 @@ export default function EditorPage() {
 
   const handleUnsavedSave = async () => {
     if (!title.trim()) {
-      setError('제목을 입력해주세요.')
+      setError('제목을 입력해 주세요.')
       setShowUnsaved(false)
       return
     }
@@ -353,37 +356,52 @@ export default function EditorPage() {
 
   // 태그
   const handleAddTag = async (tagId) => {
+    if (tagBusy) return
     if (noteTags.some((t) => t.id === tagId)) return
+    setTagBusy(true)
     try {
       await notesApi.addTag(id, tagId)
       const tag = allTags.find((t) => t.id === tagId)
       if (tag) setNoteTags((prev) => [...prev, tag])
       setSuggestedTags((prev) => prev.filter((s) => s.tagId !== tagId))
     } catch (err) {
-      alert(err.response?.data?.message || '태그 연결 실패')
+      toast.error(err.response?.data?.message || '태그 연결에 실패했어요.')
+    } finally {
+      setTagBusy(false)
     }
   }
 
   const handleRemoveTag = async (tagId) => {
+    if (tagBusy) return
+    setTagBusy(true)
     try {
       await notesApi.removeTag(id, tagId)
       setNoteTags((prev) => prev.filter((t) => t.id !== tagId))
     } catch {
-      alert('태그 해제 실패')
+      toast.error('태그 해제에 실패했어요.')
+    } finally {
+      setTagBusy(false)
     }
   }
 
   const handleCreateTag = async () => {
+    if (tagBusy) return
     const name = newTagName.trim()
     if (!name) return
+    setTagBusy(true)
     try {
       const { data } = await tagsApi.create(name)
       const tag = data.data
       setAllTags((prev) => [...prev, tag])
       setNewTagName('')
-      if (isEdit) handleAddTag(tag.id)
+      if (isEdit) {
+        await notesApi.addTag(id, tag.id)
+        setNoteTags((prev) => [...prev, tag])
+      }
     } catch (err) {
-      alert(err.response?.data?.message || '태그 생성 실패')
+      toast.error(err.response?.data?.message || '태그 생성에 실패했어요.')
+    } finally {
+      setTagBusy(false)
     }
   }
 
@@ -394,7 +412,7 @@ export default function EditorPage() {
       loadRecommendations()
       loadPendingLinks()
     } catch {
-      alert('링크 해제 실패')
+      toast.error('링크 해제에 실패했어요.')
     }
   }
 
@@ -407,20 +425,23 @@ export default function EditorPage() {
       setRecs((prev) => prev.filter((r) => r.id !== recId))
       loadPendingLinks()
     } catch (err) {
-      alert(err.response?.data?.message || '연결 실패')
+      toast.error(err.response?.data?.message || '연결에 실패했어요.')
     } finally {
       setLinkingId(null)
     }
   }
 
   const handleDelete = async () => {
+    if (deleting) return
     if (!window.confirm('이 메모를 삭제할까요?')) return
+    setDeleting(true)
     try {
       await notesApi.delete(id)
       setIsDirty(false)
       _navigate('/dashboard')
     } catch {
-      alert('삭제 실패')
+      toast.error('삭제에 실패했어요.')
+      setDeleting(false)
     }
   }
 
@@ -433,8 +454,7 @@ export default function EditorPage() {
       setAiSummary(data.data.summary)
       setShowSummary(true)
     } catch (err) {
-      const msg = err.response?.data?.message || 'AI 요약에 실패했습니다.'
-      alert(msg)
+      toast.error(err.response?.data?.message || 'AI 요약에 실패했어요.')
     } finally {
       setSummarizing(false)
     }
@@ -459,7 +479,7 @@ export default function EditorPage() {
       setShareToken(note.shareToken)
       setShareExpiresAt(note.shareExpiresAt)
     } catch {
-      alert('공유 링크 생성 실패')
+      toast.error('공유 링크 생성에 실패했어요.')
     } finally {
       setSharingLoading(false)
     }
@@ -473,7 +493,7 @@ export default function EditorPage() {
       setShareToken(null)
       setShareExpiresAt(null)
     } catch {
-      alert('공유 해제 실패')
+      toast.error('공유 해제에 실패했어요.')
     } finally {
       setSharingLoading(false)
     }
@@ -509,6 +529,11 @@ export default function EditorPage() {
               <span className="save-indicator autosave">⟳ 저장 중...</span>
             )}
             {autoSaveStatus === 'saved' && <span className="save-indicator">✓ 자동저장됨</span>}
+            {autoSaveStatus === 'error' && (
+              <span className="save-indicator autosave-error">
+                ⚠ 자동저장 실패 — 저장 버튼을 눌러 주세요
+              </span>
+            )}
             {saved && !autoSaveStatus && <span className="save-indicator">✓ 저장됨</span>}
 
             {isEdit && pendingLinks.length > 0 && (
@@ -577,13 +602,14 @@ export default function EditorPage() {
                 className="btn btn-ghost btn-sm"
                 onClick={() => safeNavigate('/graph')}
                 title="지식 그래프"
+                aria-label="지식 그래프"
               >
                 🗺️
               </button>
             )}
             {isEdit && (
-              <button className="btn btn-danger" onClick={handleDelete}>
-                삭제
+              <button className="btn btn-danger" onClick={handleDelete} disabled={deleting}>
+                {deleting ? '삭제 중...' : '삭제'}
               </button>
             )}
             <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
@@ -603,7 +629,11 @@ export default function EditorPage() {
                 <button className="btn btn-ghost btn-xs" onClick={handleInsertSummary}>
                   본문에 삽입
                 </button>
-                <button className="btn btn-ghost btn-xs" onClick={() => setShowSummary(false)}>
+                <button
+                  className="btn btn-ghost btn-xs"
+                  onClick={() => setShowSummary(false)}
+                  aria-label="AI 요약 닫기"
+                >
                   ✕
                 </button>
               </div>
@@ -687,7 +717,11 @@ export default function EditorPage() {
                     onChange={(e) => setNewTagName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleCreateTag()}
                   />
-                  <button className="btn btn-ghost btn-sm" onClick={handleCreateTag}>
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    onClick={handleCreateTag}
+                    disabled={tagBusy}
+                  >
                     추가
                   </button>
                 </div>
@@ -880,8 +914,11 @@ export default function EditorPage() {
               <>
                 <p className="share-modal-desc">읽기 전용 공개 링크를 생성합니다.</p>
                 <div className="share-expire-row">
-                  <label className="share-expire-label">만료 기간</label>
+                  <label className="share-expire-label" htmlFor="share-expire-select">
+                    만료 기간
+                  </label>
                   <select
+                    id="share-expire-select"
                     className="input input-sm share-expire-select"
                     value={shareExpireDays}
                     onChange={(e) => setShareExpireDays(e.target.value)}
@@ -919,9 +956,9 @@ export default function EditorPage() {
             <div className="unsaved-icon">📝</div>
             <h2 className="unsaved-title">저장하지 않은 내용이 있어요</h2>
             <p className="unsaved-desc">
-              작성 중인 내용이 있습니다.
+              작성 중인 내용이 있어요. 저장하지 않고 나가면 사라져요.
               <br />
-              저장하고 이동하시겠어요?
+              저장하고 이동할까요?
             </p>
             <div className="unsaved-actions">
               <button

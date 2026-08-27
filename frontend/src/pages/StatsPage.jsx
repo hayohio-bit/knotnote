@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { exportApi, statsApi } from '../api/notes.js'
 import Navbar from '../components/Navbar.jsx'
 import Spinner from '../components/Spinner.jsx'
+import { toast } from '../lib/toast.js'
 import './StatsPage.css'
 
 function StatCard({ label, value, sub, accent }) {
@@ -32,20 +33,28 @@ export default function StatsPage() {
   const [stats, setStats] = useState(null)
   const [insights, setInsights] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [exporting, setExporting] = useState(false)
+  const [loadError, setLoadError] = useState(false)
+  // 실행 중인 내보내기 format ('json' | 'markdown' | null)
+  const [exporting, setExporting] = useState(null)
 
-  useEffect(() => {
+  const loadStats = useCallback(() => {
+    setLoading(true)
+    setLoadError(false)
     Promise.all([statsApi.get(), statsApi.getGraphInsights()])
       .then(([s, g]) => {
         setStats(s.data.data)
         setInsights(g.data.data)
       })
-      .catch(() => {})
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false))
   }, [])
 
+  useEffect(() => {
+    loadStats()
+  }, [loadStats])
+
   const handleExport = async (format) => {
-    setExporting(true)
+    setExporting(format)
     try {
       const { data, headers } = await exportApi.download(format)
       const url = URL.createObjectURL(new Blob([data]))
@@ -55,9 +64,9 @@ export default function StatsPage() {
       link.click()
       URL.revokeObjectURL(url)
     } catch {
-      alert('내보내기 실패')
+      toast.error('내보내기에 실패했어요')
     } finally {
-      setExporting(false)
+      setExporting(null)
     }
   }
 
@@ -81,176 +90,194 @@ export default function StatsPage() {
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => handleExport('json')}
-              disabled={exporting}
+              disabled={exporting != null}
             >
-              {exporting ? '내보내는 중...' : '⬇ JSON 내보내기'}
+              {exporting === 'json' ? '내보내는 중...' : '⬇ JSON 내보내기'}
             </button>
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => handleExport('markdown')}
-              disabled={exporting}
+              disabled={exporting != null}
             >
-              {exporting ? '...' : '⬇ Markdown 내보내기'}
+              {exporting === 'markdown' ? '내보내는 중...' : '⬇ Markdown 내보내기'}
             </button>
           </div>
         </div>
 
-        {/* 핵심 지표 카드 */}
-        <section className="stat-cards-grid">
-          <StatCard
-            label="전체 노트"
-            value={stats?.totalNotes}
-            sub={`최근 7일 +${stats?.recentNoteCount ?? 0}`}
-            accent
-          />
-          <StatCard
-            label="전체 링크"
-            value={stats?.totalLinks}
-            sub={`매듭 확정 ${stats?.crystallizedLinks ?? 0}`}
-          />
-          <StatCard label="전체 태그" value={stats?.totalTags} />
-          <StatCard
-            label="평균 Vitality"
-            value={stats?.avgVitalityScore != null ? stats.avgVitalityScore.toFixed(2) : '-'}
-          />
-          <StatCard
-            label="매듭 확정률"
-            value={
-              stats?.crystallizationRate != null
-                ? `${(stats.crystallizationRate * 100).toFixed(1)}%`
-                : '-'
-            }
-          />
-        </section>
-
-        {/* Vitality 분포 */}
-        {vd && Object.keys(vd).length > 0 && (
-          <section className="stats-section">
-            <h2 className="stats-section-title">Vitality 분포</h2>
-            <div className="vitality-bars">
-              {[
-                { key: 'veryLow', label: '매우 낮음 (0~0.2)', color: '#ef4444' },
-                { key: 'low', label: '낮음 (0.2~0.4)', color: '#f59e0b' },
-                { key: 'medium', label: '보통 (0.4~0.6)', color: '#3b82f6' },
-                { key: 'high', label: '높음 (0.6~0.8)', color: '#10b981' },
-                { key: 'veryHigh', label: '매우 높음 (0.8~1)', color: '#6366f1' },
-              ].map(({ key, label, color }) => (
-                <div key={key} className="vitality-bar-row">
-                  <span className="vitality-bar-label">{label}</span>
-                  <ProgressBar value={vd[key] ?? 0} max={stats?.totalNotes ?? 1} color={color} />
-                  <span className="vitality-bar-count">{vd[key] ?? 0}개</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 허브 노트 */}
-        {stats?.mostConnectedNote && (
-          <section className="stats-section">
-            <h2 className="stats-section-title">최다 연결 노트</h2>
-            <button
-              className="hub-note-card"
-              onClick={() => navigate(`/notes/${stats.mostConnectedNote.noteId}`)}
-            >
-              <span className="hub-note-title">{stats.mostConnectedNote.title}</span>
-              <span className="hub-note-meta">링크 {stats.mostConnectedNote.linkCount ?? 0}개</span>
+        {/* 로드 실패 시 배너만 표시하고 본문은 감춘다 */}
+        {loadError ? (
+          <div className="stats-error-banner" role="alert">
+            <span>통계를 불러오지 못했어요</span>
+            <button className="btn btn-secondary btn-sm" onClick={loadStats}>
+              재시도
             </button>
-          </section>
-        )}
+          </div>
+        ) : (
+          <>
+            {/* 핵심 지표 카드 */}
+            <section className="stat-cards-grid">
+              <StatCard
+                label="전체 노트"
+                value={stats?.totalNotes}
+                sub={`최근 7일 +${stats?.recentNoteCount ?? 0}`}
+                accent
+              />
+              <StatCard
+                label="전체 링크"
+                value={stats?.totalLinks}
+                sub={`매듭 확정 ${stats?.crystallizedLinks ?? 0}`}
+              />
+              <StatCard label="전체 태그" value={stats?.totalTags} />
+              <StatCard
+                label="평균 Vitality"
+                value={stats?.avgVitalityScore != null ? stats.avgVitalityScore.toFixed(2) : '-'}
+              />
+              <StatCard
+                label="매듭 확정률"
+                value={
+                  stats?.crystallizationRate != null
+                    ? `${(stats.crystallizationRate * 100).toFixed(1)}%`
+                    : '-'
+                }
+              />
+            </section>
 
-        {/* 인기 태그 */}
-        {stats?.topTags?.length > 0 && (
-          <section className="stats-section">
-            <h2 className="stats-section-title">인기 태그 Top 5</h2>
-            <div className="top-tags-list">
-              {stats.topTags.map((t, i) => (
-                <div
-                  key={t.tagName}
-                  className="top-tag-item"
-                  onClick={() => navigate(`/dashboard?tagId=${t.tagId}`)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <span className="top-tag-rank">#{i + 1}</span>
-                  <span className="top-tag-name">{t.tagName}</span>
-                  <span className="top-tag-count">{t.noteCount}개</span>
+            {/* Vitality 분포 */}
+            {vd && Object.keys(vd).length > 0 && (
+              <section className="stats-section">
+                <h2 className="stats-section-title">Vitality 분포</h2>
+                <div className="vitality-bars">
+                  {[
+                    { key: 'veryLow', label: '매우 낮음 (0~0.2)', color: '#ef4444' },
+                    { key: 'low', label: '낮음 (0.2~0.4)', color: '#f59e0b' },
+                    { key: 'medium', label: '보통 (0.4~0.6)', color: '#3b82f6' },
+                    { key: 'high', label: '높음 (0.6~0.8)', color: '#10b981' },
+                    { key: 'veryHigh', label: '매우 높음 (0.8~1)', color: '#6366f1' },
+                  ].map(({ key, label, color }) => (
+                    <div key={key} className="vitality-bar-row">
+                      <span className="vitality-bar-label">{label}</span>
+                      <ProgressBar
+                        value={vd[key] ?? 0}
+                        max={stats?.totalNotes ?? 1}
+                        color={color}
+                      />
+                      <span className="vitality-bar-count">{vd[key] ?? 0}개</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Graph Insights */}
-        {insights && (
-          <section className="stats-section">
-            <h2 className="stats-section-title">🗺️ Graph Insights</h2>
-            <div className="insights-grid">
-              <div className="insight-card">
-                <span className="insight-value">{insights.clusterCount ?? '-'}</span>
-                <span className="insight-label">클러스터 수</span>
-              </div>
-              <div className="insight-card">
-                <span className="insight-value">
-                  {insights.connectivityRate != null
-                    ? `${(insights.connectivityRate * 100).toFixed(1)}%`
-                    : '-'}
-                </span>
-                <span className="insight-label">연결률</span>
-              </div>
-              <div className="insight-card">
-                <span className="insight-value">{insights.orphanNotes?.length ?? 0}</span>
-                <span className="insight-label">고립 노트</span>
-              </div>
-              <div className="insight-card">
-                <span className="insight-value">{insights.weakLinks?.length ?? 0}</span>
-                <span className="insight-label">약한 링크</span>
-              </div>
-            </div>
+              </section>
+            )}
 
             {/* 허브 노트 */}
-            {insights.hubNotes?.length > 0 && (
-              <div className="insights-sub">
-                <h3 className="insights-sub-title">허브 노트 (연결 많은 순)</h3>
-                <ul className="hub-list">
-                  {insights.hubNotes.map((n) => (
-                    <li key={n.noteId} className="hub-item">
-                      <button
-                        className="hub-item-title"
-                        onClick={() => navigate(`/notes/${n.noteId}`)}
-                      >
-                        {n.title}
-                      </button>
-                      <span className="hub-item-meta">
-                        링크 {n.degree}개 · 확정 {n.crystallized ?? 0}개
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {stats?.mostConnectedNote && (
+              <section className="stats-section">
+                <h2 className="stats-section-title">최다 연결 노트</h2>
+                <button
+                  className="hub-note-card"
+                  onClick={() => navigate(`/notes/${stats.mostConnectedNote.noteId}`)}
+                >
+                  <span className="hub-note-title">{stats.mostConnectedNote.title}</span>
+                  <span className="hub-note-meta">
+                    링크 {stats.mostConnectedNote.linkCount ?? 0}개
+                  </span>
+                </button>
+              </section>
             )}
 
-            {/* 고립 노트 */}
-            {insights.orphanNotes?.length > 0 && (
-              <div className="insights-sub">
-                <h3 className="insights-sub-title">고립 노트 (링크 없음)</h3>
-                <ul className="orphan-list">
-                  {insights.orphanNotes.slice(0, 5).map((n) => (
-                    <li key={n.noteId}>
-                      <button
-                        className="orphan-title"
-                        onClick={() => navigate(`/notes/${n.noteId}`)}
-                      >
-                        {n.title}
-                      </button>
-                    </li>
+            {/* 인기 태그 */}
+            {stats?.topTags?.length > 0 && (
+              <section className="stats-section">
+                <h2 className="stats-section-title">인기 태그 Top 5</h2>
+                <div className="top-tags-list">
+                  {stats.topTags.map((t, i) => (
+                    <button
+                      key={t.tagName}
+                      type="button"
+                      className="top-tag-item"
+                      onClick={() => navigate(`/dashboard?tagId=${t.tagId}`)}
+                    >
+                      <span className="top-tag-rank">#{i + 1}</span>
+                      <span className="top-tag-name">{t.tagName}</span>
+                      <span className="top-tag-count">{t.noteCount}개</span>
+                    </button>
                   ))}
-                  {insights.orphanNotes.length > 5 && (
-                    <li className="orphan-more">+{insights.orphanNotes.length - 5}개 더</li>
-                  )}
-                </ul>
-              </div>
+                </div>
+              </section>
             )}
-          </section>
+
+            {/* Graph Insights */}
+            {insights && (
+              <section className="stats-section">
+                <h2 className="stats-section-title">🗺️ Graph Insights</h2>
+                <div className="insights-grid">
+                  <div className="insight-card">
+                    <span className="insight-value">{insights.clusterCount ?? '-'}</span>
+                    <span className="insight-label">클러스터 수</span>
+                  </div>
+                  <div className="insight-card">
+                    <span className="insight-value">
+                      {insights.connectivityRate != null
+                        ? `${(insights.connectivityRate * 100).toFixed(1)}%`
+                        : '-'}
+                    </span>
+                    <span className="insight-label">연결률</span>
+                  </div>
+                  <div className="insight-card">
+                    <span className="insight-value">{insights.orphanNotes?.length ?? 0}</span>
+                    <span className="insight-label">고립 노트</span>
+                  </div>
+                  <div className="insight-card">
+                    <span className="insight-value">{insights.weakLinks?.length ?? 0}</span>
+                    <span className="insight-label">약한 링크</span>
+                  </div>
+                </div>
+
+                {/* 허브 노트 */}
+                {insights.hubNotes?.length > 0 && (
+                  <div className="insights-sub">
+                    <h3 className="insights-sub-title">허브 노트 (연결 많은 순)</h3>
+                    <ul className="hub-list">
+                      {insights.hubNotes.map((n) => (
+                        <li key={n.noteId} className="hub-item">
+                          <button
+                            className="hub-item-title"
+                            onClick={() => navigate(`/notes/${n.noteId}`)}
+                          >
+                            {n.title}
+                          </button>
+                          <span className="hub-item-meta">
+                            링크 {n.degree}개 · 확정 {n.crystallized ?? 0}개
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* 고립 노트 */}
+                {insights.orphanNotes?.length > 0 && (
+                  <div className="insights-sub">
+                    <h3 className="insights-sub-title">고립 노트 (링크 없음)</h3>
+                    <ul className="orphan-list">
+                      {insights.orphanNotes.slice(0, 5).map((n) => (
+                        <li key={n.noteId}>
+                          <button
+                            className="orphan-title"
+                            onClick={() => navigate(`/notes/${n.noteId}`)}
+                          >
+                            {n.title}
+                          </button>
+                        </li>
+                      ))}
+                      {insights.orphanNotes.length > 5 && (
+                        <li className="orphan-more">+{insights.orphanNotes.length - 5}개 더</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </section>
+            )}
+          </>
         )}
       </main>
     </div>

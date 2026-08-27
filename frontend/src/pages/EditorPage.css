@@ -554,6 +554,15 @@
   white-space: nowrap;
 }
 
+.autosave-error {
+  font-size: 12px;
+  color: var(--warning);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
 /* ── Sidebar title row (with action button) ─────────────────── */
 .sidebar-title-row {
   display: flex;

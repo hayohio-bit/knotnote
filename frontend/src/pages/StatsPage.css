@@ -23,6 +23,21 @@
   gap: 8px;
 }
 
+/* 로드 실패 배너 */
+.stats-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--danger);
+  margin-bottom: 32px;
+}
+
 /* 핵심 지표 카드 */
 .stat-cards-grid {
   display: grid;
@@ -157,6 +172,13 @@
   padding: 10px 16px;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
+  /* button 요소로 렌더링되므로 기본 스타일을 초기화한다 */
+  border: none;
+  width: 100%;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text);
 }
 .top-tag-rank {
   font-size: 14px;

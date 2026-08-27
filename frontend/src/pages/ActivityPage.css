@@ -118,6 +118,17 @@
   font-size: 16px;
 }
 
+.activity-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  text-align: center;
+}
+
 .activity-more {
   text-align: center;
   margin-top: 24px;

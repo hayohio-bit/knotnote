@@ -578,6 +578,79 @@
   flex: 1;
 }
 
+/* ── 벌크 태그 선택 팝오버 ──────────────────────────────────── */
+.bulk-tag-picker {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-top: -8px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bulk-tag-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bulk-tag-picker-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.bulk-tag-picker-close {
+  background: none;
+  border: none;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.bulk-tag-picker-close:hover {
+  color: var(--text);
+}
+
+.bulk-tag-picker-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bulk-tag-chip {
+  background: none;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text);
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.bulk-tag-chip:hover:not(:disabled) {
+  background: var(--accent-pale);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.bulk-tag-chip:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.bulk-tag-picker-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
 /* ── Export button in toolbar ───────────────────────────────── */
 .btn-export {
   display: inline-flex;

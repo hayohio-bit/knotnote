@@ -35,14 +35,17 @@ export default function ActivityPage() {
   const navigate = useNavigate()
   const [activities, setActivities] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [limit, setLimit] = useState(30)
 
   const load = async (lim) => {
     setLoading(true)
+    setLoadError(false)
     try {
       const { data } = await activityApi.list(lim)
       setActivities(data.data ?? [])
     } catch {
+      setLoadError(true)
     } finally {
       setLoading(false)
     }
@@ -63,6 +66,13 @@ export default function ActivityPage() {
 
         {loading ? (
           <Spinner />
+        ) : loadError ? (
+          <div className="activity-error" role="alert">
+            <p>활동을 불러오지 못했어요</p>
+            <button className="btn btn-secondary btn-sm" onClick={() => load(limit)}>
+              재시도
+            </button>
+          </div>
         ) : (
           <>
             {activities.length === 0 ? (

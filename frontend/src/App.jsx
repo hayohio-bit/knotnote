@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import PrivateRoute from './components/PrivateRoute.jsx'
 import QuickCapture from './components/QuickCapture.jsx'
+import ToastHost from './components/ToastHost.jsx'
 import { AuthProvider, useAuth } from './store/AuthContext.jsx'
 
 import ActivityPage from './pages/ActivityPage.jsx'
@@ -18,6 +19,7 @@ function AppRoutes() {
   const { user } = useAuth()
   return (
     <>
+      <ToastHost />
       {user && <QuickCapture />}
       <Routes>
         {/* 공개 */}

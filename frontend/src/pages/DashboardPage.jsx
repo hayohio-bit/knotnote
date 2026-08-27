@@ -9,6 +9,7 @@ import NoteCard from '../components/NoteCard.jsx'
 import SmartFolderModal from '../components/SmartFolderModal.jsx'
 import Spinner from '../components/Spinner.jsx'
 import TemplateModal from '../components/TemplateModal.jsx'
+import { toast } from '../lib/toast.js'
 import './DashboardPage.css'
 
 const VIEW_KEY = 'knotnote-view-mode'
@@ -85,6 +86,9 @@ export default function DashboardPage() {
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [bulkLoading, setBulkLoading] = useState(false)
   const [exporting, setExporting] = useState(false)
+  const [showTagPicker, setShowTagPicker] = useState(false)
+  const tagPickerRef = useRef(null)
+  const tagPickerBtnRef = useRef(null)
 
   // ── 템플릿 모달 (Phase 7-C) ──
   const [showTemplateModal, setShowTemplateModal] = useState(false)
@@ -254,7 +258,12 @@ export default function DashboardPage() {
 
   const handleSFDelete = async (sfId) => {
     if (!window.confirm('이 스마트 폴더를 삭제할까요?')) return
-    await smartFoldersApi.delete(sfId).catch(() => {})
+    try {
+      await smartFoldersApi.delete(sfId)
+    } catch {
+      toast.error('폴더 삭제에 실패했어요')
+      return
+    }
     if (activeSF?.id === sfId) setActiveSF(null)
     loadSmartFolders()
   }
@@ -271,6 +280,7 @@ export default function DashboardPage() {
   const toggleBulkMode = () => {
     setBulkMode((m) => !m)
     setSelectedIds(new Set())
+    setShowTagPicker(false)
   }
 
   const selectAll = () => setSelectedIds(new Set(displayNotes.map((n) => n.id)))
@@ -287,38 +297,43 @@ export default function DashboardPage() {
       setBulkMode(false)
       fetchNotes()
     } catch {
-      alert('벌크 삭제 실패')
+      toast.error('선택한 메모 삭제에 실패했어요')
     } finally {
       setBulkLoading(false)
     }
   }
 
-  // 벌크 태그 부착
-  const handleBulkTag = async () => {
-    if (selectedIds.size === 0 || tags.length === 0) return
-    const tagName = window.prompt(
-      `태그를 선택하세요 (이름 입력):\n${tags.map((t) => t.name).join(', ')}`,
-    )
-    if (!tagName) return
-    const tag = tags.find((t) => t.name === tagName.trim())
-    if (!tag) {
-      alert('존재하지 않는 태그입니다.')
-      return
-    }
+  // 벌크 태그 부착: 태그 선택 팝오버에서 칩을 클릭하면 실행된다
+  const handleBulkTag = async (tag) => {
+    if (selectedIds.size === 0) return
     setBulkLoading(true)
     try {
+      const count = selectedIds.size
       await notesApi.bulkAddTag([...selectedIds], tag.id)
-      alert(`${selectedIds.size}개 메모에 #${tag.name} 태그를 부착했습니다.`)
+      toast.success(`${count}개 메모에 #${tag.name} 태그를 부착했어요`)
+      setShowTagPicker(false)
       setSelectedIds(new Set())
       setBulkMode(false)
       fetchNotes()
       loadTags()
     } catch {
-      alert('벌크 태그 실패')
+      toast.error('태그 부착에 실패했어요')
     } finally {
       setBulkLoading(false)
     }
   }
+
+  // 태그 선택 팝오버: 바깥 클릭으로 닫는다
+  useEffect(() => {
+    if (!showTagPicker) return
+    const onPointerDown = (e) => {
+      if (tagPickerRef.current?.contains(e.target)) return
+      if (tagPickerBtnRef.current?.contains(e.target)) return
+      setShowTagPicker(false)
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    return () => document.removeEventListener('mousedown', onPointerDown)
+  }, [showTagPicker])
 
   // 웹 클리핑
   const handleClip = async () => {
@@ -355,7 +370,7 @@ export default function DashboardPage() {
       link.click()
       URL.revokeObjectURL(url)
     } catch {
-      alert('내보내기 실패')
+      toast.error('내보내기에 실패했어요')
     } finally {
       setExporting(false)
     }
@@ -513,7 +528,7 @@ export default function DashboardPage() {
                 disabled={exporting}
                 title="Markdown ZIP 내보내기"
               >
-                {exporting ? '...' : '내보내기'}
+                {exporting ? '내보내는 중...' : '내보내기'}
               </button>
 
               <button
@@ -551,32 +566,67 @@ export default function DashboardPage() {
 
           {/* 벌크 액션 바 */}
           {bulkMode && (
-            <div className="bulk-action-bar">
-              <span className="bulk-count">{selectedIds.size}개 선택됨</span>
-              <button className="btn btn-ghost btn-sm" onClick={selectAll}>
-                전체 선택
-              </button>
-              <button className="btn btn-ghost btn-sm" onClick={clearSelect}>
-                선택 해제
-              </button>
-              <button
-                className="btn btn-ghost btn-sm"
-                onClick={handleBulkTag}
-                disabled={selectedIds.size === 0 || bulkLoading}
-              >
-                🏷 태그 부착
-              </button>
-              <button
-                className="btn btn-danger btn-sm"
-                onClick={handleBulkDelete}
-                disabled={selectedIds.size === 0 || bulkLoading}
-              >
-                {bulkLoading ? '삭제 중...' : '🗑 삭제'}
-              </button>
-              <button className="btn btn-ghost btn-sm" onClick={toggleBulkMode}>
-                취소
-              </button>
-            </div>
+            <>
+              <div className="bulk-action-bar">
+                <span className="bulk-count">{selectedIds.size}개 선택됨</span>
+                <button className="btn btn-ghost btn-sm" onClick={selectAll}>
+                  전체 선택
+                </button>
+                <button className="btn btn-ghost btn-sm" onClick={clearSelect}>
+                  선택 해제
+                </button>
+                <button
+                  ref={tagPickerBtnRef}
+                  className={`btn btn-ghost btn-sm ${showTagPicker ? 'active' : ''}`}
+                  onClick={() => setShowTagPicker((v) => !v)}
+                  disabled={selectedIds.size === 0 || bulkLoading}
+                >
+                  🏷 태그 부착
+                </button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={handleBulkDelete}
+                  disabled={selectedIds.size === 0 || bulkLoading}
+                >
+                  {bulkLoading ? '삭제 중...' : '🗑 삭제'}
+                </button>
+                <button className="btn btn-ghost btn-sm" onClick={toggleBulkMode}>
+                  취소
+                </button>
+              </div>
+
+              {/* 태그 선택 팝오버 */}
+              {showTagPicker && (
+                <div className="bulk-tag-picker" ref={tagPickerRef}>
+                  <div className="bulk-tag-picker-header">
+                    <span className="bulk-tag-picker-title">부착할 태그를 선택하세요</span>
+                    <button
+                      className="bulk-tag-picker-close"
+                      onClick={() => setShowTagPicker(false)}
+                      aria-label="태그 선택 닫기"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  {tags.length === 0 ? (
+                    <p className="bulk-tag-picker-empty">태그가 아직 없어요</p>
+                  ) : (
+                    <div className="bulk-tag-picker-list">
+                      {tags.map((tag) => (
+                        <button
+                          key={tag.id}
+                          className="bulk-tag-chip"
+                          onClick={() => handleBulkTag(tag)}
+                          disabled={bulkLoading}
+                        >
+                          #{tag.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           {/* 스마트폴더 활성 표시 */}
@@ -607,7 +657,12 @@ export default function DashboardPage() {
                 return tag ? (
                   <span key={id} className="active-tag-chip">
                     #{tag.name}
-                    <button onClick={() => toggleTag(id)}>×</button>
+                    <button
+                      onClick={() => toggleTag(id)}
+                      aria-label={`#${tag.name} 태그 필터 제거`}
+                    >
+                      ×
+                    </button>
                   </span>
                 ) : null
               })}
@@ -704,6 +759,7 @@ export default function DashboardPage() {
                 className="modal-close-btn"
                 onClick={() => setShowClipModal(false)}
                 disabled={clipLoading}
+                aria-label="웹 클리핑 모달 닫기"
               >
                 ×
               </button>
