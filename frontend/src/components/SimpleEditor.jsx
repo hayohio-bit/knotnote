@@ -1,4 +1,5 @@
 import { memo, useCallback, useLayoutEffect, useRef, useState } from 'react'
+import { renderInline } from '../lib/inlineMarkdown.js'
 import './SimpleEditor.css'
 
 // ── 블록 타입 서식 버튼 ───────────────────────────────────────
@@ -211,6 +212,9 @@ const BlockEl = memo(function BlockEl({
 }) {
   const elRef = useRef(null)
   const composing = useRef(false)
+  // 마지막으로 강조를 입힌 텍스트. 편집 직후에는 textContent 가 이미 최신이라
+  // 이 값이 없으면 blur 된 뒤에도 마커가 평문으로 남는다.
+  const rendered = useRef(null)
 
   const refCb = useCallback(
     (el) => {
@@ -229,8 +233,13 @@ const BlockEl = memo(function BlockEl({
       autoGrow(el)
       return
     }
-    if (el !== document.activeElement && el.textContent !== text) {
-      el.textContent = text
+    // 포커스 중에는 건드리지 않는다. 편집 중에 DOM 을 다시 쓰면 커서가 튄다.
+    // 강조는 blur 된 뒤에 입혀지고, 마커가 문자열에 남으므로 textContent 는
+    // 언제나 원문과 같다.
+    if (el === document.activeElement) return
+    if (rendered.current !== text || el.textContent !== text) {
+      el.innerHTML = renderInline(text)
+      rendered.current = text
     }
   })
 
