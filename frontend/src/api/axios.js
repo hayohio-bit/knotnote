@@ -19,6 +19,17 @@ api.interceptors.request.use((config) => {
 let isRefreshing = false
 let failedQueue = []
 
+const isPublicPath = () => {
+  const path = window.location.pathname
+  return path.startsWith('/shared/') || path === '/login'
+}
+
+const redirectToLogin = () => {
+  if (!isPublicPath()) {
+    window.location.href = '/login'
+  }
+}
+
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
@@ -44,6 +55,7 @@ api.interceptors.response.use(
         failedQueue.push({ resolve, reject })
       })
         .then((token) => {
+          original._retry = true
           original.headers.Authorization = `Bearer ${token}`
           return api(original)
         })
@@ -55,8 +67,10 @@ api.interceptors.response.use(
 
     const refreshToken = tokenStorage.getRefresh()
     if (!refreshToken) {
+      isRefreshing = false
+      processQueue(error, null)
       tokenStorage.clear()
-      window.location.href = '/login'
+      redirectToLogin()
       return Promise.reject(error)
     }
 
@@ -76,7 +90,7 @@ api.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null)
       tokenStorage.clear()
-      window.location.href = '/login'
+      redirectToLogin()
       return Promise.reject(refreshError)
     } finally {
       isRefreshing = false

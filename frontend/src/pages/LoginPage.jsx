@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../store/AuthContext.jsx'
 import './AuthPage.css'
 
 export default function LoginPage() {
-  const { login } = useAuth()
+  const { user, login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const infoMessage = location.state?.message
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -26,12 +28,18 @@ export default function LoginPage() {
     }
   }
 
+  if (user) {
+    return <Navigate to="/dashboard" replace />
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-card neu-card">
         <div className="auth-logo">🪢 KnotNote</div>
         <h1 className="auth-title">로그인</h1>
         <p className="auth-subtitle">환영합니다! 계속하려면 로그인해주세요.</p>
+
+        {infoMessage && <div className="auth-info">{infoMessage}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">

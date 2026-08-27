@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../store/AuthContext.jsx'
 import './AuthPage.css'
 
 export default function SignupPage() {
-  const { signup } = useAuth()
+  const { user, signup } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '', nickname: '' })
   const [error, setError] = useState('')
@@ -30,6 +30,10 @@ export default function SignupPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />
   }
 
   return (
