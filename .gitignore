@@ -57,3 +57,4 @@ frontend/.env.local
 *.db
 *.mv.db
 *.trace.db
+.claude/settings.local.json
