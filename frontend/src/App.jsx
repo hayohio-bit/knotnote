@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import ConfirmHost from './components/ConfirmHost.jsx'
 import PrivateRoute from './components/PrivateRoute.jsx'
 import QuickCapture from './components/QuickCapture.jsx'
 import ToastHost from './components/ToastHost.jsx'
@@ -20,6 +21,7 @@ function AppRoutes() {
   return (
     <>
       <ToastHost />
+      <ConfirmHost />
       {user && <QuickCapture />}
       <Routes>
         {/* 공개 */}

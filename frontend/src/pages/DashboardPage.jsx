@@ -9,6 +9,7 @@ import NoteCard from '../components/NoteCard.jsx'
 import SmartFolderModal from '../components/SmartFolderModal.jsx'
 import Spinner from '../components/Spinner.jsx'
 import TemplateModal from '../components/TemplateModal.jsx'
+import { confirmDialog } from '../lib/confirm.js'
 import { toast } from '../lib/toast.js'
 import './DashboardPage.css'
 
@@ -257,7 +258,10 @@ export default function DashboardPage() {
   }
 
   const handleSFDelete = async (sfId) => {
-    if (!window.confirm('이 스마트 폴더를 삭제할까요?')) return
+    if (
+      !(await confirmDialog('이 스마트 폴더를 삭제할까요?', { confirmLabel: '삭제', danger: true }))
+    )
+      return
     try {
       await smartFoldersApi.delete(sfId)
     } catch {
@@ -289,7 +293,13 @@ export default function DashboardPage() {
   // 벌크 삭제
   const handleBulkDelete = async () => {
     if (selectedIds.size === 0) return
-    if (!window.confirm(`선택한 ${selectedIds.size}개 메모를 삭제할까요?`)) return
+    if (
+      !(await confirmDialog(`선택한 ${selectedIds.size}개 메모를 삭제할까요?`, {
+        confirmLabel: '삭제',
+        danger: true,
+      }))
+    )
+      return
     setBulkLoading(true)
     try {
       await notesApi.bulkDelete([...selectedIds])

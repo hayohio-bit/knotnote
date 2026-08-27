@@ -8,6 +8,7 @@ import Navbar from '../components/Navbar.jsx'
 import SimpleEditor from '../components/SimpleEditor.jsx'
 import Spinner from '../components/Spinner.jsx'
 import TagBadge from '../components/TagBadge.jsx'
+import { confirmDialog } from '../lib/confirm.js'
 import { toast } from '../lib/toast.js'
 import './EditorPage.css'
 
@@ -235,7 +236,12 @@ export default function EditorPage() {
   }
 
   const handleRestoreVersion = async (versionId) => {
-    if (!window.confirm('이 버전으로 복원할까요? 현재 내용은 새 버전으로 저장됩니다.')) return
+    if (
+      !(await confirmDialog('이 버전으로 복원할까요?\n현재 내용은 새 버전으로 저장됩니다.', {
+        confirmLabel: '복원',
+      }))
+    )
+      return
     setRestoringId(versionId)
     try {
       const { data } = await notesApi.restoreVersion(id, versionId)
@@ -433,7 +439,8 @@ export default function EditorPage() {
 
   const handleDelete = async () => {
     if (deleting) return
-    if (!window.confirm('이 메모를 삭제할까요?')) return
+    if (!(await confirmDialog('이 메모를 삭제할까요?', { confirmLabel: '삭제', danger: true })))
+      return
     setDeleting(true)
     try {
       await notesApi.delete(id)
@@ -486,7 +493,13 @@ export default function EditorPage() {
   }
 
   const handleUnshare = async () => {
-    if (!window.confirm('공유를 해제할까요? 링크가 더 이상 유효하지 않게 됩니다.')) return
+    if (
+      !(await confirmDialog('공유를 해제할까요?\n링크가 더 이상 유효하지 않게 됩니다.', {
+        confirmLabel: '해제',
+        danger: true,
+      }))
+    )
+      return
     setSharingLoading(true)
     try {
       await notesApi.unshare(id)
