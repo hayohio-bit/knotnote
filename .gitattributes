@@ -1,5 +1,7 @@
-# 기본: CRLF → LF 자동 변환
-* text=auto
+# 기본: 저장소와 작업 트리 모두 LF 로 통일한다.
+# eol=lf 를 생략하면 Windows 에서 작업 트리가 CRLF 로 체크아웃되어,
+# lineEnding 을 lf 로 지정한 Biome 검사가 모든 파일을 형식 위반으로 잡는다.
+* text=auto eol=lf
 
 # gradlew는 항상 LF (Linux 실행 파일)
 gradlew text eol=lf
